@@ -7,7 +7,7 @@ const App = () => {
   const [viewMode, setViewMode] = useState('table');
   const [parsedData, setParsedData] = useState([]);
   const [userApiKey, setUserApiKey] = useState('');
-  const [aiModel, setAiModel] = useState('gemini-2.5-flash-preview-09-2025'); // Added Model Selector State
+  const [aiModel, setAiModel] = useState('gemini-2.5-flash-preview-09-2025');
   const [uiError, setUiError] = useState('');
 
   // PDF Extraction State
@@ -38,7 +38,7 @@ const App = () => {
     loadPdfJs();
   }, []);
 
-  // Handle PDF File Upload (UPDATED WITH SMART LINE-BREAK TRACKING)
+  // Handle PDF File Upload
   const handleFileUpload = async (e) => {
     setUiError('');
     const file = e.target.files[0];
@@ -186,13 +186,15 @@ const App = () => {
         setAiResult("✨ **Success!** The text has been structured into Coverage, Exclusions, and Dealer Actions. The table behind this modal has been updated.");
       }
     } catch (err) {
-      setAiError(err.message || "An error occurred while contacting the AI. Check your API key.");
+      setAiError(err.message || "An error occurred while contacting the AI. Check your API key or Canvas Session.");
     } finally {
       setIsAiLoading(false);
     }
   };
 
-  // The Parser Logic triggered by button
+  // ---------------------------------------------------------
+  // CORE PARSING LOGIC: UPDATED FOR BULLETPROOF EXTRACTION
+  // ---------------------------------------------------------
   const handleConvert = () => {
     if (!rawText.trim()) {
       setParsedData([]);
@@ -201,16 +203,24 @@ const App = () => {
 
     let processedText = rawText;
     
-    // Clean headers/footers
+    // 1. Clean headers/footers to prevent false splits
     processedText = processedText.replace(/Page\s+(\d+)\s+of\s+\d+/gi, "\n__PAGE_$1__\n");
     processedText = processedText.replace(/2026 HYUNDAI WARRANTY POLICY AND PROCEDURES/gi, " ");
     processedText = processedText.replace(/Section \d+.*?Warranty/gi, " "); 
-
-    // DESTROY TABLE OF CONTENTS: Strip any line that has multiple consecutive dots
+    
+    // 2. DESTROY TABLE OF CONTENTS dots
     processedText = processedText.replace(/^.*?(?:\.{4,}|\.\s\.\s\.\s\.).*?$/gm, '');
 
-    // Regex to catch Warranty Sections on a fresh line (e.g., "1.0", "2.3.2")
-    const sectionRegex = /^[ \t]*([1-9]\d*(?:\.\d+)+)[ \t]+([^\n]{3,120})$/gm;
+    // 3. THE IGNITION SWITCH (FRONT MATTER BYPASS)
+    const ignitionPoint = processedText.indexOf("1.0 GENERAL INFORMATION");
+    if (ignitionPoint !== -1) {
+      processedText = processedText.substring(ignitionPoint);
+    }
+
+    // 4. THE MAGIC REGEX: Extract Sections based on leading numbers
+    // Fix 1: (?:\.\d+)+ forces the number to have a decimal (e.g. 1.0, 7.5.1) to ignore single digit ghosts.
+    // Fix 2: \r?\n? allows the number and title to be split across two lines, fixing Chapters 8 & 9.
+    const sectionRegex = /^[ \t]*([1-9]\d*(?:\.\d+)+)[ \t]*\r?\n?[ \t]*([A-Za-z0-9][^\n\r]{2,120})/gm;
     
     const sections = [];
     let match;
@@ -220,10 +230,10 @@ const App = () => {
 
     while ((match = sectionRegex.exec(processedText)) !== null) {
       const sectionId = match[1].trim();
-      const title = match[2].trim();
-
-      // Final safeguard against stray TOC fragments
-      if (title.includes('...')) continue;
+      let title = match[2].trim();
+      
+      // Clean page tags out of the title if they accidentally bled in
+      title = title.replace(/__PAGE_\d+__/g, '').trim();
 
       // Grab content for the PREVIOUS section
       if (currentSection) {
@@ -240,7 +250,6 @@ const App = () => {
         currentSection.raw_content = content.replace(/\s+/g, ' ').trim();
         currentSection.source_pages = Array.from(pages).sort((a,b) => parseInt(a) - parseInt(b));
         
-        // Only push if there's actual content (prevents empty phantom sections)
         if (currentSection.raw_content.length > 10) {
             sections.push(currentSection);
         }
@@ -415,7 +424,7 @@ const App = () => {
             <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex gap-3 items-start">
               <BookOpen className="text-blue-500 shrink-0" size={20} />
               <p className="text-sm text-blue-700">
-                <strong>Update Applied:</strong> The PDF reader now tracks line-breaks accurately, and the parser automatically skips the Table of Contents index!
+                <strong>How to use:</strong> Upload the Warranty PDF. Once extracted, hit "Extract Sections". Then, use the AI Structure button in the table to turn the text into clean JSON.
               </p>
             </div>
           </section>
@@ -565,11 +574,7 @@ const App = () => {
                   <AlertCircle className="shrink-0 mt-0.5" size={18} />
                   <div>
                     <h4 className="font-semibold text-sm mb-1">Failed to fetch AI insight</h4>
-                    <p className="text-sm mb-2">{aiError}</p>
-                    <div className="text-xs bg-red-100/50 p-2 rounded border border-red-100 mt-2">
-                      <strong>Getting a 401?</strong> Your Canvas session likely expired. Try refreshing the page.<br/>
-                      <strong>Getting a 404?</strong> You must use the "Canvas Env Model" if you are testing inside this window!
-                    </div>
+                    <p className="text-sm">{aiError}</p>
                   </div>
                 </div>
               ) : (
