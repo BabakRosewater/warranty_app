@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Copy, Download, BookOpen, FileText, Search, CheckCircle, AlertCircle, Play, Sparkles, X, Loader2, ShieldAlert, Wrench, UploadCloud } from 'lucide-react';
 
 const App = () => {
@@ -20,6 +20,11 @@ const App = () => {
   const [aiResult, setAiResult] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
+
+  // Batch AI State
+  const [isBatchProcessing, setIsBatchProcessing] = useState(false);
+  const [batchProgress, setBatchProgress] = useState({ current: 0, total: 0 });
+  const cancelBatchRef = useRef(false);
 
   // Load PDF.js dynamically
   useEffect(() => {
@@ -67,15 +72,12 @@ const App = () => {
         let pageText = '';
         let lastY = null;
         
-        // Track the Y-coordinate to accurately insert line breaks
         textContent.items.forEach(item => {
           const y = Math.round(item.transform[5]); 
           
           if (lastY !== null && Math.abs(lastY - y) > 5) {
-            // Significant vertical drop = New Line
             pageText += '\n';
           } else if (lastY !== null && pageText.length > 0 && !pageText.endsWith(' ') && item.str.trim().length > 0) {
-            // Same line, but needs a space separator
             pageText += ' ';
           }
           
@@ -89,7 +91,7 @@ const App = () => {
       setRawText(extractedText);
     } catch (error) {
       console.error('Error reading PDF:', error);
-      setUiError('An error occurred while trying to read the PDF. Please make sure the file is not corrupted or password protected.');
+      setUiError('An error occurred while trying to read the PDF.');
     } finally {
       setIsReadingPdf(false);
       e.target.value = null; 
@@ -141,7 +143,72 @@ const App = () => {
     }
   };
 
-  // Run AI Tasks
+  // ---------------------------------------------------------
+  // BATCH PROCESSING LOGIC
+  // ---------------------------------------------------------
+  const handleBatchStructure = async () => {
+    const unstructuredSections = parsedData.filter(s => !s.is_structured);
+    
+    if (unstructuredSections.length === 0) {
+      alert("All sections are already structured!");
+      return;
+    }
+
+    setIsBatchProcessing(true);
+    cancelBatchRef.current = false;
+    setBatchProgress({ current: 0, total: unstructuredSections.length });
+
+    const schema = {
+      type: "OBJECT",
+      properties: {
+        title: { type: "STRING", description: "Cleaned section title" },
+        coverage_details: { type: "ARRAY", items: { type: "STRING" }, description: "Specific items, scenarios, or parts covered by this policy." },
+        exclusions: { type: "ARRAY", items: { type: "STRING" }, description: "Specific items, scenarios, or conditions explicitly NOT covered." },
+        dealer_actions: { type: "ARRAY", items: { type: "STRING" }, description: "Steps the dealership must take (e.g. required documentation, inspections, forms)." }
+      },
+      required: ["title", "coverage_details", "exclusions", "dealer_actions"]
+    };
+
+    let processedCount = 0;
+
+    for (const section of unstructuredSections) {
+      if (cancelBatchRef.current) {
+        console.log("Batch processing cancelled by user.");
+        break;
+      }
+
+      processedCount++;
+      setBatchProgress({ current: processedCount, total: unstructuredSections.length });
+
+      const prompt = `Transform this raw warranty manual text into a structured JSON object. Separate what is covered, what is excluded, and what administrative actions the dealer must take.\n\nRaw Text:\n${section.raw_content}`;
+
+      try {
+        const jsonResult = await callGemini(prompt, "You are an expert data architect for automotive warranty systems.", schema);
+        const cleanedData = JSON.parse(jsonResult);
+        
+        // Update state progressively so the UI updates while looping
+        setParsedData(prev => prev.map(s => 
+          s.section_id === section.section_id ? { ...s, ...cleanedData, is_structured: true } : s
+        ));
+      } catch (err) {
+        console.error(`Failed on section ${section.section_id}:`, err);
+        // Continue to the next section even if one fails
+      }
+
+      // Respect rate limits - wait 2.5 seconds between API calls
+      if (processedCount < unstructuredSections.length && !cancelBatchRef.current) {
+        await new Promise(resolve => setTimeout(resolve, 2500));
+      }
+    }
+
+    setIsBatchProcessing(false);
+  };
+
+  const stopBatchProcess = () => {
+    cancelBatchRef.current = true;
+  };
+
+  // Run Individual AI Tasks
   const handleAiAction = async (section, taskType) => {
     setAiTargetSection(section);
     setActiveAiTask(taskType);
@@ -178,7 +245,6 @@ const App = () => {
         const jsonResult = await callGemini(prompt, "You are an expert data architect for automotive warranty systems.", schema);
         const cleanedData = JSON.parse(jsonResult);
         
-        // Update state with cleaned data
         setParsedData(prev => prev.map(s => 
           s.section_id === section.section_id ? { ...s, ...cleanedData, is_structured: true } : s
         ));
@@ -186,15 +252,12 @@ const App = () => {
         setAiResult("✨ **Success!** The text has been structured into Coverage, Exclusions, and Dealer Actions. The table behind this modal has been updated.");
       }
     } catch (err) {
-      setAiError(err.message || "An error occurred while contacting the AI. Check your API key or Canvas Session.");
+      setAiError(err.message || "An error occurred while contacting the AI.");
     } finally {
       setIsAiLoading(false);
     }
   };
 
-  // ---------------------------------------------------------
-  // CORE PARSING LOGIC: UPDATED FOR BULLETPROOF EXTRACTION
-  // ---------------------------------------------------------
   const handleConvert = () => {
     if (!rawText.trim()) {
       setParsedData([]);
@@ -203,23 +266,18 @@ const App = () => {
 
     let processedText = rawText;
     
-    // 1. Clean headers/footers to prevent false splits
     processedText = processedText.replace(/Page\s+(\d+)\s+of\s+\d+/gi, "\n__PAGE_$1__\n");
     processedText = processedText.replace(/2026 HYUNDAI WARRANTY POLICY AND PROCEDURES/gi, " ");
     processedText = processedText.replace(/Section \d+.*?Warranty/gi, " "); 
-    
-    // 2. DESTROY TABLE OF CONTENTS dots
     processedText = processedText.replace(/^.*?(?:\.{4,}|\.\s\.\s\.\s\.).*?$/gm, '');
 
-    // 3. THE IGNITION SWITCH (FRONT MATTER BYPASS)
-    const ignitionPoint = processedText.indexOf("1.0 GENERAL INFORMATION");
-    if (ignitionPoint !== -1) {
-      processedText = processedText.substring(ignitionPoint);
+    const ignitionRegex = /1\.0\s+Sale of Hyundai Products/i;
+    const matchIgnition = processedText.match(ignitionRegex);
+    
+    if (matchIgnition) {
+      processedText = processedText.substring(matchIgnition.index);
     }
 
-    // 4. THE MAGIC REGEX: Extract Sections based on leading numbers
-    // Fix 1: (?:\.\d+)+ forces the number to have a decimal (e.g. 1.0, 7.5.1) to ignore single digit ghosts.
-    // Fix 2: \r?\n? allows the number and title to be split across two lines, fixing Chapters 8 & 9.
     const sectionRegex = /^[ \t]*([1-9]\d*(?:\.\d+)+)[ \t]*\r?\n?[ \t]*([A-Za-z0-9][^\n\r]{2,120})/gm;
     
     const sections = [];
@@ -232,14 +290,11 @@ const App = () => {
       const sectionId = match[1].trim();
       let title = match[2].trim();
       
-      // Clean page tags out of the title if they accidentally bled in
       title = title.replace(/__PAGE_\d+__/g, '').trim();
 
-      // Grab content for the PREVIOUS section
       if (currentSection) {
         let content = processedText.substring(lastIndex, match.index);
         
-        // Extract pages from content
         const pages = new Set([lastSeenPage]);
         content = content.replace(/__PAGE_(\d+)__/g, (m, p1) => {
           pages.add(p1);
@@ -255,7 +310,6 @@ const App = () => {
         }
       }
 
-      // Start NEW section
       currentSection = {
         section_id: sectionId,
         title: title,
@@ -268,7 +322,6 @@ const App = () => {
       lastIndex = match.index + match[0].length;
     }
 
-    // Push the final section
     if (currentSection) {
       let content = processedText.substring(lastIndex);
       const pages = new Set([lastSeenPage]);
@@ -318,7 +371,6 @@ const App = () => {
     <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-900 relative">
       <div className="max-w-[1400px] mx-auto">
         
-        {/* Header */}
         <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
@@ -373,10 +425,8 @@ const App = () => {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Input Panel */}
           <section className="flex flex-col gap-4 lg:col-span-4">
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[700px]">
-              
               <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
                   <FileText size={14} /> Source Text Input
@@ -399,7 +449,6 @@ const App = () => {
                   <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-blue-600">
                     <Loader2 className="animate-spin mb-3" size={32} />
                     <p className="font-medium text-sm">Extracting Text from PDF...</p>
-                    <p className="text-xs text-slate-500 mt-1">Calculating paragraph line breaks...</p>
                   </div>
                 )}
                 <textarea
@@ -429,30 +478,43 @@ const App = () => {
             </div>
           </section>
 
-          {/* Output Panel */}
           <section className="flex flex-col gap-4 lg:col-span-8">
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[700px]">
-              <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-                <div className="flex bg-slate-200 p-1 rounded-md">
-                  <button 
-                    onClick={() => setViewMode('table')}
-                    className={`px-3 py-1 text-xs font-medium rounded transition-all ${viewMode === 'table' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                    Table View
-                  </button>
-                  <button 
-                    onClick={() => setViewMode('json')}
-                    className={`px-3 py-1 text-xs font-medium rounded transition-all ${viewMode === 'json' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                    JSON View
-                  </button>
+              <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex gap-2 items-center">
+                  <div className="flex bg-slate-200 p-1 rounded-md mr-2">
+                    <button 
+                      onClick={() => setViewMode('table')}
+                      className={`px-3 py-1 text-xs font-medium rounded transition-all ${viewMode === 'table' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+                    >
+                      Table View
+                    </button>
+                    <button 
+                      onClick={() => setViewMode('json')}
+                      className={`px-3 py-1 text-xs font-medium rounded transition-all ${viewMode === 'json' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+                    >
+                      JSON View
+                    </button>
+                  </div>
+                  
+                  {/* BATCH STRUCTURE BUTTON */}
+                  {parsedData.length > 0 && parsedData.some(s => !s.is_structured) && (
+                    <button 
+                      onClick={handleBatchStructure}
+                      disabled={isBatchProcessing}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 rounded text-xs font-bold shadow-sm transition-colors"
+                    >
+                      <Sparkles size={14} /> Structure All
+                    </button>
+                  )}
                 </div>
+
                 <div className="relative">
                   <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input 
                     type="text" 
                     placeholder="Search sections..."
-                    className="pl-8 pr-3 py-1 bg-white border border-slate-200 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none w-48 lg:w-64"
+                    className="pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded text-xs focus:ring-1 focus:ring-blue-500 outline-none w-full sm:w-48 lg:w-64"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -541,8 +603,36 @@ const App = () => {
         </div>
       </div>
 
-      {/* Gemini AI Modal Overlay */}
-      {aiModalOpen && (
+      {/* Batch Processing Modal */}
+      {isBatchProcessing && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 flex flex-col items-center text-center animate-in zoom-in-95">
+            <Loader2 className="animate-spin text-amber-500 mb-4" size={48} />
+            <h2 className="text-xl font-bold text-slate-800 mb-2">Structuring All Sections</h2>
+            <p className="text-sm text-slate-500 mb-6">
+              Processing section {batchProgress.current} of {batchProgress.total}.<br/>
+              <em>Adding a short delay between each to prevent API limits.</em>
+            </p>
+            
+            <div className="w-full bg-slate-100 rounded-full h-3 mb-6 overflow-hidden">
+              <div 
+                className="bg-amber-500 h-3 rounded-full transition-all duration-300" 
+                style={{ width: `${(batchProgress.current / batchProgress.total) * 100}%` }}
+              ></div>
+            </div>
+
+            <button 
+              onClick={stopBatchProcess}
+              className="px-6 py-2 bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 border border-slate-200 hover:border-red-200 rounded-lg font-medium transition-colors"
+            >
+              Cancel Processing
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Single AI Modal Overlay */}
+      {aiModalOpen && !isBatchProcessing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[80vh] animate-in fade-in zoom-in-95 duration-200">
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
