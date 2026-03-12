@@ -50,10 +50,21 @@ function pickContextSection(section) {
     section_id: sanitizeText(section.section_id, 80),
     title: sanitizeText(section.title, 250),
     raw_content: sanitizeText(section.raw_content, MAX_LONG_TEXT_CHARS),
-    coverage_details: sanitizeArray(section.coverage_details, 800),
-    exclusions: sanitizeArray(section.exclusions, 800),
+    
+    // Rich Relational Schema Fields
+    eligibility_conditions: sanitizeArray(section.eligibility_conditions, 500),
+    coverage_and_reimbursement: sanitizeArray(section.coverage_and_reimbursement || section.coverage_details, 800),
+    not_covered: sanitizeArray(section.not_covered || section.exclusions, 800),
+    payment_limitations: sanitizeArray(section.payment_limitations, 500),
     dealer_actions: sanitizeArray(section.dealer_actions, 800),
-    source_pages: sanitizeArray(section.source_pages, 100)
+    documents_required: sanitizeArray(section.documents_required, 500),
+    systems: sanitizeArray(section.systems, 300),
+    system_screens: sanitizeArray(section.system_screens, 300),
+    comment_requirements: sanitizeArray(section.comment_requirements, 500),
+    timing_rules: sanitizeArray(section.timing_rules, 500),
+    claim_processing_risks: sanitizeArray(section.claim_processing_risks, 500),
+    roles_explicitly_mentioned: sanitizeArray(section.roles_explicitly_mentioned, 200),
+    source_pdf_pages: sanitizeArray(section.source_pdf_pages || section.source_pages, 100)
   };
 
   if (!picked.section_id && !picked.title) {
@@ -134,6 +145,8 @@ function buildSystemPrompt({ selectedSection, relevantSections, matchingMeta }) 
     "- First answer the user directly.",
     "- If multiple relevant sections are present, list them and summarize each one.",
     "- If the context details 'dealer_actions' or administrative steps, emphasize what the dealership personnel must do (e.g., forms, approvals).",
+    "- If the context details 'timing_rules' or 'payment_limitations', explicitly highlight them for the user.",
+    "- Emphasize 'documents_required' and 'comment_requirements' when explaining claim procedures.",
     "- Use bullet points for limits, coverages, and exclusions to make them highly readable.",
     "",
     "MANUAL CONTEXT:",
