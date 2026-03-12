@@ -94,18 +94,18 @@
           <div class="min-w-0">
             <h1 class="truncate text-lg font-bold tracking-wide sm:text-xl">Warranty Semantic Hub</h1>
             <p class="truncate text-xs text-blue-100">
-              Hyundai Warranty Policies & Procedures
+              Hyundai Warranty Policies, Coverage, Claims & Error Workflows
             </p>
           </div>
         </div>
 
         <div class="flex shrink-0 items-center gap-2 sm:gap-3">
           <div
-            id="manual-status-pill"
+            id="library-status-pill"
             class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs"
           >
-            <span id="manual-status-dot" class="h-2 w-2 rounded-full bg-amber-300"></span>
-            <span id="manual-status-text">Loading policies…</span>
+            <span id="library-status-dot" class="h-2 w-2 rounded-full bg-amber-300"></span>
+            <span id="library-status-text">Loading libraries…</span>
           </div>
 
           <div class="hidden items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs sm:inline-flex">
@@ -116,26 +116,39 @@
       </div>
     </header>
 
+    <!-- WORKSPACE NAV -->
+    <div class="shrink-0 border-b border-slate-200 bg-white px-4 py-3">
+      <div class="flex flex-wrap gap-2" id="workspace-nav">
+        <button type="button" data-workspace-mode="policy" class="workspace-tab rounded-xl border px-3 py-2 text-sm font-medium transition">Policy</button>
+        <button type="button" data-workspace-mode="checklist" class="workspace-tab rounded-xl border px-3 py-2 text-sm font-medium transition">Checklist</button>
+        <button type="button" data-workspace-mode="claim_types" class="workspace-tab rounded-xl border px-3 py-2 text-sm font-medium transition">Claim Types</button>
+        <button type="button" data-workspace-mode="entry_map" class="workspace-tab rounded-xl border px-3 py-2 text-sm font-medium transition">Entry Map</button>
+        <button type="button" data-workspace-mode="validator" class="workspace-tab rounded-xl border px-3 py-2 text-sm font-medium transition">Validator</button>
+        <button type="button" data-workspace-mode="error_fix" class="workspace-tab rounded-xl border px-3 py-2 text-sm font-medium transition">Error Fix</button>
+        <button type="button" data-workspace-mode="coverage" class="workspace-tab rounded-xl border px-3 py-2 text-sm font-medium transition">Coverage</button>
+      </div>
+    </div>
+
     <!-- COMPACT NAV -->
     <div id="mobile-tab-bar" class="border-b border-slate-200 bg-white xl:hidden">
       <div class="grid grid-cols-3 gap-2 px-3 py-3">
         <button
           type="button"
-          data-compact-view="sections"
+          data-compact-view="left"
           class="compact-tab rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition"
         >
-          Sections
+          Navigate
         </button>
         <button
           type="button"
-          data-compact-view="details"
+          data-compact-view="center"
           class="compact-tab rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition"
         >
           Details
         </button>
         <button
           type="button"
-          data-compact-view="chat"
+          data-compact-view="right"
           class="compact-tab rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition"
         >
           Assistant
@@ -147,149 +160,29 @@
     <main class="flex min-h-0 flex-1 xl:flex-row">
       <!-- LEFT PANEL -->
       <aside
-        id="panel-sections"
+        id="panel-left"
         class="flex min-h-0 flex-1 flex-col bg-white xl:min-w-[320px] xl:w-[28%] xl:border-r xl:border-slate-200"
       >
-        <div class="shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-4">
-          <div class="mb-3 flex items-center justify-between gap-3">
-            <h2 class="flex items-center gap-2 text-sm font-semibold text-slate-700">
-              <svg class="h-4 w-4 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-              </svg>
-              Policy Index
-            </h2>
-
-            <span id="section-count" class="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-600">
-              0 loaded
-            </span>
-          </div>
-
-          <div class="relative">
-            <input
-              id="search-input"
-              type="text"
-              placeholder="Search section number or keyword..."
-              class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-16 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-transparent focus:ring-2 focus:ring-[var(--brand)] disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
-              disabled
-            />
-            <svg class="pointer-events-none absolute left-3 top-2.5 h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-              <circle cx="11" cy="11" r="7"></circle>
-              <path stroke-linecap="round" stroke-linejoin="round" d="m20 20-3.5-3.5"></path>
-            </svg>
-            <div class="pointer-events-none absolute right-3 top-2.5 hidden rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-400 sm:block">
-              Ctrl K
-            </div>
-          </div>
-
-          <div class="mt-2 flex items-center justify-between gap-3">
-            <p id="search-summary" class="text-xs text-slate-500">Waiting for data…</p>
-            <button
-              id="clear-search-btn"
-              type="button"
-              class="hidden text-xs font-medium text-slate-400 transition hover:text-slate-600"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-
-        <div id="section-list" class="min-h-0 flex-1 overflow-y-auto p-2">
-          <!-- injected -->
-        </div>
+        <div id="left-panel-header" class="shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-4"></div>
+        <div id="leftPanel" class="min-h-0 flex-1 overflow-y-auto p-2"></div>
       </aside>
 
-      <!-- MIDDLE PANEL -->
+      <!-- CENTER PANEL -->
       <section
-        id="panel-details"
-        class="flex min-h-0 flex-1 flex-col bg-slate-50 xl:min-w-[380px] xl:w-[34%] xl:border-r xl:border-slate-200"
+        id="panel-center"
+        class="flex min-h-0 flex-1 flex-col bg-slate-50 xl:min-w-[420px] xl:w-[36%] xl:border-r xl:border-slate-200"
       >
-        <div class="shrink-0 border-b border-slate-200 bg-white px-4 py-4">
-          <div class="flex items-center justify-between gap-3">
-            <h2 class="text-sm font-semibold text-slate-700">Policy Details</h2>
-
-            <button
-              id="copy-section-btn"
-              type="button"
-              class="hidden rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
-            >
-              Copy Details
-            </button>
-          </div>
-        </div>
-
-        <div id="section-details" class="min-h-0 flex-1 overflow-y-auto">
-          <!-- injected -->
-        </div>
+        <div id="center-panel-header" class="shrink-0 border-b border-slate-200 bg-white px-4 py-4"></div>
+        <div id="centerPanel" class="min-h-0 flex-1 overflow-y-auto"></div>
       </section>
 
       <!-- RIGHT PANEL -->
       <section
-        id="panel-chat"
+        id="panel-right"
         class="flex min-h-0 flex-1 flex-col bg-white"
       >
-        <div class="shrink-0 border-b border-slate-200 bg-white px-4 py-4">
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <h2 class="flex items-center gap-2 text-sm font-semibold text-slate-700">
-                <svg class="h-4 w-4 text-[var(--brand)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5m-8 7 3.5-3H19a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14l2-2Z" />
-                </svg>
-                Warranty Assistant
-              </h2>
-              <p class="mt-1 text-xs text-slate-500">
-                Answers grounded in the 2026 Warranty Policy JSON.
-              </p>
-            </div>
-
-            <button
-              id="clear-chat-btn"
-              class="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
-            >
-              Clear Chat
-            </button>
-          </div>
-        </div>
-
-        <div id="chat-container" class="bg-grid min-h-0 flex-1 overflow-y-auto p-4">
-          <!-- injected -->
-        </div>
-
-        <div class="shrink-0 border-t border-slate-200 bg-white p-4">
-          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-inner">
-            <div class="mb-2 flex items-center justify-between gap-3">
-              <p class="text-xs text-slate-500">
-                Tip: Select a policy first for highly accurate answers.
-              </p>
-              <p id="chat-status" class="text-xs text-slate-400">Manual required</p>
-            </div>
-
-            <div class="flex items-end gap-2">
-              <textarea
-                id="chat-input"
-                rows="3"
-                placeholder="Ask about a coverage, exclusion, time limit, or procedure..."
-                class="min-h-[72px] max-h-40 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-transparent focus:ring-2 focus:ring-[var(--brand)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500"
-                disabled
-              ></textarea>
-
-              <button
-                id="send-btn"
-                class="inline-flex h-12 shrink-0 items-center justify-center rounded-xl bg-[var(--brand)] px-4 text-white transition hover:bg-blue-900 disabled:cursor-not-allowed disabled:opacity-50"
-                disabled
-                aria-label="Send"
-              >
-                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M22 2 11 13"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" d="m22 2-7 20-4-9-9-4 20-7Z"></path>
-                </svg>
-              </button>
-            </div>
-
-            <div id="prompt-chips" class="mt-3 flex flex-wrap gap-2">
-              <!-- injected -->
-            </div>
-          </div>
-        </div>
+        <div id="right-panel-header" class="shrink-0 border-b border-slate-200 bg-white px-4 py-4"></div>
+        <div id="rightPanel" class="min-h-0 flex-1 overflow-y-auto"></div>
       </section>
     </main>
 
@@ -301,19 +194,44 @@
   </div>
 
   <script>
+    const APP_MODES = {
+      POLICY: "policy",
+      CHECKLIST: "checklist",
+      CLAIM_TYPES: "claim_types",
+      ENTRY_MAP: "entry_map",
+      VALIDATOR: "validator",
+      ERROR_FIX: "error_fix",
+      COVERAGE: "coverage"
+    };
+
     const state = {
-      sections: [],
-      selectedSection: null,
+      mode: APP_MODES.POLICY,
+      compactView: "left",
+
       manualLoaded: false,
-      loadingManual: false,
       sending: false,
+      loadingLibraries: false,
+
       searchTerm: "",
-      compactView: "sections",
       toastTimer: null,
+
+      selectedSectionId: null,
+      selectedClaimType: "warranty",
+      selectedChecklistGroup: "minimum_submission_checklist",
+      selectedPortalSection: "basic_information",
+      selectedErrorCode: null,
+
+      policies: [],
+      claimRequirements: null,
+      claimTypes: [],
+      claimPortalSchema: {},
+      claimErrorRules: [],
+      coverageGuide: null,
+
       chatHistory: [
         {
           role: "model",
-          text: "Hello. I’m your Warranty Policy assistant. I’m ready once the manual finishes loading."
+          text: "Hello. I’m your Warranty assistant. I can help with policy, checklist, claim type, portal field, and return-error questions once the libraries finish loading."
         }
       ]
     };
@@ -322,30 +240,35 @@
       "a", "an", "the", "about", "tell", "me", "of", "for", "to", "in", "on", "at", "by",
       "show", "what", "is", "are", "was", "were", "be", "being", "been", "give", "example",
       "it", "this", "that", "please", "do", "does", "did", "and", "or", "with", "from",
-      "how", "works", "work", "explain", "policy", "warranty"
+      "how", "works", "work", "explain", "policy", "warranty", "claim", "claims"
     ]);
 
+    const CHECKLIST_GROUPS = [
+      ["repair_order_required_fields", "Repair Order Required Fields"],
+      ["repair_order_supporting_requirements", "Repair Order Supporting Requirements"],
+      ["digital_attachments_required", "Digital Attachments Required"],
+      ["digital_attachment_standards", "Digital Attachment Standards"],
+      ["campaign_or_recall_minimums", "Campaign / Recall Minimums"],
+      ["audit_support_documents", "Audit Support Documents"],
+      ["minimum_submission_checklist", "Minimum Submission Checklist"],
+      ["special_requirements", "Special Requirements"]
+    ];
+
     const els = {
-      manualStatusText: document.getElementById("manual-status-text"),
-      manualStatusDot: document.getElementById("manual-status-dot"),
-      sectionCount: document.getElementById("section-count"),
-      searchInput: document.getElementById("search-input"),
-      searchSummary: document.getElementById("search-summary"),
-      clearSearchBtn: document.getElementById("clear-search-btn"),
-      sectionList: document.getElementById("section-list"),
-      sectionDetails: document.getElementById("section-details"),
-      copySectionBtn: document.getElementById("copy-section-btn"),
-      chatContainer: document.getElementById("chat-container"),
-      chatInput: document.getElementById("chat-input"),
-      sendBtn: document.getElementById("send-btn"),
-      clearChatBtn: document.getElementById("clear-chat-btn"),
-      chatStatus: document.getElementById("chat-status"),
-      promptChips: document.getElementById("prompt-chips"),
+      libraryStatusText: document.getElementById("library-status-text"),
+      libraryStatusDot: document.getElementById("library-status-dot"),
       toast: document.getElementById("toast"),
+      workspaceNav: document.getElementById("workspace-nav"),
       mobileTabBar: document.getElementById("mobile-tab-bar"),
-      panelSections: document.getElementById("panel-sections"),
-      panelDetails: document.getElementById("panel-details"),
-      panelChat: document.getElementById("panel-chat")
+      panelLeft: document.getElementById("panel-left"),
+      panelCenter: document.getElementById("panel-center"),
+      panelRight: document.getElementById("panel-right"),
+      leftPanelHeader: document.getElementById("left-panel-header"),
+      centerPanelHeader: document.getElementById("center-panel-header"),
+      rightPanelHeader: document.getElementById("right-panel-header"),
+      leftPanel: document.getElementById("leftPanel"),
+      centerPanel: document.getElementById("centerPanel"),
+      rightPanel: document.getElementById("rightPanel")
     };
 
     function escapeHtml(value) {
@@ -370,7 +293,7 @@
     function normalizeForMatch(value) {
       return String(value ?? "")
         .toLowerCase()
-        .replace(/[^a-z0-9\.]+/g, " ") // Preserve dots for Section IDs like 2.1.2
+        .replace(/[^a-z0-9\.]+/g, " ")
         .trim();
     }
 
@@ -381,27 +304,20 @@
         .filter((token) => token.length > 1 && !MATCH_STOP_WORDS.has(token));
     }
 
-    function dedupeSections(sections) {
-      const seen = new Set();
-      const out = [];
+    function updateLibraryStatus(kind, text) {
+      const colorMap = {
+        loading: "bg-amber-300",
+        ready: "bg-green-400",
+        error: "bg-red-400"
+      };
 
-      for (const sec of sections) {
-        if (!sec) continue;
-        const key = `${sec.section_id || ""}`;
-        if (!key.trim() || seen.has(key)) continue;
-        seen.add(key);
-        out.push(sec);
-      }
-
-      return out;
+      els.libraryStatusDot.className = `h-2 w-2 rounded-full ${colorMap[kind] || "bg-slate-400"}`;
+      els.libraryStatusText.textContent = text;
     }
 
     function showToast(message) {
       if (!message) return;
-
-      if (state.toastTimer) {
-        clearTimeout(state.toastTimer);
-      }
+      if (state.toastTimer) clearTimeout(state.toastTimer);
 
       els.toast.textContent = message;
       els.toast.classList.remove("hidden");
@@ -417,8 +333,25 @@
       const value = normalizeText(text);
       if (!value) return;
 
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(value);
+          showToast(successMessage);
+          return;
+        } catch (_) {}
+      }
+
       try {
-        await navigator.clipboard.writeText(value);
+        const textarea = document.createElement("textarea");
+        textarea.value = value;
+        textarea.style.position = "fixed";
+        textarea.style.top = "-9999px";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
         showToast(successMessage);
       } catch (error) {
         console.error(error);
@@ -426,14 +359,83 @@
       }
     }
 
-    function getSectionById(sectionId) {
-      return state.sections.find(
-        (sec) => String(sec.section_id) === String(sectionId)
-      ) || null;
+    async function loadJson(path) {
+      const response = await fetch(path, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Failed to load ${path} (${response.status})`);
+      }
+      return response.json();
     }
 
-    function sectionExists(sectionId) {
-      return Boolean(getSectionById(sectionId));
+    async function loadLibraries() {
+      state.loadingLibraries = true;
+      updateLibraryStatus("loading", "Loading libraries…");
+      renderApp();
+
+      try {
+        const [
+          policies,
+          claimRequirements,
+          claimTypes,
+          claimPortalSchema,
+          claimErrorRules,
+          coverageGuide
+        ] = await Promise.all([
+          loadJson("/warranty_library/2026_hyundai_warranty_policies.json"),
+          loadJson("/warranty_library/claimRequirements.json"),
+          loadJson("/warranty_library/claimTypes.json"),
+          loadJson("/warranty_library/claimPortalSchema.json"),
+          loadJson("/warranty_library/claimErrorRules.json"),
+          loadJson("/warranty_library/coverageGuide.json").catch(() => null)
+        ]);
+
+        state.policies = Array.isArray(policies) ? policies : [];
+        state.claimRequirements = claimRequirements?.warranty_claim_submission_requirements || null;
+        state.claimTypes = claimTypes?.claim_types || [];
+        state.claimPortalSchema = claimPortalSchema?.claim_portal_schema || {};
+        state.claimErrorRules = claimErrorRules?.claim_error_rules || [];
+        state.coverageGuide = coverageGuide || null;
+
+        if (state.claimTypes.length && !state.claimTypes.find((t) => t.key === state.selectedClaimType)) {
+          state.selectedClaimType = state.claimTypes[0].key;
+        }
+
+        state.manualLoaded = true;
+        updateLibraryStatus("ready", "Libraries loaded");
+      } catch (error) {
+        console.error(error);
+        state.manualLoaded = false;
+        updateLibraryStatus("error", "Library load failed");
+        state.chatHistory.push({
+          role: "model",
+          text: `⚠️ I could not load one or more JSON libraries. ${error.message}`
+        });
+      } finally {
+        state.loadingLibraries = false;
+        renderApp();
+      }
+    }
+
+    function syncWorkspaceTabs() {
+      document.querySelectorAll("[data-workspace-mode]").forEach((button) => {
+        const active = button.dataset.workspaceMode === state.mode;
+        button.className = `workspace-tab rounded-xl border px-3 py-2 text-sm font-medium transition ${
+          active
+            ? "border-[var(--brand)] bg-[var(--brand)] text-white shadow-sm"
+            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+        }`;
+      });
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      syncWorkspaceTabs();
+      renderApp();
+
+      if (window.innerWidth < 1280) {
+        state.compactView = "left";
+        updateResponsivePanels();
+      }
     }
 
     function setCompactView(view) {
@@ -445,28 +447,25 @@
       const compact = window.innerWidth < 1280;
 
       if (!compact) {
-        els.panelSections.classList.remove("hidden");
-        els.panelSections.classList.add("flex");
-
-        els.panelDetails.classList.remove("hidden");
-        els.panelDetails.classList.add("flex");
-
-        els.panelChat.classList.remove("hidden");
-        els.panelChat.classList.add("flex");
-
+        els.panelLeft.classList.remove("hidden");
+        els.panelLeft.classList.add("flex");
+        els.panelCenter.classList.remove("hidden");
+        els.panelCenter.classList.add("flex");
+        els.panelRight.classList.remove("hidden");
+        els.panelRight.classList.add("flex");
         els.mobileTabBar.classList.add("hidden");
         return;
       }
 
       els.mobileTabBar.classList.remove("hidden");
 
-      const views = {
-        sections: els.panelSections,
-        details: els.panelDetails,
-        chat: els.panelChat
+      const panelMap = {
+        left: els.panelLeft,
+        center: els.panelCenter,
+        right: els.panelRight
       };
 
-      Object.entries(views).forEach(([name, panel]) => {
+      Object.entries(panelMap).forEach(([name, panel]) => {
         const active = state.compactView === name;
         panel.classList.toggle("hidden", !active);
         panel.classList.toggle("flex", active);
@@ -482,67 +481,23 @@
       });
     }
 
-    function updateManualStatus(kind, text) {
-      const colorMap = {
-        loading: "bg-amber-300",
-        ready: "bg-green-400",
-        error: "bg-red-400"
-      };
-
-      els.manualStatusDot.className = `h-2 w-2 rounded-full ${colorMap[kind] || "bg-slate-400"}`;
-      els.manualStatusText.textContent = text;
-    }
-
-    function updateChatAvailability() {
-      const enabled = state.manualLoaded && !state.sending;
-      els.chatInput.disabled = !enabled;
-      els.sendBtn.disabled = !enabled;
-
-      if (!state.manualLoaded) {
-        els.chatStatus.textContent = "Manual required";
-      } else if (state.sending) {
-        els.chatStatus.textContent = "Assistant is responding…";
-      } else if (state.selectedSection) {
-        els.chatStatus.textContent = `Using context: Section ${state.selectedSection.section_id || "N/A"}`;
-      } else {
-        els.chatStatus.textContent = "Manual loaded";
-      }
-
-      els.searchInput.disabled = !state.manualLoaded;
-      els.copySectionBtn.classList.toggle("hidden", !state.selectedSection);
-      renderPromptChips();
-    }
-
-    function setSelectedSection(sectionId) {
-      state.selectedSection = getSectionById(sectionId);
-
-      renderSectionList();
-      renderSectionDetails();
-      updateChatAvailability();
-
-      if (window.innerWidth < 1280) {
-        setCompactView("details");
-      }
-    }
-
-    function clearSelectedSection() {
-      state.selectedSection = null;
-      renderSectionList();
-      renderSectionDetails();
-      updateChatAvailability();
-    }
-
     function formatInlineMarkdown(text) {
       return text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
     }
 
+    function sectionExists(sectionId) {
+      return state.policies.some((sec) => String(sec.section_id) === String(sectionId));
+    }
+
+    function getSectionById(sectionId) {
+      return state.policies.find((sec) => String(sec.section_id) === String(sectionId)) || null;
+    }
+
     function linkSectionMentions(text) {
-      // Looks for "Section 2.1.2"
       return text.replace(
         /\b(?:Section|Sec\.?)\s+([1-9]\d*(?:\.\d+)*)\b/gi,
         (match, sectionId) => {
           if (!sectionExists(sectionId)) return match;
-
           return `
             <button
               type="button"
@@ -559,11 +514,9 @@
     function formatRichInline(text, role = "model") {
       let html = escapeHtml(text);
       html = formatInlineMarkdown(html);
-
       if (role === "model") {
         html = linkSectionMentions(html);
       }
-
       return html;
     }
 
@@ -573,13 +526,13 @@
       let inList = false;
       let listType = "";
 
-      for (let i = 0; i < lines.length; i++) {
-        let line = lines[i].trim();
-        
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
+
         if (!line) {
-          if (inList) { 
-            html += `</${listType}>`; 
-            inList = false; 
+          if (inList) {
+            html += `</${listType}>`;
+            inList = false;
           }
           html += "<br>";
           continue;
@@ -589,433 +542,36 @@
         const isNum = /^(\d+)\.\s+(.*)/.exec(line);
 
         if (isBullet) {
-          if (!inList) { 
-            html += `<ul class="list-disc space-y-1 pl-5 mb-2 text-slate-700">`; 
-            inList = true; 
-            listType = "ul"; 
-          } else if (listType === "ol") { 
-            html += `</ol><ul class="list-disc space-y-1 pl-5 mb-2 text-slate-700">`; 
-            listType = "ul"; 
+          if (!inList) {
+            html += `<ul class="list-disc space-y-1 pl-5 mb-2 text-slate-700">`;
+            inList = true;
+            listType = "ul";
+          } else if (listType === "ol") {
+            html += `</ol><ul class="list-disc space-y-1 pl-5 mb-2 text-slate-700">`;
+            listType = "ul";
           }
           html += `<li>${formatRichInline(isBullet[1], role)}</li>`;
         } else if (isNum) {
-          if (!inList) { 
-            html += `<ol class="list-decimal space-y-1 pl-5 mb-2 text-slate-700">`; 
-            inList = true; 
-            listType = "ol"; 
-          } else if (listType === "ul") { 
-            html += `</ul><ol class="list-decimal space-y-1 pl-5 mb-2 text-slate-700">`; 
-            listType = "ol"; 
+          if (!inList) {
+            html += `<ol class="list-decimal space-y-1 pl-5 mb-2 text-slate-700">`;
+            inList = true;
+            listType = "ol";
+          } else if (listType === "ul") {
+            html += `</ul><ol class="list-decimal space-y-1 pl-5 mb-2 text-slate-700">`;
+            listType = "ol";
           }
           html += `<li>${formatRichInline(isNum[2], role)}</li>`;
         } else {
-          if (inList) { 
-            html += `</${listType}>`; 
-            inList = false; 
+          if (inList) {
+            html += `</${listType}>`;
+            inList = false;
           }
           html += `<p class="mb-2 text-slate-700">${formatRichInline(line, role)}</p>`;
         }
       }
-      
-      if (inList) { 
-        html += `</${listType}>`; 
-      }
-      
+
+      if (inList) html += `</${listType}>`;
       return html;
-    }
-
-    function getPromptSuggestions() {
-      if (state.selectedSection) {
-        return [
-          "Summarize this policy",
-          "What are the time or mileage limits?",
-          "What is specifically excluded?",
-          "What actions must the dealer take?"
-        ];
-      }
-
-      return [
-        "How do I file a transportation claim?",
-        "What is the warranty on a 12V battery?",
-        "Explain the Pre-Delivery Inspection rules",
-        "What are the exclusions for paint defects?"
-      ];
-    }
-
-    function renderPromptChips() {
-      const prompts = getPromptSuggestions();
-
-      els.promptChips.innerHTML = prompts
-        .map((prompt) => {
-          return `
-            <button
-              type="button"
-              data-prompt="${escapeHtml(prompt)}"
-              class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
-            >
-              ${escapeHtml(prompt)}
-            </button>
-          `;
-        })
-        .join("");
-    }
-
-    function renderChatWelcomeCard() {
-      return `
-        <div class="mb-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div class="mb-3 flex items-start gap-3">
-            <div class="rounded-2xl bg-blue-50 p-2 text-[var(--brand)]">
-              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5m-8 7 3.5-3H19a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14l2-2Z" />
-              </svg>
-            </div>
-            <div>
-              <h3 class="text-sm font-semibold text-slate-800">How to use this assistant</h3>
-              <p class="mt-1 text-sm text-slate-600">
-                Search and select a section on the left, then ask for coverages, exclusions, limits, or dealer procedures.
-              </p>
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Starter prompts</p>
-            <div class="flex flex-wrap gap-2">
-              ${getPromptSuggestions()
-                .map((prompt) => `
-                  <button
-                    type="button"
-                    data-prompt="${escapeHtml(prompt)}"
-                    class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-white"
-                  >
-                    ${escapeHtml(prompt)}
-                  </button>
-                `)
-                .join("")}
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderChat() {
-      const isOnlyWelcome =
-        state.chatHistory.length === 1 &&
-        state.chatHistory[0]?.role === "model";
-
-      const introHtml = isOnlyWelcome ? renderChatWelcomeCard() : "";
-
-      const html = state.chatHistory
-        .map((msg, index) => {
-          const isUser = msg.role === "user";
-
-          return `
-            <div class="mb-4 flex ${isUser ? "justify-end" : "justify-start"}">
-              <div class="group relative max-w-[92%] sm:max-w-[88%]">
-                <div class="rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
-                  isUser
-                    ? "rounded-tr-none bg-[var(--brand)] text-white"
-                    : "rounded-tl-none border border-slate-200 bg-white"
-                }">
-                  ${renderMessageBody(msg.text, msg.role)}
-                </div>
-
-                <button
-                  type="button"
-                  data-copy-chat-index="${index}"
-                  class="absolute -bottom-2 ${isUser ? "left-2" : "right-2"} hidden rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-500 shadow-sm transition hover:text-[var(--brand)] group-hover:block"
-                >
-                  Copy
-                </button>
-              </div>
-            </div>
-          `;
-        })
-        .join("");
-
-      const typingHtml = state.sending
-        ? `
-          <div class="mb-4 flex justify-start">
-            <div class="inline-flex items-center gap-3 rounded-2xl rounded-tl-none border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
-              <svg class="h-4 w-4 animate-spin-custom text-[var(--brand)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-6.2-8.56" />
-              </svg>
-              <span>Checking the policy manual…</span>
-            </div>
-          </div>
-        `
-        : "";
-
-      els.chatContainer.innerHTML = introHtml + html + typingHtml;
-      els.chatContainer.scrollTop = els.chatContainer.scrollHeight;
-    }
-
-    function renderSectionList() {
-      const term = state.searchTerm.toLowerCase().trim();
-
-      const filtered = state.sections.filter((sec) => {
-        if (!term) return true;
-
-        const haystack = [
-          sec.section_id,
-          sec.title,
-          sec.raw_content
-        ]
-          .map((v) => String(v ?? "").toLowerCase())
-          .join(" ");
-
-        return haystack.includes(term);
-      });
-
-      els.sectionCount.textContent = `${state.sections.length} loaded`;
-      els.searchSummary.textContent = state.manualLoaded
-        ? `${filtered.length} of ${state.sections.length} items shown`
-        : "Waiting for manual data…";
-
-      els.clearSearchBtn.classList.toggle("hidden", !state.searchTerm);
-
-      if (!state.manualLoaded) {
-        els.sectionList.innerHTML = `
-          <div class="flex h-full flex-col items-center justify-center px-6 text-center text-slate-400">
-            <svg class="mb-3 h-8 w-8 animate-spin-custom text-[var(--brand)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-6.2-8.56" />
-            </svg>
-            <p class="text-sm">Loading policy data…</p>
-          </div>
-        `;
-        return;
-      }
-
-      if (!filtered.length) {
-        els.sectionList.innerHTML = `
-          <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500">
-            No sections found for that search.
-          </div>
-        `;
-        return;
-      }
-
-      els.sectionList.innerHTML = filtered
-        .map((sec) => {
-          const isSelected =
-            state.selectedSection &&
-            String(state.selectedSection.section_id) === String(sec.section_id);
-
-          return `
-            <button
-              type="button"
-              data-section-id="${escapeHtml(sec.section_id)}"
-              class="mb-2 flex w-full items-center justify-between rounded-2xl border px-3 py-3 text-left transition ${
-                isSelected
-                  ? "border-[var(--brand)] bg-[var(--brand)] text-white shadow-sm"
-                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
-              }"
-            >
-              <div class="min-w-0">
-                <div class="truncate text-xs font-semibold uppercase tracking-wider ${isSelected ? "text-blue-200" : "text-slate-400"}">
-                  Section ${escapeHtml(sec.section_id || "—")}
-                </div>
-                <div class="mt-1 truncate text-sm font-medium ${isSelected ? "text-white" : "text-slate-800"}">
-                  ${escapeHtml(sec.title || "Untitled")}
-                </div>
-                ${sec.is_structured 
-                  ? `<div class="mt-1.5 inline-flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-700"><svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg> AI Structured</div>` 
-                  : ""}
-              </div>
-
-              <svg class="ml-3 h-4 w-4 shrink-0 ${isSelected ? "text-white" : "text-slate-300"}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
-              </svg>
-            </button>
-          `;
-        })
-        .join("");
-    }
-
-    function renderSourcePagePills(items) {
-      return `
-        <div class="flex flex-wrap gap-2">
-          ${items.map((item) => `
-            <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600">
-              Page ${escapeHtml(item)}
-            </span>
-          `).join("")}
-        </div>
-      `;
-    }
-
-    function renderGenericArray(items) {
-      return `
-        <ul class="space-y-2 text-sm text-slate-700">
-          ${items.map((item) => `<li class="pl-1">${formatRichInline(String(item), "model")}</li>`).join("")}
-        </ul>
-      `;
-    }
-
-    function shouldSectionOpen(title, value, isStructured = false) {
-      const alwaysOpen = new Set(["Coverage & Reimbursement", "Coverages", "Not Covered", "Exclusions"]);
-      if (alwaysOpen.has(title)) return true;
-
-      // Keep the raw text closed if the section is already structured, to avoid clutter
-      if (title === "Raw Policy Text" && isStructured) return false;
-
-      if (Array.isArray(value) && value.length > 0 && value.length <= 4) return true;
-      if (typeof value === "string" && value.length > 0 && value.length < 300) return true;
-
-      return false;
-    }
-
-    function renderSectionCard(title, value, tone = "slate", options = {}) {
-      const toneMap = {
-        green: { outer: "border-green-200 bg-green-50/70", title: "text-green-800" },
-        red: { outer: "border-red-200 bg-red-50/70", title: "text-red-800" },
-        blue: { outer: "border-blue-200 bg-blue-50/70", title: "text-blue-800" },
-        purple: { outer: "border-purple-200 bg-purple-50/70", title: "text-purple-800" },
-        orange: { outer: "border-orange-200 bg-orange-50/70", title: "text-orange-800" },
-        indigo: { outer: "border-indigo-200 bg-indigo-50/70", title: "text-indigo-800" },
-        cyan: { outer: "border-cyan-200 bg-cyan-50/70", title: "text-cyan-800" },
-        sky: { outer: "border-sky-200 bg-sky-50/70", title: "text-sky-800" },
-        fuchsia: { outer: "border-fuchsia-200 bg-fuchsia-50/70", title: "text-fuchsia-800" },
-        amber: { outer: "border-amber-200 bg-amber-50/70", title: "text-amber-800" },
-        rose: { outer: "border-rose-200 bg-rose-50/70", title: "text-rose-800" },
-        teal: { outer: "border-teal-200 bg-teal-50/70", title: "text-teal-800" },
-        slate: { outer: "border-slate-200 bg-white", title: "text-slate-700" }
-      };
-
-      const toneClass = toneMap[tone] || toneMap.slate;
-      const isArray = Array.isArray(value);
-      const hasValue = isArray ? value.length > 0 : value !== null && value !== undefined && value !== "";
-
-      if (!hasValue) return "";
-
-      let bodyHtml = "";
-
-      if (options.type === "sourcePages") {
-        bodyHtml = renderSourcePagePills(value);
-      } else if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
-        bodyHtml = `<p class="text-sm leading-relaxed text-slate-700">${formatRichInline(String(value), "model")}</p>`;
-      } else if (Array.isArray(value)) {
-        bodyHtml = renderGenericArray(value);
-      }
-
-      let openAttr = "";
-      if (title === "Raw Policy Text" && options.isStructured) {
-          openAttr = ""; // keep closed
-      } else if (shouldSectionOpen(title, value, options.isStructured)) {
-          openAttr = "open";
-      }
-
-      return `
-        <details ${openAttr} class="group rounded-2xl border ${toneClass.outer} p-4 shadow-sm transition-all open:bg-opacity-100">
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-3 outline-none">
-            <span class="text-sm font-bold ${toneClass.title}">${escapeHtml(title)}</span>
-            <span class="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 transition group-hover:bg-slate-50 group-open:rotate-180">
-                <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-            </span>
-          </summary>
-          <div class="mt-4 border-t border-black/5 pt-3">${bodyHtml}</div>
-        </details>
-      `;
-    }
-
-    function getPopularSections() {
-      const preferred = ["2.1.2", "2.2.4", "2.3.2", "3.0.2", "4.1.6", "5.0.8"];
-      return preferred
-        .map((num) => getSectionById(num))
-        .filter(Boolean)
-        .slice(0, 6);
-    }
-
-    function renderSectionDetails() {
-      if (!state.selectedSection) {
-        const popular = getPopularSections();
-
-        els.sectionDetails.innerHTML = `
-          <div class="flex h-full flex-col px-5 py-6">
-            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
-              <div class="mb-4 flex items-start gap-3">
-                <div class="rounded-2xl bg-blue-50 p-3 text-[var(--brand)]">
-                  <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 class="text-lg font-semibold text-slate-800">Choose a section to begin</h3>
-                  <p class="mt-1 text-sm text-slate-600">
-                    Search the index on the left, open a policy, and use the assistant to ask for limits, exclusions, or examples.
-                  </p>
-                </div>
-              </div>
-
-              ${popular.length > 0 ? `
-              <div class="mb-5">
-                <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Popular Policies</p>
-                <div class="flex flex-wrap gap-2">
-                  ${popular.map((sec) => `
-                    <button
-                      type="button"
-                      data-select-section="${escapeHtml(sec.section_id)}"
-                      class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-slate-300 hover:bg-white"
-                    >
-                      ${escapeHtml(sec.section_id)} - ${escapeHtml(sec.title)}
-                    </button>
-                  `).join("")}
-                </div>
-              </div>
-              ` : ''}
-
-            </div>
-          </div>
-        `;
-        return;
-      }
-
-      const sec = state.selectedSection;
-
-      els.sectionDetails.innerHTML = `
-        <div class="space-y-4 p-5">
-          <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div class="mb-3 inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[var(--brand)]">
-              SECTION ${escapeHtml(sec.section_id)}
-            </div>
-
-            <div class="flex flex-wrap items-start justify-between gap-3">
-              <div class="text-xl font-bold text-slate-800 w-full sm:w-auto">
-                ${escapeHtml(sec.title || "Untitled")}
-              </div>
-
-              <button
-                type="button"
-                data-copy-section="${escapeHtml(`Section ${sec.section_id} - ${sec.title}`)}"
-                class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-
-          ${sec.is_structured ? `
-            ${renderSectionCard("Eligibility Conditions", normalizeArray(sec.eligibility_conditions), "purple")}
-            ${renderSectionCard("Coverage & Reimbursement", normalizeArray(sec.coverage_and_reimbursement || sec.coverage_details), "green")}
-            ${renderSectionCard("Payment Limitations", normalizeArray(sec.payment_limitations), "orange")}
-            ${renderSectionCard("Not Covered", normalizeArray(sec.not_covered || sec.exclusions), "red")}
-            ${renderSectionCard("Dealer Actions", normalizeArray(sec.dealer_actions), "blue")}
-            ${renderSectionCard("Timing Rules", normalizeArray(sec.timing_rules), "amber")}
-            ${renderSectionCard("Documents Required", normalizeArray(sec.documents_required), "indigo")}
-            ${renderSectionCard("Systems", normalizeArray(sec.systems), "cyan")}
-            ${renderSectionCard("System Screens", normalizeArray(sec.system_screens), "sky")}
-            ${renderSectionCard("Comment Requirements", normalizeArray(sec.comment_requirements), "fuchsia")}
-            ${renderSectionCard("Claim Processing Risks", normalizeArray(sec.claim_processing_risks), "rose")}
-            ${renderSectionCard("Roles Explicitly Mentioned", normalizeArray(sec.roles_explicitly_mentioned), "teal")}
-            ${renderSectionCard("Raw Policy Text", sec.raw_content, "slate", { isStructured: true })}
-          ` : `
-            ${renderSectionCard("Raw Policy Text", sec.raw_content, "slate")}
-          `}
-          
-          ${renderSectionCard("Source Pages", normalizeArray(sec.source_pdf_pages || sec.source_pages), "slate", { type: "sourcePages" })}
-        </div>
-      `;
     }
 
     function scoreSectionMatch(sec, question) {
@@ -1035,58 +591,50 @@
         (number && qNorm === `section ${number}`) ||
         qTokens.includes(number);
 
-      if (isDirectLookup) {
-        score += 300;
-      }
-
+      if (isDirectLookup) score += 300;
       if (title && qNorm === title) score += 180;
       if (title && title.includes(qNorm) && qNorm.length >= 3) score += 120;
 
       let tokenHits = 0;
 
       for (const token of qTokens) {
-        let matchedThisToken = false;
+        let matched = false;
 
         if (number === token) {
           score += 150;
-          matchedThisToken = true;
+          matched = true;
         } else if (number.includes(token)) {
           score += 45;
-          matchedThisToken = true;
+          matched = true;
         }
 
         if (title === token) {
           score += 100;
-          matchedThisToken = true;
+          matched = true;
         } else if (title.includes(token)) {
           score += 24;
-          matchedThisToken = true;
+          matched = true;
         }
 
         if (content.includes(token)) {
           score += 5;
-          matchedThisToken = true;
+          matched = true;
         }
 
-        if (matchedThisToken) tokenHits += 1;
+        if (matched) tokenHits += 1;
       }
 
       if (qTokens.length > 0) {
         score += tokenHits * 8;
-        if (tokenHits === qTokens.length) {
-          score += 30;
-        }
+        if (tokenHits === qTokens.length) score += 30;
       }
 
       return score;
     }
 
     function findMatchingSections(question) {
-      const ranked = state.sections
-        .map((sec) => ({
-          sec,
-          score: scoreSectionMatch(sec, question)
-        }))
+      const ranked = state.policies
+        .map((sec) => ({ sec, score: scoreSectionMatch(sec, question) }))
         .filter((item) => item.score >= 20)
         .sort((a, b) => b.score - a.score);
 
@@ -1100,107 +648,1357 @@
       }
 
       const floor = Math.max(20, Math.floor(topScore * 0.55));
-
-      return dedupeSections(
-        ranked
-          .filter((item, index) => index < 6 && item.score >= floor)
-          .map((item) => item.sec)
-      );
+      return ranked
+        .filter((item, index) => index < 6 && item.score >= floor)
+        .map((item) => item.sec);
     }
 
-    async function fetchManualData() {
-      state.loadingManual = true;
-      state.manualLoaded = false;
+    function getSelectedSection() {
+      return getSectionById(state.selectedSectionId);
+    }
 
-      updateManualStatus("loading", "Loading policies…");
-      updateChatAvailability();
-      renderSectionList();
-      renderSectionDetails();
-      renderChat();
+    function getSelectedClaimType() {
+      return state.claimTypes.find((t) => t.key === state.selectedClaimType) || null;
+    }
 
-      try {
-        const response = await fetch("/warranty_library/2026_hyundai_warranty_policies.json", {
-          cache: "no-store"
-        });
+    function getSelectedPortalSchema() {
+      return state.claimPortalSchema?.[state.selectedClaimType] || null;
+    }
 
-        if (!response.ok) {
-          throw new Error(`Failed to load manual: ${response.status}`);
-        }
+    function getSelectedErrorRule() {
+      return state.claimErrorRules.find((r) => r.code === state.selectedErrorCode) || null;
+    }
 
-        const data = await response.json();
-        const items = Array.isArray(data) ? data : Array.isArray(data.items) ? data.items : [];
-
-        if (!items.length) {
-          throw new Error("JSON loaded but no sections were found.");
-        }
-
-        state.sections = items;
-        state.manualLoaded = true;
-        updateManualStatus("ready", "Policies loaded");
-      } catch (error) {
-        console.error(error);
-
-        state.sections = [];
-        state.manualLoaded = false;
-        updateManualStatus("error", "Failed to load");
-
-        state.chatHistory.push({
-          role: "model",
-          text: `⚠️ I could not load the warranty manual. Error: ${error.message}`
-        });
-      } finally {
-        state.loadingManual = false;
-        updateChatAvailability();
-        renderSectionList();
-        renderSectionDetails();
-        renderChat();
+    function getPromptSuggestions() {
+      switch (state.mode) {
+        case APP_MODES.CHECKLIST:
+          return [
+            "What documents are required before submission?",
+            "What attachments are mandatory?",
+            "What do I need for a powertrain claim?",
+            "What records must be retained for audit?"
+          ];
+        case APP_MODES.CLAIM_TYPES:
+          return [
+            "What claim type should I use for rental?",
+            "What is the difference between warranty and campaign?",
+            "When do I use a PDI claim?",
+            "What workflows are related to warranty claims?"
+          ];
+        case APP_MODES.ENTRY_MAP:
+          return [
+            "Explain the Basic Information section",
+            "What belongs in OP Code Information?",
+            "How should attachments be categorized?",
+            "What does the summary section mean?"
+          ];
+        case APP_MODES.ERROR_FIX:
+          return [
+            "Explain code 306",
+            "What does invalid OP code mean?",
+            "How do I fix a returned claim?",
+            "When is dealer reply needed?"
+          ];
+        case APP_MODES.COVERAGE:
+          return [
+            "What is covered for this component?",
+            "What are the time and mileage limits?",
+            "Is this covered for second owner?",
+            "What exclusions apply?"
+          ];
+        case APP_MODES.POLICY:
+        default:
+          if (getSelectedSection()) {
+            return [
+              "Summarize this policy",
+              "What are the time or mileage limits?",
+              "What is specifically excluded?",
+              "What actions must the dealer take?"
+            ];
+          }
+          return [
+            "How do I file a transportation claim?",
+            "What is the warranty on a 12V battery?",
+            "Explain the Pre-Delivery Inspection rules",
+            "What are the exclusions for paint defects?"
+          ];
       }
     }
 
+    function renderPromptChips(containerId = "chat-prompts-inline") {
+      const prompts = getPromptSuggestions();
+      return `
+        <div id="${containerId}" class="mt-3 flex flex-wrap gap-2">
+          ${prompts.map((prompt) => `
+            <button
+              type="button"
+              data-prompt="${escapeHtml(prompt)}"
+              class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+            >
+              ${escapeHtml(prompt)}
+            </button>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderChatPanel() {
+      const selectedSection = getSelectedSection();
+      const modeLabelMap = {
+        policy: "Policy Assistant",
+        checklist: "Checklist Assistant",
+        claim_types: "Claim Type Assistant",
+        entry_map: "Entry Map Assistant",
+        validator: "Validator Assistant",
+        error_fix: "Error Fix Assistant",
+        coverage: "Coverage Assistant"
+      };
+
+      els.rightPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <h2 class="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <svg class="h-4 w-4 text-[var(--brand)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5m-8 7 3.5-3H19a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14l2-2Z" />
+              </svg>
+              ${escapeHtml(modeLabelMap[state.mode] || "Warranty Assistant")}
+            </h2>
+            <p class="mt-1 text-xs text-slate-500">
+              Answers grounded in your loaded JSON libraries.
+            </p>
+          </div>
+
+          <button
+            id="clear-chat-btn"
+            class="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
+          >
+            Clear Chat
+          </button>
+        </div>
+      `;
+
+      const isOnlyWelcome =
+        state.chatHistory.length === 1 &&
+        state.chatHistory[0]?.role === "model";
+
+      const introHtml = isOnlyWelcome
+        ? `
+          <div class="mb-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="mb-3 flex items-start gap-3">
+              <div class="rounded-2xl bg-blue-50 p-2 text-[var(--brand)]">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h8M8 14h5m-8 7 3.5-3H19a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14l2-2Z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-slate-800">How to use this workspace</h3>
+                <p class="mt-1 text-sm text-slate-600">
+                  Pick a workspace tab, then ask questions about policy, claim requirements, portal structure, return errors, or coverage rules.
+                </p>
+              </div>
+            </div>
+            ${renderPromptChips("chat-intro-prompts")}
+          </div>
+        `
+        : "";
+
+      const messagesHtml = state.chatHistory.map((msg, index) => {
+        const isUser = msg.role === "user";
+        return `
+          <div class="mb-4 flex ${isUser ? "justify-end" : "justify-start"}">
+            <div class="group relative max-w-[92%] sm:max-w-[88%]">
+              <div class="rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
+                isUser
+                  ? "rounded-tr-none bg-[var(--brand)] text-white"
+                  : "rounded-tl-none border border-slate-200 bg-white"
+              }">
+                ${renderMessageBody(msg.text, msg.role)}
+              </div>
+
+              <button
+                type="button"
+                data-copy-chat-index="${index}"
+                class="absolute -bottom-2 ${isUser ? "left-2" : "right-2"} hidden rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-500 shadow-sm transition hover:text-[var(--brand)] group-hover:block"
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const typingHtml = state.sending
+        ? `
+          <div class="mb-4 flex justify-start">
+            <div class="inline-flex items-center gap-3 rounded-2xl rounded-tl-none border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
+              <svg class="h-4 w-4 animate-spin-custom text-[var(--brand)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-6.2-8.56" />
+              </svg>
+              <span>Checking the loaded libraries…</span>
+            </div>
+          </div>
+        `
+        : "";
+
+      const enabled = state.manualLoaded && !state.sending;
+      const chatStatus = !state.manualLoaded
+        ? "Libraries required"
+        : state.sending
+          ? "Assistant is responding…"
+          : selectedSection && state.mode === APP_MODES.POLICY
+            ? `Using context: Section ${selectedSection.section_id}`
+            : `Mode: ${state.mode.replaceAll("_", " ")}`;
+
+      els.rightPanel.innerHTML = `
+        <div id="chat-container" class="bg-grid min-h-0 flex-1 overflow-y-auto p-4">
+          ${introHtml}${messagesHtml}${typingHtml}
+        </div>
+
+        <div class="shrink-0 border-t border-slate-200 bg-white p-4">
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-inner">
+            <div class="mb-2 flex items-center justify-between gap-3">
+              <p class="text-xs text-slate-500">
+                Tip: In Policy mode, selecting a section improves answer precision.
+              </p>
+              <p id="chat-status" class="text-xs text-slate-400">${escapeHtml(chatStatus)}</p>
+            </div>
+
+            <div class="flex items-end gap-2">
+              <textarea
+                id="chat-input"
+                rows="3"
+                placeholder="Ask about a policy, checklist item, claim type, portal field, or return error..."
+                class="min-h-[72px] max-h-40 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-transparent focus:ring-2 focus:ring-[var(--brand)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500"
+                ${enabled ? "" : "disabled"}
+              ></textarea>
+
+              <button
+                id="send-btn"
+                class="inline-flex h-12 shrink-0 items-center justify-center rounded-xl bg-[var(--brand)] px-4 text-white transition hover:bg-blue-900 disabled:cursor-not-allowed disabled:opacity-50"
+                ${enabled ? "" : "disabled"}
+                aria-label="Send"
+              >
+                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M22 2 11 13"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m22 2-7 20-4-9-9-4 20-7Z"></path>
+                </svg>
+              </button>
+            </div>
+
+            ${renderPromptChips("chat-prompts-inline")}
+          </div>
+        </div>
+      `;
+
+      const chatContainer = document.getElementById("chat-container");
+      if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+
+      const sendBtn = document.getElementById("send-btn");
+      const chatInput = document.getElementById("chat-input");
+      const clearChatBtn = document.getElementById("clear-chat-btn");
+
+      if (sendBtn) sendBtn.addEventListener("click", sendMessage);
+      if (clearChatBtn) clearChatBtn.addEventListener("click", clearChat);
+      if (chatInput) {
+        chatInput.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+          }
+        });
+      }
+    }
+
+    function renderPlaceholderCard(title, message) {
+      return `
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
+          <h3 class="text-lg font-semibold text-slate-800">${escapeHtml(title)}</h3>
+          <p class="mt-2 text-sm text-slate-600">${escapeHtml(message)}</p>
+        </div>
+      `;
+    }
+
+    function renderPolicyMode() {
+      const selectedSection = getSelectedSection();
+
+      els.leftPanelHeader.innerHTML = `
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="flex items-center gap-2 text-sm font-semibold text-slate-700">
+            <svg class="h-4 w-4 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            </svg>
+            Policy Index
+          </h2>
+
+          <span class="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-600">
+            ${state.policies.length} loaded
+          </span>
+        </div>
+
+        <div class="relative">
+          <input
+            id="policy-search-input"
+            type="text"
+            placeholder="Search section number or keyword..."
+            value="${escapeHtml(state.searchTerm)}"
+            class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-16 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-transparent focus:ring-2 focus:ring-[var(--brand)] disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
+            ${state.manualLoaded ? "" : "disabled"}
+          />
+          <svg class="pointer-events-none absolute left-3 top-2.5 h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path stroke-linecap="round" stroke-linejoin="round" d="m20 20-3.5-3.5"></path>
+          </svg>
+          <div class="pointer-events-none absolute right-3 top-2.5 hidden rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-400 sm:block">
+            Ctrl K
+          </div>
+        </div>
+
+        <div class="mt-2 flex items-center justify-between gap-3">
+          <p class="text-xs text-slate-500">${state.manualLoaded ? "Policy search ready" : "Waiting for data…"}</p>
+          <button
+            id="clear-search-btn"
+            type="button"
+            class="${state.searchTerm ? "" : "hidden "}text-xs font-medium text-slate-400 transition hover:text-slate-600"
+          >
+            Clear
+          </button>
+        </div>
+      `;
+
+      const term = state.searchTerm.toLowerCase().trim();
+      const filtered = state.policies.filter((sec) => {
+        if (!term) return true;
+        const haystack = [sec.section_id, sec.title, sec.raw_content]
+          .map((v) => String(v ?? "").toLowerCase())
+          .join(" ");
+        return haystack.includes(term);
+      });
+
+      if (!state.manualLoaded && state.loadingLibraries) {
+        els.leftPanel.innerHTML = `
+          <div class="flex h-full flex-col items-center justify-center px-6 text-center text-slate-400">
+            <svg class="mb-3 h-8 w-8 animate-spin-custom text-[var(--brand)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-6.2-8.56" />
+            </svg>
+            <p class="text-sm">Loading policy data…</p>
+          </div>
+        `;
+      } else if (!filtered.length) {
+        els.leftPanel.innerHTML = `
+          <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500">
+            No sections found for that search.
+          </div>
+        `;
+      } else {
+        els.leftPanel.innerHTML = filtered.map((sec) => {
+          const isSelected = selectedSection && String(selectedSection.section_id) === String(sec.section_id);
+          return `
+            <button
+              type="button"
+              data-section-id="${escapeHtml(sec.section_id)}"
+              class="mb-2 flex w-full items-center justify-between rounded-2xl border px-3 py-3 text-left transition ${
+                isSelected
+                  ? "border-[var(--brand)] bg-[var(--brand)] text-white shadow-sm"
+                  : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+              }"
+            >
+              <div class="min-w-0">
+                <div class="truncate text-xs font-semibold uppercase tracking-wider ${isSelected ? "text-blue-200" : "text-slate-400"}">
+                  Section ${escapeHtml(sec.section_id || "—")}
+                </div>
+                <div class="mt-1 truncate text-sm font-medium ${isSelected ? "text-white" : "text-slate-800"}">
+                  ${escapeHtml(sec.title || "Untitled")}
+                </div>
+                ${sec.is_structured
+                  ? `<div class="mt-1.5 inline-flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-700">AI Structured</div>`
+                  : ""}
+              </div>
+              <svg class="ml-3 h-4 w-4 shrink-0 ${isSelected ? "text-white" : "text-slate-300"}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
+          `;
+        }).join("");
+      }
+
+      els.centerPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Policy Details</h2>
+          <button
+            id="copy-section-btn"
+            type="button"
+            class="${selectedSection ? "" : "hidden "}rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
+          >
+            Copy Details
+          </button>
+        </div>
+      `;
+
+      if (!selectedSection) {
+        const popular = ["2.1.2", "2.2.4", "2.3.2", "3.0.2", "4.1.6", "5.0.8"]
+          .map((id) => getSectionById(id))
+          .filter(Boolean);
+
+        els.centerPanel.innerHTML = `
+          <div class="flex h-full flex-col px-5 py-6">
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
+              <div class="mb-4 flex items-start gap-3">
+                <div class="rounded-2xl bg-blue-50 p-3 text-[var(--brand)]">
+                  <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-slate-800">Choose a section to begin</h3>
+                  <p class="mt-1 text-sm text-slate-600">
+                    Search the index on the left, open a policy, and use the assistant to ask for limits, exclusions, or procedures.
+                  </p>
+                </div>
+              </div>
+
+              ${popular.length ? `
+                <div>
+                  <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Popular Policies</p>
+                  <div class="flex flex-wrap gap-2">
+                    ${popular.map((sec) => `
+                      <button
+                        type="button"
+                        data-select-section="${escapeHtml(sec.section_id)}"
+                        class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-slate-300 hover:bg-white"
+                      >
+                        ${escapeHtml(sec.section_id)} - ${escapeHtml(sec.title)}
+                      </button>
+                    `).join("")}
+                  </div>
+                </div>
+              ` : ""}
+            </div>
+          </div>
+        `;
+      } else {
+        const sectionCards = [];
+
+        function addCard(title, value, tone = "slate") {
+          const items = Array.isArray(value) ? value : value ? [value] : [];
+          if (!items.length) return;
+
+          const toneMap = {
+            green: "border-green-200 bg-green-50/70 text-green-800",
+            red: "border-red-200 bg-red-50/70 text-red-800",
+            blue: "border-blue-200 bg-blue-50/70 text-blue-800",
+            purple: "border-purple-200 bg-purple-50/70 text-purple-800",
+            orange: "border-orange-200 bg-orange-50/70 text-orange-800",
+            indigo: "border-indigo-200 bg-indigo-50/70 text-indigo-800",
+            cyan: "border-cyan-200 bg-cyan-50/70 text-cyan-800",
+            sky: "border-sky-200 bg-sky-50/70 text-sky-800",
+            fuchsia: "border-fuchsia-200 bg-fuchsia-50/70 text-fuchsia-800",
+            amber: "border-amber-200 bg-amber-50/70 text-amber-800",
+            rose: "border-rose-200 bg-rose-50/70 text-rose-800",
+            teal: "border-teal-200 bg-teal-50/70 text-teal-800",
+            slate: "border-slate-200 bg-white text-slate-700"
+          };
+
+          const toneClass = toneMap[tone] || toneMap.slate;
+
+          sectionCards.push(`
+            <details open class="group rounded-2xl border ${toneClass} p-4 shadow-sm">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-3">
+                <span class="text-sm font-bold">${escapeHtml(title)}</span>
+                <span class="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition group-open:rotate-180">
+                  <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </summary>
+              <div class="mt-4 border-t border-black/5 pt-3">
+                <ul class="space-y-2 text-sm text-slate-700">
+                  ${items.map((item) => `<li>${formatRichInline(String(item), "model")}</li>`).join("")}
+                </ul>
+              </div>
+            </details>
+          `);
+        }
+
+        if (selectedSection.is_structured) {
+          addCard("Eligibility Conditions", normalizeArray(selectedSection.eligibility_conditions), "purple");
+          addCard("Coverage & Reimbursement", normalizeArray(selectedSection.coverage_and_reimbursement || selectedSection.coverage_details), "green");
+          addCard("Payment Limitations", normalizeArray(selectedSection.payment_limitations), "orange");
+          addCard("Not Covered", normalizeArray(selectedSection.not_covered || selectedSection.exclusions), "red");
+          addCard("Dealer Actions", normalizeArray(selectedSection.dealer_actions), "blue");
+          addCard("Timing Rules", normalizeArray(selectedSection.timing_rules), "amber");
+          addCard("Documents Required", normalizeArray(selectedSection.documents_required), "indigo");
+          addCard("Systems", normalizeArray(selectedSection.systems), "cyan");
+          addCard("System Screens", normalizeArray(selectedSection.system_screens), "sky");
+          addCard("Comment Requirements", normalizeArray(selectedSection.comment_requirements), "fuchsia");
+          addCard("Claim Processing Risks", normalizeArray(selectedSection.claim_processing_risks), "rose");
+          addCard("Roles Explicitly Mentioned", normalizeArray(selectedSection.roles_explicitly_mentioned), "teal");
+        }
+
+        els.centerPanel.innerHTML = `
+          <div class="space-y-4 p-5">
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="mb-3 inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[var(--brand)]">
+                SECTION ${escapeHtml(selectedSection.section_id)}
+              </div>
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div class="w-full text-xl font-bold text-slate-800 sm:w-auto">
+                  ${escapeHtml(selectedSection.title || "Untitled")}
+                </div>
+                <button
+                  type="button"
+                  data-copy-section="${escapeHtml(`Section ${selectedSection.section_id} - ${selectedSection.title}`)}"
+                  class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            ${sectionCards.join("")}
+
+            <details class="group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <summary class="flex cursor-pointer list-none items-center justify-between gap-3">
+                <span class="text-sm font-bold text-slate-700">Raw Policy Text</span>
+                <span class="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition group-open:rotate-180">
+                  <svg class="h-3.5 w-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </summary>
+              <div class="mt-4 border-t border-black/5 pt-3">
+                <p class="text-sm leading-relaxed text-slate-700">${escapeHtml(selectedSection.raw_content || "")}</p>
+              </div>
+            </details>
+          </div>
+        `;
+
+        const copyBtn = document.getElementById("copy-section-btn");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", () => {
+            copyTextToClipboard(
+              `Section ${selectedSection.section_id} - ${selectedSection.title}`,
+              `Copied Section ${selectedSection.section_id}`
+            );
+          });
+        }
+      }
+
+      const policySearchInput = document.getElementById("policy-search-input");
+      const clearSearchBtn = document.getElementById("clear-search-btn");
+
+      if (policySearchInput) {
+        policySearchInput.addEventListener("input", (event) => {
+          state.searchTerm = event.target.value || "";
+          renderPolicyMode();
+          renderChatPanel();
+        });
+      }
+
+      if (clearSearchBtn) {
+        clearSearchBtn.addEventListener("click", () => {
+          state.searchTerm = "";
+          renderPolicyMode();
+          renderChatPanel();
+        });
+      }
+
+      els.leftPanel.querySelectorAll("[data-section-id]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selectedSectionId = button.dataset.sectionId;
+          renderPolicyMode();
+          renderChatPanel();
+          if (window.innerWidth < 1280) setCompactView("center");
+        });
+      });
+    }
+
+    function renderChecklistMode() {
+      const checklist = state.claimRequirements;
+
+      els.leftPanelHeader.innerHTML = `
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Checklist Groups</h2>
+          <span class="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-600">
+            ${CHECKLIST_GROUPS.length} groups
+          </span>
+        </div>
+        <p class="text-xs text-slate-500">Claim submission and audit-support requirements.</p>
+      `;
+
+      els.leftPanel.innerHTML = `
+        <div class="space-y-2">
+          ${CHECKLIST_GROUPS.map(([key, label]) => `
+            <button
+              class="w-full rounded-lg border px-3 py-2 text-left text-sm ${
+                state.selectedChecklistGroup === key
+                  ? "border-blue-600 bg-blue-50 text-blue-700"
+                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+              }"
+              data-checklist-group="${key}"
+            >
+              ${escapeHtml(label)}
+            </button>
+          `).join("")}
+        </div>
+      `;
+
+      els.centerPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Checklist Details</h2>
+          <button
+            id="copy-checklist-btn"
+            type="button"
+            class="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
+          >
+            Copy List
+          </button>
+        </div>
+      `;
+
+      const selectedKey = state.selectedChecklistGroup || "minimum_submission_checklist";
+      let centerHtml = "";
+
+      if (!checklist) {
+        centerHtml = renderPlaceholderCard("Checklist not loaded", "claimRequirements.json is missing or could not be loaded.");
+      } else if (selectedKey === "special_requirements") {
+        centerHtml = `
+          <div class="space-y-4 p-5">
+            ${Object.entries(checklist.special_requirements || {}).map(([key, items]) => `
+              <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div class="text-sm font-semibold text-slate-900">${escapeHtml(key.replaceAll("_", " "))}</div>
+                <ul class="mt-3 space-y-2">
+                  ${(items || []).map((item) => `
+                    <li class="flex items-start gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                      <input type="checkbox" class="mt-1 h-4 w-4 rounded border-slate-300" />
+                      <span>${escapeHtml(item)}</span>
+                    </li>
+                  `).join("")}
+                </ul>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      } else {
+        const label = CHECKLIST_GROUPS.find(([k]) => k === selectedKey)?.[1] || "Checklist";
+        const items = checklist[selectedKey] || [];
+        centerHtml = `
+          <div class="p-5">
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm font-semibold text-slate-900">${escapeHtml(label)}</div>
+              <ul class="mt-3 space-y-2">
+                ${items.map((item) => `
+                  <li class="flex items-start gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                    <input type="checkbox" class="mt-1 h-4 w-4 rounded border-slate-300" />
+                    <span>${escapeHtml(item)}</span>
+                  </li>
+                `).join("")}
+              </ul>
+            </div>
+          </div>
+        `;
+      }
+
+      els.centerPanel.innerHTML = centerHtml;
+
+      const totalChecklistItems =
+        CHECKLIST_GROUPS.filter(([key]) => key !== "special_requirements")
+          .reduce((sum, [key]) => sum + ((checklist?.[key] || []).length), 0) +
+        Object.values(checklist?.special_requirements || {})
+          .reduce((sum, arr) => sum + ((arr || []).length), 0);
+
+      els.rightPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Checklist Summary</h2>
+        </div>
+      `;
+
+      els.rightPanel.innerHTML = `
+        <div class="space-y-4 p-4">
+          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="text-sm text-slate-500">Source Sections</div>
+            <div class="mt-1 text-sm font-semibold text-slate-900">${escapeHtml((checklist?.source_sections || []).join(", "))}</div>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="text-sm text-slate-500">Total Checklist Items</div>
+            <div class="mt-1 text-2xl font-bold text-slate-900">${totalChecklistItems}</div>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="text-sm font-semibold text-slate-900">Use Case</div>
+            <p class="mt-2 text-sm text-slate-600">
+              Use this to confirm what must exist before submission and what must be retained for Hyundai review and audit.
+            </p>
+          </div>
+        </div>
+      `;
+
+      els.leftPanel.querySelectorAll("[data-checklist-group]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selectedChecklistGroup = button.dataset.checklistGroup;
+          renderChecklistMode();
+          renderChatPanel();
+          if (window.innerWidth < 1280) setCompactView("center");
+        });
+      });
+
+      const copyChecklistBtn = document.getElementById("copy-checklist-btn");
+      if (copyChecklistBtn && checklist) {
+        copyChecklistBtn.addEventListener("click", () => {
+          const items = selectedKey === "special_requirements"
+            ? Object.entries(checklist.special_requirements || {})
+                .map(([k, arr]) => `${k}\n- ${(arr || []).join("\n- ")}`)
+                .join("\n\n")
+            : (checklist[selectedKey] || []).join("\n");
+          copyTextToClipboard(items, "Checklist copied");
+        });
+      }
+    }
+
+    function renderClaimTypesMode() {
+      const selected = getSelectedClaimType();
+
+      els.leftPanelHeader.innerHTML = `
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Claim Types</h2>
+          <span class="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-600">
+            ${state.claimTypes.length} loaded
+          </span>
+        </div>
+        <p class="text-xs text-slate-500">Select the claim workflow you want to understand or validate.</p>
+      `;
+
+      els.leftPanel.innerHTML = state.claimTypes.map((type) => `
+        <button
+          class="mb-2 w-full rounded-xl border px-3 py-3 text-left ${
+            type.key === selected?.key
+              ? "border-blue-600 bg-blue-50 text-blue-700"
+              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+          }"
+          data-claim-type="${escapeHtml(type.key)}"
+        >
+          <div class="font-semibold">${escapeHtml(type.label)}</div>
+          <div class="mt-1 text-xs opacity-80">${escapeHtml(type.category || "")}</div>
+        </button>
+      `).join("");
+
+      els.centerPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Claim Type Details</h2>
+        </div>
+      `;
+
+      if (!selected) {
+        els.centerPanel.innerHTML = `<div class="p-5">${renderPlaceholderCard("No claim types loaded", "claimTypes.json is missing or empty.")}</div>`;
+      } else {
+        els.centerPanel.innerHTML = `
+          <div class="p-5">
+            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="text-sm text-slate-500">Selected Claim Type</div>
+              <h2 class="mt-1 text-2xl font-bold text-slate-900">${escapeHtml(selected.label)}</h2>
+              <p class="mt-3 text-sm text-slate-600">${escapeHtml(selected.description || "")}</p>
+
+              <div class="mt-5 grid gap-4 md:grid-cols-2">
+                <div class="rounded-xl bg-slate-50 p-4">
+                  <div class="text-sm font-semibold text-slate-900">Portal Path</div>
+                  <ul class="mt-2 space-y-1 text-sm text-slate-700">
+                    ${(selected.portal_path || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                  </ul>
+                </div>
+
+                <div class="rounded-xl bg-slate-50 p-4">
+                  <div class="text-sm font-semibold text-slate-900">Required Groups</div>
+                  <ul class="mt-2 space-y-1 text-sm text-slate-700">
+                    ${(selected.required_groups || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                  </ul>
+                </div>
+              </div>
+
+              <div class="mt-4 grid gap-4 md:grid-cols-2">
+                <div class="rounded-xl bg-slate-50 p-4">
+                  <div class="text-sm font-semibold text-slate-900">When To Use</div>
+                  <ul class="mt-2 space-y-2 text-sm text-slate-700">
+                    ${(selected.when_to_use || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                  </ul>
+                </div>
+
+                <div class="rounded-xl bg-slate-50 p-4">
+                  <div class="text-sm font-semibold text-slate-900">Related Workflows</div>
+                  <ul class="mt-2 space-y-2 text-sm text-slate-700">
+                    ${(selected.related_workflows || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      els.rightPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Claim Type Summary</h2>
+        </div>
+      `;
+
+      els.rightPanel.innerHTML = selected
+        ? `
+          <div class="space-y-4 p-4">
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm text-slate-500">Key</div>
+              <div class="mt-1 text-sm font-semibold text-slate-900">${escapeHtml(selected.key)}</div>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm text-slate-500">Screen</div>
+              <div class="mt-1 text-sm font-semibold text-slate-900">${escapeHtml(selected.screen_name || "-")}</div>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm text-slate-500">Source Sections</div>
+              <div class="mt-1 text-sm font-semibold text-slate-900">${escapeHtml((selected.source_sections || []).join(", "))}</div>
+            </div>
+          </div>
+        `
+        : `<div class="p-5">${renderPlaceholderCard("No selection", "Select a claim type on the left.")}</div>`;
+
+      els.leftPanel.querySelectorAll("[data-claim-type]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selectedClaimType = button.dataset.claimType;
+          state.selectedPortalSection = "basic_information";
+          renderClaimTypesMode();
+          renderChatPanel();
+          if (window.innerWidth < 1280) setCompactView("center");
+        });
+      });
+    }
+
+    function renderEntryMapMode() {
+      const selectedType = getSelectedClaimType();
+      const schema = getSelectedPortalSchema();
+      const sections = schema?.sections || {};
+
+      els.leftPanelHeader.innerHTML = `
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Portal Sections</h2>
+          <span class="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-600">
+            ${selectedType ? selectedType.label : "No type"}
+          </span>
+        </div>
+        <div class="relative">
+          <select id="claim-type-select" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-[var(--brand)]">
+            ${state.claimTypes.map((type) => `
+              <option value="${escapeHtml(type.key)}" ${type.key === state.selectedClaimType ? "selected" : ""}>
+                ${escapeHtml(type.label)}
+              </option>
+            `).join("")}
+          </select>
+        </div>
+      `;
+
+      const sectionKeys = Object.keys(sections);
+      if (!sectionKeys.includes(state.selectedPortalSection)) {
+        state.selectedPortalSection = sectionKeys[0] || null;
+      }
+
+      els.leftPanel.innerHTML = sectionKeys.map((key) => {
+        const sec = sections[key];
+        return `
+          <button
+            class="mb-2 w-full rounded-xl border px-3 py-3 text-left ${
+              key === state.selectedPortalSection
+                ? "border-blue-600 bg-blue-50 text-blue-700"
+                : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+            }"
+            data-portal-section="${escapeHtml(key)}"
+          >
+            <div class="font-semibold">${escapeHtml(sec.label || key)}</div>
+            <div class="mt-1 text-xs opacity-80">${sec.fields?.length || 0} fields</div>
+          </button>
+        `;
+      }).join("");
+
+      els.centerPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Claim Entry Map</h2>
+          <button id="copy-portal-section-btn" type="button" class="rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50">
+            Copy Section
+          </button>
+        </div>
+      `;
+
+      const activeSection = sections[state.selectedPortalSection];
+      if (!activeSection) {
+        els.centerPanel.innerHTML = `<div class="p-5">${renderPlaceholderCard("No portal schema", "claimPortalSchema.json is missing or no section is available for this claim type.")}</div>`;
+      } else {
+        els.centerPanel.innerHTML = `
+          <div class="p-5">
+            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="text-sm text-slate-500">Selected Portal Section</div>
+              <h2 class="mt-1 text-2xl font-bold text-slate-900">${escapeHtml(activeSection.label || state.selectedPortalSection)}</h2>
+              ${activeSection.repeatable ? `<div class="mt-2 text-xs text-slate-500">Repeatable section • max rows: ${activeSection.max_rows || activeSection.max_lines || "—"}</div>` : ""}
+              ${activeSection.max_file_size_mb ? `<div class="mt-2 text-xs text-slate-500">Max file size: ${activeSection.max_file_size_mb} MB</div>` : ""}
+
+              ${activeSection.restricted_characters_note ? `
+                <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+                  ${escapeHtml(activeSection.restricted_characters_note)}
+                </div>
+              ` : ""}
+
+              <div class="mt-5 space-y-3">
+                ${(activeSection.fields || []).map((field) => `
+                  <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <div class="text-sm font-semibold text-slate-900">${escapeHtml(field.label)}</div>
+                      <span class="rounded-full bg-white px-2 py-0.5 text-[11px] text-slate-500">${escapeHtml(field.type || "string")}</span>
+                      ${field.required ? `<span class="rounded-full bg-red-100 px-2 py-0.5 text-[11px] text-red-700">required</span>` : `<span class="rounded-full bg-slate-200 px-2 py-0.5 text-[11px] text-slate-600">optional</span>`}
+                      ${field.max_length ? `<span class="rounded-full bg-blue-100 px-2 py-0.5 text-[11px] text-blue-700">max ${field.max_length}</span>` : ""}
+                    </div>
+                    <div class="mt-2 text-xs text-slate-500">${escapeHtml(field.key)}</div>
+                  </div>
+                `).join("")}
+              </div>
+
+              ${activeSection.allowed_categories ? `
+                <div class="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <div class="text-sm font-semibold text-slate-900">Allowed Categories</div>
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    ${activeSection.allowed_categories.map((item) => `
+                      <span class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700">${escapeHtml(item)}</span>
+                    `).join("")}
+                  </div>
+                </div>
+              ` : ""}
+
+              ${activeSection.system_generated_examples ? `
+                <div class="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <div class="text-sm font-semibold text-slate-900">System Generated Examples</div>
+                  <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                    ${activeSection.system_generated_examples.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                  </ul>
+                </div>
+              ` : ""}
+
+              ${activeSection.character_limits ? `
+                <div class="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <div class="text-sm font-semibold text-slate-900">Character Limits</div>
+                  <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                    ${Object.entries(activeSection.character_limits).map(([key, value]) => `<li>${escapeHtml(key)}: ${escapeHtml(value)}</li>`).join("")}
+                  </ul>
+                </div>
+              ` : ""}
+            </div>
+          </div>
+        `;
+      }
+
+      els.rightPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Context Panel</h2>
+        </div>
+      `;
+
+      const checklist = state.claimRequirements;
+      const relatedDocs = checklist?.documents_required || [];
+      els.rightPanel.innerHTML = `
+        <div class="space-y-4 p-4">
+          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="text-sm font-semibold text-slate-900">Selected Claim Type</div>
+            <div class="mt-1 text-sm text-slate-600">${escapeHtml(selectedType?.label || "—")}</div>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="text-sm font-semibold text-slate-900">Portal Section</div>
+            <div class="mt-1 text-sm text-slate-600">${escapeHtml(activeSection?.label || "—")}</div>
+          </div>
+          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="text-sm font-semibold text-slate-900">Why this matters</div>
+            <p class="mt-2 text-sm text-slate-600">
+              Use this view as a map of the Hyundai portal so you know which field group to inspect before submission or resubmission.
+            </p>
+          </div>
+        </div>
+      `;
+
+      const claimTypeSelect = document.getElementById("claim-type-select");
+      if (claimTypeSelect) {
+        claimTypeSelect.addEventListener("change", (event) => {
+          state.selectedClaimType = event.target.value;
+          state.selectedPortalSection = "basic_information";
+          renderEntryMapMode();
+          renderChatPanel();
+        });
+      }
+
+      els.leftPanel.querySelectorAll("[data-portal-section]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selectedPortalSection = button.dataset.portalSection;
+          renderEntryMapMode();
+          renderChatPanel();
+          if (window.innerWidth < 1280) setCompactView("center");
+        });
+      });
+
+      const copyPortalSectionBtn = document.getElementById("copy-portal-section-btn");
+      if (copyPortalSectionBtn && activeSection) {
+        copyPortalSectionBtn.addEventListener("click", () => {
+          const text = (activeSection.fields || [])
+            .map((f) => `${f.label} (${f.key})${f.required ? " [required]" : ""}`)
+            .join("\n");
+          copyTextToClipboard(text, "Portal section copied");
+        });
+      }
+    }
+
+    function renderValidatorMode() {
+      els.leftPanelHeader.innerHTML = `
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Validator Input</h2>
+        </div>
+        <p class="text-xs text-slate-500">Paste claim text or notes to compare against the selected claim workflow.</p>
+      `;
+
+      els.leftPanel.innerHTML = `
+        <div class="space-y-4 p-2">
+          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <label class="mb-2 block text-sm font-semibold text-slate-900">Claim Type</label>
+            <select id="validator-claim-type" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-[var(--brand)]">
+              ${state.claimTypes.map((type) => `
+                <option value="${escapeHtml(type.key)}" ${type.key === state.selectedClaimType ? "selected" : ""}>
+                  ${escapeHtml(type.label)}
+                </option>
+              `).join("")}
+            </select>
+          </div>
+
+          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <label class="mb-2 block text-sm font-semibold text-slate-900">Claim Text</label>
+            <textarea id="validator-text" rows="14" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-[var(--brand)]" placeholder="Paste portal text, RO notes, or extracted claim content here..."></textarea>
+            <button id="run-validator-btn" class="mt-3 w-full rounded-xl bg-[var(--brand)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-900">
+              Run Validator
+            </button>
+          </div>
+        </div>
+      `;
+
+      els.centerPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Validation Results</h2>
+        </div>
+      `;
+
+      els.centerPanel.innerHTML = `
+        <div class="p-5">
+          ${renderPlaceholderCard("Validator", "This first version checks presence of core required fields using the selected claim type’s Basic Information schema.")}
+        </div>
+      `;
+
+      els.rightPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">How it works</h2>
+        </div>
+      `;
+
+      els.rightPanel.innerHTML = `
+        <div class="space-y-4 p-4">
+          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="text-sm font-semibold text-slate-900">Validation Engine</div>
+            <p class="mt-2 text-sm text-slate-600">
+              This checks for obvious presence/missing patterns against the selected claim type’s portal fields. Later you can extend it for attachment categories, OP code structure, and return-code-aware checks.
+            </p>
+          </div>
+        </div>
+      `;
+
+      const runBtn = document.getElementById("run-validator-btn");
+      const textBox = document.getElementById("validator-text");
+      const claimTypeSelect = document.getElementById("validator-claim-type");
+
+      if (claimTypeSelect) {
+        claimTypeSelect.addEventListener("change", (event) => {
+          state.selectedClaimType = event.target.value;
+          renderValidatorMode();
+          renderChatPanel();
+        });
+      }
+
+      if (runBtn && textBox) {
+        runBtn.addEventListener("click", () => {
+          const schema = getSelectedPortalSchema();
+          const basicFields = schema?.sections?.basic_information?.fields || [];
+          const text = normalizeForMatch(textBox.value);
+
+          const results = basicFields.map((field) => {
+            const labelNorm = normalizeForMatch(field.label).replace(/#/g, "");
+            const keyNorm = normalizeForMatch(field.key);
+            const present = text.includes(labelNorm) || text.includes(keyNorm);
+            return {
+              label: field.label,
+              required: !!field.required,
+              status: present ? "present" : (field.required ? "missing" : "review")
+            };
+          });
+
+          els.centerPanel.innerHTML = `
+            <div class="p-5">
+              <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div class="text-sm font-semibold text-slate-900">Basic Information Check</div>
+                <div class="mt-4 space-y-3">
+                  ${results.map((item) => {
+                    const styles = item.status === "present"
+                      ? "border-green-200 bg-green-50 text-green-800"
+                      : item.status === "missing"
+                        ? "border-red-200 bg-red-50 text-red-800"
+                        : "border-amber-200 bg-amber-50 text-amber-800";
+                    return `
+                      <div class="rounded-xl border p-3 ${styles}">
+                        <div class="flex items-center justify-between gap-3">
+                          <div class="font-semibold">${escapeHtml(item.label)}</div>
+                          <div class="text-xs font-bold uppercase">${escapeHtml(item.status)}</div>
+                        </div>
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
+              </div>
+            </div>
+          `;
+
+          if (window.innerWidth < 1280) setCompactView("center");
+        });
+      }
+    }
+
+    function renderErrorFixMode() {
+      const claimTypeFilteredRules = state.claimErrorRules.filter((rule) => {
+        return !rule.claim_type || rule.claim_type === state.selectedClaimType || rule.claim_type === "warranty";
+      });
+
+      const selectedRule =
+        claimTypeFilteredRules.find((r) => r.code === state.selectedErrorCode) ||
+        claimTypeFilteredRules[0] ||
+        null;
+
+      if (selectedRule && state.selectedErrorCode !== selectedRule.code) {
+        state.selectedErrorCode = selectedRule.code;
+      }
+
+      els.leftPanelHeader.innerHTML = `
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Error Rules</h2>
+          <span class="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-600">
+            ${claimTypeFilteredRules.length} rules
+          </span>
+        </div>
+        <div class="relative">
+          <select id="error-claim-type-select" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-[var(--brand)]">
+            ${state.claimTypes.map((type) => `
+              <option value="${escapeHtml(type.key)}" ${type.key === state.selectedClaimType ? "selected" : ""}>
+                ${escapeHtml(type.label)}
+              </option>
+            `).join("")}
+          </select>
+        </div>
+      `;
+
+      els.leftPanel.innerHTML = claimTypeFilteredRules.map((rule) => `
+        <button
+          class="mb-2 w-full rounded-xl border px-3 py-3 text-left ${
+            selectedRule?.code === rule.code
+              ? "border-blue-600 bg-blue-50 text-blue-700"
+              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+          }"
+          data-error-code="${escapeHtml(rule.code)}"
+        >
+          <div class="font-semibold">${escapeHtml(rule.code)}</div>
+          <div class="mt-1 text-xs opacity-80">${escapeHtml(rule.message)}</div>
+        </button>
+      `).join("");
+
+      els.centerPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Error Details</h2>
+        </div>
+      `;
+
+      if (!selectedRule) {
+        els.centerPanel.innerHTML = `<div class="p-5">${renderPlaceholderCard("No error rules", "claimErrorRules.json is missing or no rules match the selected claim type.")}</div>`;
+      } else {
+        els.centerPanel.innerHTML = `
+          <div class="space-y-4 p-5">
+            <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="rounded-full bg-blue-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[var(--brand)]">${escapeHtml(selectedRule.code)}</span>
+                <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">${escapeHtml(selectedRule.severity || "info")}</span>
+                <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">${escapeHtml(selectedRule.category || "general")}</span>
+              </div>
+
+              <h2 class="mt-3 text-xl font-bold text-slate-900">${escapeHtml(selectedRule.message)}</h2>
+              <p class="mt-3 text-sm text-slate-600">${escapeHtml(selectedRule.meaning || "")}</p>
+            </div>
+
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm font-semibold text-slate-900">Likely Problem Areas</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                ${(selectedRule.likely_problem_areas || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+              </ul>
+            </div>
+
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm font-semibold text-slate-900">Validation Checks</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                ${(selectedRule.validation_checks || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+              </ul>
+            </div>
+
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm font-semibold text-slate-900">Recommended Fix Steps</div>
+              <ol class="mt-3 list-decimal space-y-2 pl-5 text-sm text-slate-700">
+                ${(selectedRule.recommended_fix_steps || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+              </ol>
+            </div>
+          </div>
+        `;
+      }
+
+      els.rightPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Return Guidance</h2>
+        </div>
+      `;
+
+      els.rightPanel.innerHTML = selectedRule
+        ? `
+          <div class="space-y-4 p-4">
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm text-slate-500">Screen</div>
+              <div class="mt-1 text-sm font-semibold text-slate-900">${escapeHtml(selectedRule.screen || "-")}</div>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm text-slate-500">Dealer Reply Needed</div>
+              <div class="mt-1 text-sm font-semibold text-slate-900">${selectedRule.dealer_reply_needed ? "Yes" : "No"}</div>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm font-semibold text-slate-900">How to use this</div>
+              <p class="mt-2 text-sm text-slate-600">
+                Use this view when a claim returns, an OP code triggers a validation error, or the portal shows a warning tied to the current claim type.
+              </p>
+            </div>
+          </div>
+        `
+        : `<div class="p-5">${renderPlaceholderCard("No rule selected", "Select an error rule on the left.")}</div>`;
+
+      const errorClaimTypeSelect = document.getElementById("error-claim-type-select");
+      if (errorClaimTypeSelect) {
+        errorClaimTypeSelect.addEventListener("change", (event) => {
+          state.selectedClaimType = event.target.value;
+          state.selectedErrorCode = null;
+          renderErrorFixMode();
+          renderChatPanel();
+        });
+      }
+
+      els.leftPanel.querySelectorAll("[data-error-code]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selectedErrorCode = button.dataset.errorCode;
+          renderErrorFixMode();
+          renderChatPanel();
+          if (window.innerWidth < 1280) setCompactView("center");
+        });
+      });
+    }
+
+    function renderCoverageMode() {
+      els.leftPanelHeader.innerHTML = `
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Coverage Guide</h2>
+        </div>
+        <p class="text-xs text-slate-500">CoverageGuide.json can plug in here when structured.</p>
+      `;
+
+      els.leftPanel.innerHTML = `
+        <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+          Build this mode after you structure the Coverage Guide into coverageGuide.json categories.
+        </div>
+      `;
+
+      els.centerPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Coverage Lookup</h2>
+        </div>
+      `;
+
+      els.centerPanel.innerHTML = `
+        <div class="p-5">
+          ${renderPlaceholderCard("Coverage mode ready for next phase", "Use this mode for component coverage, time/mileage limits, ownership rules, and exceptions once coverageGuide.json is structured.")}
+        </div>
+      `;
+
+      els.rightPanelHeader.innerHTML = `
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-sm font-semibold text-slate-700">Coverage Notes</h2>
+        </div>
+      `;
+
+      els.rightPanel.innerHTML = `
+        <div class="p-4">
+          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div class="text-sm font-semibold text-slate-900">Planned use</div>
+            <p class="mt-2 text-sm text-slate-600">
+              This mode should answer: What is covered, for how long, for which owner, and under what exception?
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderApp() {
+      syncWorkspaceTabs();
+
+      switch (state.mode) {
+        case APP_MODES.CHECKLIST:
+          renderChecklistMode();
+          break;
+        case APP_MODES.CLAIM_TYPES:
+          renderClaimTypesMode();
+          break;
+        case APP_MODES.ENTRY_MAP:
+          renderEntryMapMode();
+          break;
+        case APP_MODES.VALIDATOR:
+          renderValidatorMode();
+          break;
+        case APP_MODES.ERROR_FIX:
+          renderErrorFixMode();
+          break;
+        case APP_MODES.COVERAGE:
+          renderCoverageMode();
+          break;
+        case APP_MODES.POLICY:
+        default:
+          renderPolicyMode();
+          break;
+      }
+
+      renderChatPanel();
+      updateResponsivePanels();
+    }
+
     async function sendMessage() {
-      const message = normalizeText(els.chatInput.value);
+      const chatInput = document.getElementById("chat-input");
+      const message = normalizeText(chatInput?.value);
 
       if (!message || !state.manualLoaded || state.sending) return;
 
       state.chatHistory.push({ role: "user", text: message });
-      els.chatInput.value = "";
+      if (chatInput) chatInput.value = "";
       state.sending = true;
 
       if (window.innerWidth < 1280) {
-        setCompactView("chat");
+        setCompactView("right");
       }
 
-      updateChatAvailability();
-      renderChat();
+      renderChatPanel();
 
       try {
-        const matchedSections = findMatchingSections(message);
-
-        let effectiveSelectedSection = null;
-        let autoSelected = false;
-
-        if (matchedSections.length === 1) {
-          effectiveSelectedSection = matchedSections[0];
-
-          if (
-            !state.selectedSection ||
-            String(state.selectedSection.section_id) !== String(effectiveSelectedSection.section_id)
-          ) {
-            state.selectedSection = effectiveSelectedSection;
-            autoSelected = true;
-            renderSectionList();
-            renderSectionDetails();
-            updateChatAvailability();
-          }
-        } else if (matchedSections.length > 1) {
-          effectiveSelectedSection = null;
-        } else {
-          effectiveSelectedSection = state.selectedSection;
-        }
-
-        const recentHistory = state.chatHistory
-          .filter((_, index) => index !== 0)
-          .slice(-8);
+        const selectedSection = state.mode === APP_MODES.POLICY ? getSelectedSection() : null;
+        const matchedSections = state.mode === APP_MODES.POLICY ? findMatchingSections(message) : [];
 
         const response = await fetch("/api/chat", {
           method: "POST",
@@ -1209,13 +2007,14 @@
           },
           body: JSON.stringify({
             message,
-            selectedSection: effectiveSelectedSection,
+            mode: state.mode,
+            selectedSection,
             relevantSections: matchedSections,
-            history: recentHistory,
-            matchingMeta: {
-              matchedCount: matchedSections.length,
-              autoSelected
-            }
+            selectedClaimType: state.selectedClaimType,
+            selectedChecklistGroup: state.selectedChecklistGroup,
+            selectedPortalSection: state.selectedPortalSection,
+            selectedErrorCode: state.selectedErrorCode,
+            history: state.chatHistory.slice(-8)
           })
         });
 
@@ -1226,38 +2025,27 @@
         }
 
         const answer = normalizeText(data.answer) || "I’m sorry, I could not generate a response.";
-        const finishReason = normalizeText(data.finishReason);
-
-        state.chatHistory.push({
-          role: "model",
-          text: finishReason === "MAX_TOKENS"
-            ? `${answer}\n\n[Note: response was cut short by output limit.]`
-            : answer
-        });
+        state.chatHistory.push({ role: "model", text: answer });
       } catch (error) {
         console.error(error);
         state.chatHistory.push({
           role: "model",
-          text: `⚠️ Sorry, I hit an error while searching the manual. ${error.message}`
+          text: `⚠️ Sorry, I hit an error while checking the loaded libraries. ${error.message}`
         });
       } finally {
         state.sending = false;
-        updateChatAvailability();
-        renderChat();
-        els.chatInput.focus();
+        renderChatPanel();
+        const nextInput = document.getElementById("chat-input");
+        if (nextInput) nextInput.focus();
       }
     }
 
     function usePrompt(prompt) {
       const text = normalizeText(prompt);
       if (!text) return;
-
-      els.chatInput.value = text;
-
-      if (window.innerWidth < 1280) {
-        setCompactView("chat");
-      }
-
+      const chatInput = document.getElementById("chat-input");
+      if (chatInput) chatInput.value = text;
+      if (window.innerWidth < 1280) setCompactView("right");
       sendMessage();
     }
 
@@ -1266,55 +2054,33 @@
         {
           role: "model",
           text: state.manualLoaded
-            ? "Chat cleared. Ask me about the Warranty Policies."
-            : "Chat cleared. I’ll be ready once the manual finishes loading."
+            ? "Chat cleared. Ask me about policy, checklist, claim types, portal sections, or returned-claim errors."
+            : "Chat cleared. I’ll be ready once the libraries finish loading."
         }
       ];
-      renderChat();
+      renderChatPanel();
     }
 
-    function bindEvents() {
-      els.searchInput.addEventListener("input", (event) => {
-        state.searchTerm = event.target.value || "";
-        renderSectionList();
-      });
-
-      els.clearSearchBtn.addEventListener("click", () => {
-        state.searchTerm = "";
-        els.searchInput.value = "";
-        renderSectionList();
-        els.searchInput.focus();
-      });
-
-      els.sectionList.addEventListener("click", (event) => {
-        const button = event.target.closest("[data-section-id]");
-        if (!button) return;
-        setSelectedSection(button.dataset.sectionId);
-      });
-
-      els.copySectionBtn.addEventListener("click", () => {
-        if (!state.selectedSection) return;
-        copyTextToClipboard(
-          `Section ${state.selectedSection.section_id} - ${state.selectedSection.title}`,
-          `Copied Section ${state.selectedSection.section_id}`
-        );
-      });
-
-      els.sendBtn.addEventListener("click", sendMessage);
-
-      els.chatInput.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
-          event.preventDefault();
-          sendMessage();
-        }
-      });
-
-      els.clearChatBtn.addEventListener("click", clearChat);
-
+    function bindGlobalEvents() {
       document.addEventListener("click", (event) => {
+        const workspaceBtn = event.target.closest("[data-workspace-mode]");
+        if (workspaceBtn) {
+          setMode(workspaceBtn.dataset.workspaceMode);
+          return;
+        }
+
+        const compactTab = event.target.closest("[data-compact-view]");
+        if (compactTab) {
+          setCompactView(compactTab.dataset.compactView);
+          return;
+        }
+
         const sectionLink = event.target.closest("[data-select-section]");
         if (sectionLink) {
-          setSelectedSection(sectionLink.dataset.selectSection);
+          state.mode = APP_MODES.POLICY;
+          state.selectedSectionId = sectionLink.dataset.selectSection;
+          renderApp();
+          if (window.innerWidth < 1280) setCompactView("center");
           return;
         }
 
@@ -1336,23 +2102,19 @@
 
         const copySectionButton = event.target.closest("[data-copy-section]");
         if (copySectionButton) {
-          copyTextToClipboard(copySectionButton.dataset.copySection, "Section copied");
+          copyTextToClipboard(copySectionButton.dataset.copySection, "Copied");
           return;
-        }
-
-        const compactTab = event.target.closest("[data-compact-view]");
-        if (compactTab) {
-          setCompactView(compactTab.dataset.compactView);
         }
       });
 
       document.addEventListener("keydown", (event) => {
         if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
           event.preventDefault();
-          if (window.innerWidth < 1280) {
-            setCompactView("sections");
+          if (state.mode === APP_MODES.POLICY) {
+            const input = document.getElementById("policy-search-input");
+            if (window.innerWidth < 1280) setCompactView("left");
+            if (input) input.focus();
           }
-          els.searchInput.focus();
         }
       });
 
@@ -1360,13 +2122,10 @@
     }
 
     function init() {
-      bindEvents();
+      bindGlobalEvents();
       updateResponsivePanels();
-      updateChatAvailability();
-      renderSectionList();
-      renderSectionDetails();
-      renderChat();
-      fetchManualData();
+      renderApp();
+      loadLibraries();
     }
 
     init();
