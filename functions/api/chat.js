@@ -1,8 +1,8 @@
-const DEFAULT_MODEL = "gemini-2.5-flash";
+onst DEFAULT_MODEL = "gemini-2.5-flash";
 const MAX_HISTORY_MESSAGES = 10;
 const MAX_TEXT_CHARS = 4000;
 const MAX_LONG_TEXT_CHARS = 8000;
-const MAX_ARRAY_ITEMS = 15;
+const MAX_ARRAY_ITEMS = 40; // Increased to 40 to handle massive lists like Section 9.0 Resources
 
 function json(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
