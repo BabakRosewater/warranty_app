@@ -1,0 +1,231 @@
+{
+  "claim_types": [
+    {
+      "key": "warranty",
+      "label": "Warranty Claim",
+      "category": "Core Warranty",
+      "screen_name": "Warranty Claim Create/Edit/Submit",
+      "description": "Standard Hyundai warranty claim for warrantable repairs performed under applicable warranty coverage.",
+      "portal_path": [
+        "Warranty",
+        "Claims",
+        "Claim Entry/Edit/Submit"
+      ],
+      "when_to_use": [
+        "Use for standard warrantable repairs",
+        "Use when labor, parts, towing, sublet, or related items are being claimed under Hyundai warranty",
+        "Use when the repair is not a campaign, PDI, maintenance, or rental-only claim"
+      ],
+      "required_groups": [
+        "basic_information",
+        "op_code_information",
+        "part_information",
+        "attachments",
+        "details",
+        "summary"
+      ],
+      "related_workflows": [
+        "Claim Type Validation",
+        "Claim Status Inquiry",
+        "Claim Search Resubmit",
+        "PA Request",
+        "Original Owner Verification",
+        "Warranty Support Portal"
+      ],
+      "source_sections": [
+        "4.0",
+        "5.0",
+        "6.0"
+      ]
+    },
+    {
+      "key": "campaign",
+      "label": "Campaign Claim",
+      "category": "Recall / Service Campaign",
+      "screen_name": "Campaign Claim Entry/Edit/Submit",
+      "description": "Claim type for recall or service campaign repairs tied to Hyundai campaign rules and campaign operation codes.",
+      "portal_path": [
+        "Warranty",
+        "Claims",
+        "Claim Entry/Edit/Submit"
+      ],
+      "when_to_use": [
+        "Use for recall or campaign-related repairs",
+        "Use when the repair is tied to a Hyundai campaign number, bulletin, or remedy instruction",
+        "Use when campaign rules determine labor, parts, and attachment requirements"
+      ],
+      "required_groups": [
+        "basic_information",
+        "op_code_information",
+        "part_information",
+        "attachments",
+        "details",
+        "summary"
+      ],
+      "related_workflows": [
+        "Claim Type Validation",
+        "Claim Status Inquiry",
+        "Claim Search Resubmit",
+        "Warranty Support Portal"
+      ],
+      "source_sections": [
+        "6.0",
+        "8.0"
+      ]
+    },
+    {
+      "key": "pdi",
+      "label": "PDI Claim",
+      "category": "Pre-Delivery",
+      "screen_name": "PDI Claims",
+      "description": "Claim type for Hyundai pre-delivery inspection reimbursement and related dealer processing.",
+      "portal_path": [
+        "Warranty",
+        "Claims",
+        "PDI Claims"
+      ],
+      "when_to_use": [
+        "Use for pre-delivery inspection reimbursement",
+        "Use only when PDI timing and eligibility rules are satisfied",
+        "Do not use when repair occurred after retail delivery or demo date if Hyundai rules prohibit submission"
+      ],
+      "required_groups": [
+        "basic_information",
+        "op_code_information",
+        "summary"
+      ],
+      "related_workflows": [
+        "Claim Type Validation",
+        "Claim Status Inquiry"
+      ],
+      "source_sections": [
+        "2.0",
+        "6.0"
+      ]
+    },
+    {
+      "key": "rental",
+      "label": "Rental / SRC Claim",
+      "category": "Alternative Transportation",
+      "screen_name": "Rental Claim",
+      "description": "Claim type for Service Rental Car, 3rd Party Rental, or Rideshare reimbursement tied to an eligible repair or campaign claim.",
+      "portal_path": [
+        "Warranty",
+        "Claims",
+        "Rental Claim"
+      ],
+      "when_to_use": [
+        "Use for SRC, 3rd Party Rental, or Rideshare reimbursement",
+        "Use only when there is a corresponding paid warranty claim, campaign claim, or certain eligible customer-pay condition",
+        "Use only when reimbursement criteria are satisfied"
+      ],
+      "required_groups": [
+        "basic_information",
+        "attachments",
+        "details",
+        "summary"
+      ],
+      "related_workflows": [
+        "Claim Status Inquiry",
+        "Service Rental Car Search",
+        "Warranty Support Portal"
+      ],
+      "source_sections": [
+        "5.0.8",
+        "6.0"
+      ]
+    },
+    {
+      "key": "maintenance",
+      "label": "Maintenance Claim",
+      "category": "Maintenance / Program",
+      "screen_name": "Maintenance Claim",
+      "description": "Claim type for Hyundai maintenance-program submissions when allowed by Hyundai claim rules and program requirements.",
+      "portal_path": [
+        "Warranty",
+        "Claims",
+        "Maintenance Claim"
+      ],
+      "when_to_use": [
+        "Use when Hyundai directs maintenance items through a maintenance-claim workflow",
+        "Use only for covered maintenance-program situations, not general customer-pay service"
+      ],
+      "required_groups": [
+        "basic_information",
+        "op_code_information",
+        "part_information",
+        "attachments",
+        "summary"
+      ],
+      "related_workflows": [
+        "Claim Type Validation",
+        "Claim Status Inquiry"
+      ],
+      "source_sections": [
+        "4.1.15",
+        "6.0"
+      ]
+    },
+    {
+      "key": "foreign",
+      "label": "Foreign Claim",
+      "category": "Jurisdiction / Special",
+      "screen_name": "Foreign Claims",
+      "description": "Claim type or workflow used for vehicles involving foreign or non-standard jurisdiction handling.",
+      "portal_path": [
+        "Warranty",
+        "Foreign Claims"
+      ],
+      "when_to_use": [
+        "Use when Hyundai directs the claim through foreign-claim handling",
+        "Use when jurisdiction, distribution, or country-specific handling applies"
+      ],
+      "required_groups": [
+        "basic_information",
+        "attachments",
+        "details",
+        "summary"
+      ],
+      "related_workflows": [
+        "Hyundai Customer Care Center",
+        "Warranty Support Portal"
+      ],
+      "source_sections": [
+        "4.0.7",
+        "6.0"
+      ]
+    },
+    {
+      "key": "cuv",
+      "label": "CUV Claim",
+      "category": "Certified Used Vehicle",
+      "screen_name": "CUV Claims",
+      "description": "Claim path for Hyundai certified used vehicle claim processing when applicable.",
+      "portal_path": [
+        "Warranty",
+        "CUV Claims"
+      ],
+      "when_to_use": [
+        "Use when the repair falls under Hyundai CUV claim handling",
+        "Use only when Hyundai CUV policy and portal workflow applies"
+      ],
+      "required_groups": [
+        "basic_information",
+        "op_code_information",
+        "part_information",
+        "attachments",
+        "details",
+        "summary"
+      ],
+      "related_workflows": [
+        "Claim Type Validation",
+        "Claim Status Inquiry",
+        "Warranty Support Portal"
+      ],
+      "source_sections": [
+        "4.0",
+        "6.0"
+      ]
+    }
+  ]
+}
