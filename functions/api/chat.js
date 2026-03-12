@@ -1,4 +1,4 @@
-onst DEFAULT_MODEL = "gemini-2.5-flash";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 const MAX_HISTORY_MESSAGES = 10;
 const MAX_TEXT_CHARS = 4000;
 const MAX_LONG_TEXT_CHARS = 8000;
