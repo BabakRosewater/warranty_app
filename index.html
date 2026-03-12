@@ -818,7 +818,7 @@
                   ${escapeHtml(sec.title || "Untitled")}
                 </div>
                 ${sec.is_structured 
-                  ? `<div class="mt-1.5 inline-flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-700"><svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg> Data Synthesis</div>` 
+                  ? `<div class="mt-1.5 inline-flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-700"><svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg> AI Structured</div>` 
                   : ""}
               </div>
 
@@ -852,11 +852,11 @@
     }
 
     function shouldSectionOpen(title, value) {
-      const alwaysOpen = new Set(["Coverages", "Exclusions"]);
+      const alwaysOpen = new Set(["Coverage & Reimbursement", "Coverages", "Not Covered", "Exclusions"]);
       if (alwaysOpen.has(title)) return true;
 
-      if (Array.isArray(value) && value.length <= 4) return true;
-      if (typeof value === "string" && value.length < 300) return true;
+      if (Array.isArray(value) && value.length > 0 && value.length <= 4) return true;
+      if (typeof value === "string" && value.length > 0 && value.length < 300) return true;
 
       return false;
     }
@@ -866,6 +866,15 @@
         green: { outer: "border-green-200 bg-green-50/70", title: "text-green-800" },
         red: { outer: "border-red-200 bg-red-50/70", title: "text-red-800" },
         blue: { outer: "border-blue-200 bg-blue-50/70", title: "text-blue-800" },
+        purple: { outer: "border-purple-200 bg-purple-50/70", title: "text-purple-800" },
+        orange: { outer: "border-orange-200 bg-orange-50/70", title: "text-orange-800" },
+        indigo: { outer: "border-indigo-200 bg-indigo-50/70", title: "text-indigo-800" },
+        cyan: { outer: "border-cyan-200 bg-cyan-50/70", title: "text-cyan-800" },
+        sky: { outer: "border-sky-200 bg-sky-50/70", title: "text-sky-800" },
+        fuchsia: { outer: "border-fuchsia-200 bg-fuchsia-50/70", title: "text-fuchsia-800" },
+        amber: { outer: "border-amber-200 bg-amber-50/70", title: "text-amber-800" },
+        rose: { outer: "border-rose-200 bg-rose-50/70", title: "text-rose-800" },
+        teal: { outer: "border-teal-200 bg-teal-50/70", title: "text-teal-800" },
         slate: { outer: "border-slate-200 bg-white", title: "text-slate-700" }
       };
 
@@ -903,7 +912,7 @@
     }
 
     function getPopularSections() {
-      const preferred = ["2.1.2", "2.2.4", "2.3.2", "3.0.2"];
+      const preferred = ["2.1.2", "2.2.4", "2.3.2", "3.0.2", "4.1.6", "5.0.8"];
       return preferred
         .map((num) => getSectionById(num))
         .filter(Boolean)
@@ -979,14 +988,23 @@
           </div>
 
           ${sec.is_structured ? `
-            ${renderSectionCard("Coverages", normalizeArray(sec.coverage_details), "green")}
-            ${renderSectionCard("Exclusions", normalizeArray(sec.exclusions), "red")}
+            ${renderSectionCard("Eligibility Conditions", normalizeArray(sec.eligibility_conditions), "purple")}
+            ${renderSectionCard("Coverage & Reimbursement", normalizeArray(sec.coverage_and_reimbursement || sec.coverage_details), "green")}
+            ${renderSectionCard("Payment Limitations", normalizeArray(sec.payment_limitations), "orange")}
+            ${renderSectionCard("Not Covered", normalizeArray(sec.not_covered || sec.exclusions), "red")}
             ${renderSectionCard("Dealer Actions", normalizeArray(sec.dealer_actions), "blue")}
+            ${renderSectionCard("Timing Rules", normalizeArray(sec.timing_rules), "amber")}
+            ${renderSectionCard("Documents Required", normalizeArray(sec.documents_required), "indigo")}
+            ${renderSectionCard("Systems", normalizeArray(sec.systems), "cyan")}
+            ${renderSectionCard("System Screens", normalizeArray(sec.system_screens), "sky")}
+            ${renderSectionCard("Comment Requirements", normalizeArray(sec.comment_requirements), "fuchsia")}
+            ${renderSectionCard("Claim Processing Risks", normalizeArray(sec.claim_processing_risks), "rose")}
+            ${renderSectionCard("Roles Explicitly Mentioned", normalizeArray(sec.roles_explicitly_mentioned), "teal")}
           ` : `
             ${renderSectionCard("Raw Policy Text", sec.raw_content, "slate")}
           `}
           
-          ${renderSectionCard("Source Pages", normalizeArray(sec.source_pages), "slate", { type: "sourcePages" })}
+          ${renderSectionCard("Source Pages", normalizeArray(sec.source_pdf_pages || sec.source_pages), "slate", { type: "sourcePages" })}
         </div>
       `;
     }
