@@ -851,9 +851,12 @@
       `;
     }
 
-    function shouldSectionOpen(title, value) {
+    function shouldSectionOpen(title, value, isStructured = false) {
       const alwaysOpen = new Set(["Coverage & Reimbursement", "Coverages", "Not Covered", "Exclusions"]);
       if (alwaysOpen.has(title)) return true;
+
+      // Keep the raw text closed if the section is already structured, to avoid clutter
+      if (title === "Raw Policy Text" && isStructured) return false;
 
       if (Array.isArray(value) && value.length > 0 && value.length <= 4) return true;
       if (typeof value === "string" && value.length > 0 && value.length < 300) return true;
@@ -894,7 +897,12 @@
         bodyHtml = renderGenericArray(value);
       }
 
-      const openAttr = shouldSectionOpen(title, value) ? "open" : "";
+      let openAttr = "";
+      if (title === "Raw Policy Text" && options.isStructured) {
+          openAttr = ""; // keep closed
+      } else if (shouldSectionOpen(title, value, options.isStructured)) {
+          openAttr = "open";
+      }
 
       return `
         <details ${openAttr} class="group rounded-2xl border ${toneClass.outer} p-4 shadow-sm transition-all open:bg-opacity-100">
@@ -1000,6 +1008,7 @@
             ${renderSectionCard("Comment Requirements", normalizeArray(sec.comment_requirements), "fuchsia")}
             ${renderSectionCard("Claim Processing Risks", normalizeArray(sec.claim_processing_risks), "rose")}
             ${renderSectionCard("Roles Explicitly Mentioned", normalizeArray(sec.roles_explicitly_mentioned), "teal")}
+            ${renderSectionCard("Raw Policy Text", sec.raw_content, "slate", { isStructured: true })}
           ` : `
             ${renderSectionCard("Raw Policy Text", sec.raw_content, "slate")}
           `}
