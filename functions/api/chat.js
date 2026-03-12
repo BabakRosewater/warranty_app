@@ -47,6 +47,16 @@ function sanitizeArray(value, itemMax = 1000, maxItems = MAX_ARRAY_ITEMS) {
     .filter(Boolean);
 }
 
+function sanitizeObjectMap(obj, valueMax = 500, maxItems = MAX_ARRAY_ITEMS) {
+  if (!obj || typeof obj !== "object" || Array.isArray(obj)) return {};
+
+  return Object.fromEntries(
+    Object.entries(obj)
+      .slice(0, maxItems)
+      .map(([key, value]) => [sanitizeText(key, 120), sanitizeSimpleValue(value, valueMax)])
+  );
+}
+
 function pickContextSection(section) {
   if (!section || typeof section !== "object") return null;
 
@@ -73,11 +83,92 @@ function pickContextSection(section) {
     source_pdf_pages: sanitizeArray(section.source_pdf_pages || section.source_pages, 100)
   };
 
-  if (!picked.section_id && !picked.title) {
-    return null;
+  if (!picked.section_id && !picked.title) return null;
+  return picked;
+}
+
+function pickClaimTypeContext(item) {
+  if (!item || typeof item !== "object") return null;
+
+  return {
+    key: sanitizeText(item.key, 80),
+    label: sanitizeText(item.label, 150),
+    category: sanitizeText(item.category, 120),
+    screen_name: sanitizeText(item.screen_name, 150),
+    description: sanitizeText(item.description, 1000),
+    portal_path: sanitizeArray(item.portal_path, 200),
+    when_to_use: sanitizeArray(item.when_to_use, 500),
+    required_groups: sanitizeArray(item.required_groups, 200),
+    related_workflows: sanitizeArray(item.related_workflows, 300),
+    source_sections: sanitizeArray(item.source_sections, 120)
+  };
+}
+
+function pickChecklistContext(item) {
+  if (!item || typeof item !== "object") return null;
+
+  const out = {
+    key: sanitizeText(item.key, 120),
+    label: sanitizeText(item.label, 150)
+  };
+
+  if (Array.isArray(item.items)) {
+    out.items = sanitizeArray(item.items, 600);
+  } else if (item.items && typeof item.items === "object") {
+    out.items = Object.fromEntries(
+      Object.entries(item.items)
+        .slice(0, MAX_ARRAY_ITEMS)
+        .map(([key, value]) => [sanitizeText(key, 120), sanitizeArray(value, 600)])
+    );
+  } else {
+    out.items = [];
   }
 
-  return picked;
+  return out;
+}
+
+function pickPortalSectionContext(item) {
+  if (!item || typeof item !== "object") return null;
+
+  return {
+    claim_type: sanitizeText(item.claim_type, 80),
+    section_key: sanitizeText(item.section_key, 120),
+    label: sanitizeText(item.label, 150),
+    repeatable: Boolean(item.repeatable),
+    max_rows: item.max_rows ?? item.max_lines ?? null,
+    max_file_size_mb: item.max_file_size_mb ?? null,
+    restricted_characters_note: sanitizeText(item.restricted_characters_note, 1000),
+    allowed_categories: sanitizeArray(item.allowed_categories, 200),
+    system_generated_examples: sanitizeArray(item.system_generated_examples, 300),
+    character_limits: sanitizeObjectMap(item.character_limits, 120),
+    fields: Array.isArray(item.fields)
+      ? item.fields.slice(0, MAX_ARRAY_ITEMS).map((field) => ({
+          key: sanitizeText(field?.key, 120),
+          label: sanitizeText(field?.label, 150),
+          type: sanitizeText(field?.type, 80),
+          required: Boolean(field?.required),
+          max_length: field?.max_length ?? null
+        }))
+      : []
+  };
+}
+
+function pickErrorRuleContext(item) {
+  if (!item || typeof item !== "object") return null;
+
+  return {
+    code: sanitizeText(item.code, 80),
+    claim_type: sanitizeText(item.claim_type, 80),
+    category: sanitizeText(item.category, 120),
+    severity: sanitizeText(item.severity, 80),
+    screen: sanitizeText(item.screen, 150),
+    message: sanitizeText(item.message, 500),
+    meaning: sanitizeText(item.meaning, 1200),
+    likely_problem_areas: sanitizeArray(item.likely_problem_areas, 400),
+    validation_checks: sanitizeArray(item.validation_checks, 500),
+    recommended_fix_steps: sanitizeArray(item.recommended_fix_steps, 600),
+    dealer_reply_needed: Boolean(item.dealer_reply_needed)
+  };
 }
 
 function dedupeSections(sections) {
@@ -137,7 +228,11 @@ function buildSystemPrompt({
   selectedClaimType,
   selectedChecklistGroup,
   selectedPortalSection,
-  selectedErrorCode
+  selectedErrorCode,
+  selectedClaimTypeContext,
+  selectedChecklistContext,
+  selectedPortalSectionContext,
+  selectedErrorRuleContext
 }) {
   const context = {
     mode: mode || "policy",
@@ -145,6 +240,12 @@ function buildSystemPrompt({
     selected_checklist_group: selectedChecklistGroup || null,
     selected_portal_section: selectedPortalSection || null,
     selected_error_code: selectedErrorCode || null,
+
+    selected_claim_type_context: selectedClaimTypeContext || null,
+    selected_checklist_context: selectedChecklistContext || null,
+    selected_portal_section_context: selectedPortalSectionContext || null,
+    selected_error_rule_context: selectedErrorRuleContext || null,
+
     selected_section: selectedSection || null,
     relevant_sections: relevantSections || [],
     matching_meta: matchingMeta || { matchedCount: 0, autoSelected: false }
@@ -159,22 +260,23 @@ function buildSystemPrompt({
     "MODE RULES:",
     "- If mode is 'policy', focus on selected_section and relevant_sections from the warranty policy manual.",
     "- If mode is 'checklist', focus on required documentation, attachments, audit support, submission checklist items, and special requirements.",
-    "- If mode is 'claim_types', explain when to use the selected claim type, related workflows, and required groups.",
-    "- If mode is 'entry_map', explain the selected portal section, what fields belong there, and what the user should enter or review.",
-    "- If mode is 'validator', explain what appears missing, what should be reviewed, and what the user should verify before submission.",
-    "- If mode is 'error_fix', explain the selected error code, likely problem areas, and recommended correction steps before resubmission.",
+    "- If mode is 'claim_types', focus on selected_claim_type_context and explain when to use that claim type, what screen it belongs to, what it is for, and how it differs from related claim types when the provided context supports that comparison.",
+    "- If mode is 'entry_map', focus on selected_portal_section_context and explain what fields belong in that portal section, what is required, and what the user should review before submitting.",
+    "- If mode is 'validator', use selected_claim_type_context and selected_portal_section_context when available to explain what appears missing, what should be reviewed, and what the user should verify before submission.",
+    "- If mode is 'error_fix', focus on selected_error_rule_context and explain the error code, meaning, likely causes, validation checks, and recommended correction steps before resubmission.",
     "- If mode is 'coverage', explain coverage, exclusions, ownership rules, and time/mileage limits only if supported by the provided context.",
     "",
     "RESPONSE RULES:",
     "- Answer the user directly first.",
     "- Use short bullet points when listing requirements, limits, exclusions, or fix steps.",
     "- Clearly distinguish covered vs not covered, required vs optional, and warning vs denial risk.",
-    "- If selected_section is present, treat it as primary context.",
+    "- If selected_section is present, treat it as primary context in policy mode.",
     "- If selected_section is not present and relevant_sections contains exactly one section, treat that section as the intended policy.",
     "- If relevant_sections contains multiple sections, briefly summarize each and explain that more than one section may apply.",
     "- If the user asks about time, mileage, or dollar limits, state them explicitly if they exist in the provided context.",
     "- If claim_processing_risks are present, highlight them clearly.",
     "- If documents_required or comment_requirements are present, spell them out clearly so the dealer knows what to attach or type.",
+    "- If the user asks a comparison question, compare only from the provided context. If the context is incomplete, say that plainly.",
     "- When helpful, cite section numbers, titles, claim type names, portal section names, or error codes from the context.",
     "- If the context is insufficient, say so plainly.",
     "",
@@ -266,6 +368,11 @@ export async function onRequestPost(context) {
         .slice(0, 8)
     );
 
+    const selectedClaimTypeContext = pickClaimTypeContext(body?.selectedClaimTypeContext);
+    const selectedChecklistContext = pickChecklistContext(body?.selectedChecklistContext);
+    const selectedPortalSectionContext = pickPortalSectionContext(body?.selectedPortalSectionContext);
+    const selectedErrorRuleContext = pickErrorRuleContext(body?.selectedErrorRuleContext);
+
     const matchingMeta = sanitizeMatchingMeta(body?.matchingMeta);
 
     const systemPrompt = buildSystemPrompt({
@@ -276,7 +383,11 @@ export async function onRequestPost(context) {
       selectedClaimType,
       selectedChecklistGroup,
       selectedPortalSection,
-      selectedErrorCode
+      selectedErrorCode,
+      selectedClaimTypeContext,
+      selectedChecklistContext,
+      selectedPortalSectionContext,
+      selectedErrorRuleContext
     });
 
     let history = sanitizeHistory(body?.history);
@@ -302,7 +413,7 @@ export async function onRequestPost(context) {
       contents: history,
       generationConfig: {
         temperature: 0.1,
-        maxOutputTokens: 1400
+        maxOutputTokens: 1600
       }
     };
 
