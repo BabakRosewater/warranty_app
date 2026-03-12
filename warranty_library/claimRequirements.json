@@ -1,0 +1,117 @@
+{
+  "warranty_claim_submission_requirements": {
+    "source_sections": ["6.1", "6.1.1", "6.2.1"],
+    "repair_order_required_fields": [
+      "Repair order open date",
+      "Repair order close date",
+      "Vehicle delivery date or date of first use",
+      "Owner/customer name",
+      "Owner/customer address",
+      "Owner/customer telephone number",
+      "Customer complaint",
+      "Cause of complaint",
+      "Correction performed",
+      "Customer signature at initial write-up",
+      "Customer signature at vehicle pick-up",
+      "Claim number",
+      "Prior approval number if applicable",
+      "Nature code and explanation",
+      "Cause code and explanation",
+      "Labor dollars",
+      "Labor operation codes, quantities, and hours",
+      "Parts dollars",
+      "Parts quantities",
+      "Causal part number",
+      "Replacement part numbers if applicable",
+      "Sublet amount and sublet codes if applicable",
+      "Sublet final invoice number and vendor name if applicable",
+      "Towing amount, invoice number, and vendor name if applicable",
+      "Freight amount, carrier, and shipping date if applicable",
+      "Original installation date/original mileage/original RO or counter ticket for replacement service parts if applicable",
+      "Technician comments"
+    ],
+    "repair_order_supporting_requirements": [
+      "Technician identified by name or number next to each labor operation",
+      "All replaced parts listed on the repair order",
+      "Separate or automated parts invoice must cross-reference the repair order and be attached to the technician copy"
+    ],
+    "digital_attachments_required": [
+      "VIN photo or video",
+      "Mileage/odometer photo or video",
+      "Part photo or video",
+      "Sublet photo or video if applicable"
+    ],
+    "digital_attachment_standards": [
+      "Digital",
+      "Colored",
+      "High-resolution",
+      "Original",
+      "Unedited",
+      "Category assigned to each file"
+    ],
+    "campaign_or_recall_minimums": [
+      "VIN",
+      "Miles"
+    ],
+    "audit_support_documents": [
+      "Technician input/shop hard copy",
+      "Service file copy",
+      "Parts scrapping copy of repair order",
+      "Dealer accounting file copy of repair order",
+      "DCS acknowledgment / Claim Status Report copy",
+      "Payroll support records including time tickets and flag sheets",
+      "Outside purchase/service invoices and proof of payment",
+      "Sublet repair final invoices",
+      "Purchase orders / AP files / parts inventory files / open account statements as applicable",
+      "Rental agreements and related documents",
+      "New vehicle invoices",
+      "Customer sales files including RDR and sales contract",
+      "Customer service files including PDI checklist, delivery presentation, and copies of repair orders",
+      "Warranty Claim Register",
+      "Dealer Financial Statements",
+      "Loading / Distribution Sheets",
+      "GDS before/after readings or screenshots when applicable",
+      "Any other records supporting claim form data"
+    ],
+    "special_requirements": {
+      "add_on_warranty_repairs": [
+        "Technician written description of needed work",
+        "Cause/diagnosis notes",
+        "Corrective action",
+        "Service Manager signature next to added repair",
+        "Customer authorization details if approved by phone",
+        "Customer signature next to added repair",
+        "Cross-reference if warranty repair came off customer-pay RO"
+      ],
+      "incomplete_repairs_waiting_on_parts": [
+        "Original presentation date and mileage",
+        "Date parts were ordered",
+        "Parts status when ordered",
+        "Date parts arrived",
+        "Repair completion date and mileage",
+        "Cross-reference to original repair order"
+      ],
+      "powertrain_10yr_100k_validation": [
+        "Original Owner Verification Affidavit",
+        "Photocopy of current unexpired DMV registration",
+        "Warranty Vehicle Information Screen printout"
+      ],
+      "basica00_fcs_upload_fail": [
+        "GDS screenshot saved in RO documentation retention and attached to the claim"
+      ]
+    },
+    "minimum_submission_checklist": [
+      "Signed repair order with complaint, cause, and correction",
+      "Technician identified on repair order",
+      "Customer signatures at write-up and delivery",
+      "Causal part and replacement part numbers",
+      "Labor operations, hours, and dollars",
+      "Parts amounts and quantities",
+      "Prior approval number if needed",
+      "Sublet/towing/freight details if used",
+      "Required digital photos or videos: VIN, Miles, Part, and Sublet if applicable",
+      "Required invoices, rental documents, towing documents, sublet documents, or GDS screenshots for that claim type",
+      "Claim Status / DCS support retained in file"
+    ]
+  }
+}
