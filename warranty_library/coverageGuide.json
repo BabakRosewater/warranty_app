@@ -1,0 +1,98 @@
+{
+  "coverage_guide": {
+    "metadata": {
+      "title": "Hyundai Warranty Coverage Guide",
+      "status": "starter_scaffold",
+      "notes": [
+        "This file is intended to hold normalized coverage rules from the Hyundai Warranty Coverage Guide.",
+        "Each coverage item should eventually be tied to time, mileage, ownership, exclusions, and source references."
+      ]
+    },
+    "coverage_categories": [
+      {
+        "key": "new_vehicle_limited",
+        "label": "New Vehicle Limited Warranty",
+        "description": "General new vehicle warranty coverage category.",
+        "items": []
+      },
+      {
+        "key": "powertrain_limited",
+        "label": "Powertrain Limited Warranty",
+        "description": "Powertrain coverage including ownership-sensitive rules where applicable.",
+        "items": []
+      },
+      {
+        "key": "anti_perforation",
+        "label": "Anti-Perforation Limited Warranty",
+        "description": "Corrosion perforation-related coverage.",
+        "items": []
+      },
+      {
+        "key": "federal_emissions",
+        "label": "Federal Emissions Warranty",
+        "description": "Federal emissions defect and performance warranty coverage.",
+        "items": []
+      },
+      {
+        "key": "california_emissions",
+        "label": "California Emissions Warranty",
+        "description": "California emissions-related coverage rules.",
+        "items": []
+      },
+      {
+        "key": "adjustment",
+        "label": "Adjustment Coverage",
+        "description": "Adjustment-type coverage where Hyundai allows short-term correction coverage.",
+        "items": []
+      },
+      {
+        "key": "battery_12v",
+        "label": "12V Battery Coverage",
+        "description": "Coverage rules for the conventional 12V battery.",
+        "items": []
+      },
+      {
+        "key": "audio_navigation",
+        "label": "Audio / Navigation / Radio",
+        "description": "Coverage for infotainment, radio, navigation, and sound-related components.",
+        "items": []
+      },
+      {
+        "key": "paint",
+        "label": "Paint Coverage",
+        "description": "Paint defect or paint-related warranty coverage.",
+        "items": []
+      },
+      {
+        "key": "parts_accessories",
+        "label": "Parts and Accessories",
+        "description": "Coverage for Hyundai supplied service parts and accessories.",
+        "items": []
+      },
+      {
+        "key": "hybrid_ev",
+        "label": "Hybrid / EV System Coverage",
+        "description": "Coverage for hybrid, EV, and high-voltage related systems where applicable.",
+        "items": []
+      }
+    ],
+    "item_schema_example": {
+      "component_key": "engine_long_block",
+      "component_label": "Engine Long Block",
+      "coverage_category": "powertrain_limited",
+      "covered": true,
+      "coverage_summary": "Example summary only.",
+      "time_limit_months": null,
+      "mileage_limit": null,
+      "ownership_rule": "original_owner_or_subsequent_owner_or_all",
+      "ownership_notes": "",
+      "exceptions": [],
+      "not_covered": [],
+      "related_manual_sections": [],
+      "source_reference": {
+        "document": "Warranty Coverage Guide",
+        "pages": []
+      }
+    }
+  }
+}
