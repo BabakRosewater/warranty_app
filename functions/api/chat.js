@@ -1,8 +1,8 @@
 const DEFAULT_MODEL = "gemini-2.5-flash";
 const MAX_HISTORY_MESSAGES = 10;
 const MAX_TEXT_CHARS = 4000;
-const MAX_LONG_TEXT_CHARS = 8000;
-const MAX_ARRAY_ITEMS = 40; // Increased to 40 to handle massive lists like Section 9.0 Resources
+const MAX_LONG_TEXT_CHARS = 10000;
+const MAX_ARRAY_ITEMS = 40;
 
 function json(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), {
@@ -25,7 +25,11 @@ function sanitizeText(value, max = MAX_TEXT_CHARS) {
 
 function sanitizeSimpleValue(value, max = MAX_TEXT_CHARS) {
   if (value === null || value === undefined) return "";
-  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
     return sanitizeText(value, max);
   }
   return sanitizeText(JSON.stringify(value), max);
@@ -50,15 +54,17 @@ function pickContextSection(section) {
     section_id: sanitizeText(section.section_id, 80),
     title: sanitizeText(section.title, 250),
     raw_content: sanitizeText(section.raw_content, MAX_LONG_TEXT_CHARS),
-    
-    // Rich Relational Schema Fields
+
     eligibility_conditions: sanitizeArray(section.eligibility_conditions, 500),
-    coverage_and_reimbursement: sanitizeArray(section.coverage_and_reimbursement || section.coverage_details, 800),
+    coverage_and_reimbursement: sanitizeArray(
+      section.coverage_and_reimbursement || section.coverage_details,
+      800
+    ),
     not_covered: sanitizeArray(section.not_covered || section.exclusions, 800),
     payment_limitations: sanitizeArray(section.payment_limitations, 500),
     dealer_actions: sanitizeArray(section.dealer_actions, 800),
     documents_required: sanitizeArray(section.documents_required, 500),
-    systems: sanitizeArray(section.systems, 300),
+    systems: sanitizeArray(section.systems || section.systems_referenced, 300),
     system_screens: sanitizeArray(section.system_screens, 300),
     comment_requirements: sanitizeArray(section.comment_requirements, 500),
     timing_rules: sanitizeArray(section.timing_rules, 500),
@@ -93,7 +99,7 @@ function sanitizeHistory(history) {
   if (!Array.isArray(history)) return [];
 
   const cleaned = [];
-  
+
   for (const msg of history) {
     const role = msg?.role === "model" ? "model" : "user";
     const text = sanitizeText(msg?.text, MAX_LONG_TEXT_CHARS);
@@ -123,35 +129,56 @@ function sanitizeMatchingMeta(meta) {
   };
 }
 
-function buildSystemPrompt({ selectedSection, relevantSections, matchingMeta }) {
+function buildSystemPrompt({
+  mode,
+  selectedSection,
+  relevantSections,
+  matchingMeta,
+  selectedClaimType,
+  selectedChecklistGroup,
+  selectedPortalSection,
+  selectedErrorCode
+}) {
   const context = {
+    mode: mode || "policy",
+    selected_claim_type: selectedClaimType || null,
+    selected_checklist_group: selectedChecklistGroup || null,
+    selected_portal_section: selectedPortalSection || null,
+    selected_error_code: selectedErrorCode || null,
     selected_section: selectedSection || null,
     relevant_sections: relevantSections || [],
     matching_meta: matchingMeta || { matchedCount: 0, autoSelected: false }
   };
 
   return [
-    "You are an expert Warranty Administrator for the Hyundai Warranty Policy and Procedures Manual (2026).",
-    "Base your answers strictly on the manual context provided below.",
-    "Do not invent coverages, exclusions, time/mileage limits, or dealer procedures that are not supported by the context.",
-    "If selected_section is present, treat it as the primary policy the user is asking about.",
-    "If selected_section is not present and relevant_sections contains exactly one section, treat that section as the intended policy.",
-    "If selected_section is not present and relevant_sections contains multiple sections, explain that multiple matching sections were found and briefly summarize each.",
-    "When helpful, cite the section number, title, and clearly distinguish between what is covered vs. what is excluded.",
-    "If the user asks about time, mileage, or dollar limits, explicitly state them if they exist in the context.",
-    "Be practical, professional, direct, and concise.",
+    "You are an expert Hyundai Warranty Administrator.",
+    "You help with warranty policy interpretation, claim requirements, claim types, portal field mapping, validator guidance, and returned-claim error resolution.",
+    "Base your answers strictly on the context provided below.",
+    "Do not invent coverages, exclusions, limits, documentation, portal fields, claim workflows, or claim-fix instructions that are not supported by the provided context.",
     "",
-    "IMPORTANT RESPONSE BEHAVIOR:",
-    "- First answer the user directly.",
-    "- If multiple relevant sections are present, list them and summarize each one.",
-    "- Use 'eligibility_conditions' to explain what must happen before a claim or action is valid.",
-    "- Highlight 'payment_limitations' and 'timing_rules' clearly, as these are strict procedural boundaries.",
-    "- When explaining procedures, outline the 'dealer_actions' and specify any 'systems' or 'system_screens' the dealer must navigate.",
-    "- Emphasize 'documents_required' and 'comment_requirements' (like specific case numbers) so the dealer knows exactly what to attach or type.",
-    "- Always warn the user about any 'claim_processing_risks' (chargebacks, denials, audit failures) if they are mentioned in the context.",
-    "- Use bullet points for limits, coverages, and exclusions to make them highly readable.",
+    "MODE RULES:",
+    "- If mode is 'policy', focus on selected_section and relevant_sections from the warranty policy manual.",
+    "- If mode is 'checklist', focus on required documentation, attachments, audit support, submission checklist items, and special requirements.",
+    "- If mode is 'claim_types', explain when to use the selected claim type, related workflows, and required groups.",
+    "- If mode is 'entry_map', explain the selected portal section, what fields belong there, and what the user should enter or review.",
+    "- If mode is 'validator', explain what appears missing, what should be reviewed, and what the user should verify before submission.",
+    "- If mode is 'error_fix', explain the selected error code, likely problem areas, and recommended correction steps before resubmission.",
+    "- If mode is 'coverage', explain coverage, exclusions, ownership rules, and time/mileage limits only if supported by the provided context.",
     "",
-    "MANUAL CONTEXT:",
+    "RESPONSE RULES:",
+    "- Answer the user directly first.",
+    "- Use short bullet points when listing requirements, limits, exclusions, or fix steps.",
+    "- Clearly distinguish covered vs not covered, required vs optional, and warning vs denial risk.",
+    "- If selected_section is present, treat it as primary context.",
+    "- If selected_section is not present and relevant_sections contains exactly one section, treat that section as the intended policy.",
+    "- If relevant_sections contains multiple sections, briefly summarize each and explain that more than one section may apply.",
+    "- If the user asks about time, mileage, or dollar limits, state them explicitly if they exist in the provided context.",
+    "- If claim_processing_risks are present, highlight them clearly.",
+    "- If documents_required or comment_requirements are present, spell them out clearly so the dealer knows what to attach or type.",
+    "- When helpful, cite section numbers, titles, claim type names, portal section names, or error codes from the context.",
+    "- If the context is insufficient, say so plainly.",
+    "",
+    "CONTEXT:",
     JSON.stringify(context, null, 2)
   ].join("\n");
 }
@@ -187,10 +214,10 @@ async function callGeminiWithRetry(url, payload) {
     if (!retriable || attempt === delays.length) {
       let errorMessage = "No response body";
       try {
-         const errorJson = await response.json();
-         errorMessage = errorJson.error?.message || JSON.stringify(errorJson);
+        const errorJson = await response.json();
+        errorMessage = errorJson.error?.message || JSON.stringify(errorJson);
       } catch {
-         errorMessage = await response.text().catch(() => "");
+        errorMessage = await response.text().catch(() => "");
       }
       throw new Error(`Gemini request failed (${response.status}): ${errorMessage}`);
     }
@@ -224,6 +251,12 @@ export async function onRequestPost(context) {
       return json({ error: "Message is required." }, 400);
     }
 
+    const mode = sanitizeText(body?.mode, 50) || "policy";
+    const selectedClaimType = sanitizeText(body?.selectedClaimType, 80);
+    const selectedChecklistGroup = sanitizeText(body?.selectedChecklistGroup, 120);
+    const selectedPortalSection = sanitizeText(body?.selectedPortalSection, 120);
+    const selectedErrorCode = sanitizeText(body?.selectedErrorCode, 120);
+
     const selectedSection = pickContextSection(body?.selectedSection);
 
     const relevantSections = dedupeSections(
@@ -236,21 +269,26 @@ export async function onRequestPost(context) {
     const matchingMeta = sanitizeMatchingMeta(body?.matchingMeta);
 
     const systemPrompt = buildSystemPrompt({
+      mode,
       selectedSection,
       relevantSections,
-      matchingMeta
+      matchingMeta,
+      selectedClaimType,
+      selectedChecklistGroup,
+      selectedPortalSection,
+      selectedErrorCode
     });
 
     let history = sanitizeHistory(body?.history);
 
-    if (!history.length) {
-      history = [
-        {
-          role: "user",
-          parts: [{ text: message }]
-        }
-      ];
+    if (!history.length || history[history.length - 1]?.parts?.[0]?.text !== message) {
+      history.push({
+        role: "user",
+        parts: [{ text: message }]
+      });
     }
+
+    history = history.slice(-MAX_HISTORY_MESSAGES);
 
     const model = sanitizeText(env.GEMINI_MODEL || DEFAULT_MODEL, 100);
     const endpoint =
@@ -290,7 +328,12 @@ export async function onRequestPost(context) {
 
     return json({
       answer,
-      finishReason
+      finishReason,
+      mode,
+      selectedClaimType,
+      selectedChecklistGroup,
+      selectedPortalSection,
+      selectedErrorCode
     });
   } catch (error) {
     return json(
