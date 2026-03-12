@@ -1,0 +1,104 @@
+{
+  "claim_error_rules": [
+    {
+      "code": "306",
+      "message": "Claim has non-related op with main op code",
+      "screen": "Warranty Claim ReSubmit",
+      "claim_type": "warranty",
+      "severity": "error",
+      "meaning": "One or more operation codes on the claim do not relate properly to the main operation code.",
+      "likely_problem_areas": [
+        "OP Code Information",
+        "Main op code selection",
+        "Related labor line selection",
+        "Causal part / labor relationship"
+      ],
+      "recommended_fix_steps": [
+        "Review the main OP code first.",
+        "Review every related OP code line for logical relation to the main OP.",
+        "Confirm the causal part supports the selected main repair.",
+        "Remove unrelated labor lines if they are not allowed with the main op code.",
+        "Resubmit after OP code structure is corrected."
+      ]
+    },
+    {
+      "code": "TT_MAIN_OP_NOT_ALLOWED",
+      "message": "*TT opcode not allowed as main OP",
+      "screen": "Warranty Claim Create/Edit/Submit",
+      "claim_type": "warranty",
+      "severity": "error",
+      "meaning": "A TT operation code cannot be used as the main operation code on the claim.",
+      "likely_problem_areas": [
+        "OP Code Information",
+        "Main op code selection"
+      ],
+      "recommended_fix_steps": [
+        "Identify the correct primary OP code for the repair.",
+        "Use the TT code only in an allowed supporting position if Hyundai policy permits it.",
+        "Confirm the labor operation structure matches the claim type.",
+        "Resubmit after replacing the invalid main OP."
+      ]
+    },
+    {
+      "code": "OP_NOT_APPLICABLE_TO_CAUSAL_PART",
+      "message": "Op Code not applicable to Causal Part",
+      "screen": "Warranty Claim Create/Edit/Submit",
+      "claim_type": "warranty",
+      "severity": "warning",
+      "meaning": "The selected operation code does not align with the causal part entered on the claim.",
+      "likely_problem_areas": [
+        "Causal Part #",
+        "Causal Part Description",
+        "OP Code Information"
+      ],
+      "recommended_fix_steps": [
+        "Verify the causal part number.",
+        "Verify the selected OP code.",
+        "Check Hyundai labor applicability for that part and repair.",
+        "Correct either the causal part or the labor operation."
+      ]
+    },
+    {
+      "code": "INVALID_OP_CODE",
+      "message": "Invalid OP Code",
+      "screen": "Warranty Claim Create/Edit/Submit",
+      "claim_type": "warranty",
+      "severity": "error",
+      "meaning": "The entered operation code is not valid in the current claim context.",
+      "likely_problem_areas": [
+        "OP Code Information",
+        "Claim type",
+        "Campaign / warranty applicability"
+      ],
+      "recommended_fix_steps": [
+        "Check for typing or formatting error in the OP code.",
+        "Confirm the code is valid for the selected claim type.",
+        "Confirm the code is valid for the vehicle / repair / campaign context.",
+        "Replace the invalid code and resubmit."
+      ]
+    },
+    {
+      "code": "RETURN_STATUS",
+      "message": "Claim returned and held for correction",
+      "screen": "Warranty Claim ReSubmit",
+      "claim_type": "warranty",
+      "severity": "workflow",
+      "meaning": "The claim was not accepted as submitted and must be corrected and resubmitted.",
+      "likely_problem_areas": [
+        "Return reason banner",
+        "Dealer PWA Reply",
+        "Remark History",
+        "OP Code Information",
+        "Attachments",
+        "Basic Information"
+      ],
+      "recommended_fix_steps": [
+        "Read the return code and message first.",
+        "Review the affected section of the claim screen.",
+        "Check whether a dealer reply is required.",
+        "Correct the specific field, labor line, or attachment issue.",
+        "Resubmit only after validating the corrected claim."
+      ]
+    }
+  ]
+}
