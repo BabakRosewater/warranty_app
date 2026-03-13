@@ -220,6 +220,7 @@
       selectedChecklistGroup: "minimum_submission_checklist",
       selectedPortalSection: "basic_information",
       selectedErrorCode: null,
+      selectedCoverageKey: null,
 
       policies: [],
       claimRequirements: null,
@@ -231,7 +232,7 @@
       chatHistory: [
         {
           role: "model",
-          text: "Hello. I’m your Warranty assistant. I can help with policy, checklist, claim type, portal field, and return-error questions once the libraries finish loading."
+          text: "Hello. I’m your Warranty assistant. I can help with policy, checklist, claim type, portal field, return-error, and coverage questions once the libraries finish loading."
         }
       ]
     };
@@ -394,10 +395,15 @@
         state.claimTypes = claimTypes?.claim_types || [];
         state.claimPortalSchema = claimPortalSchema?.claim_portal_schema || {};
         state.claimErrorRules = claimErrorRules?.claim_error_rules || [];
-        state.coverageGuide = coverageGuide || null;
+        state.coverageGuide = coverageGuide?.coverage_guide || null;
 
         if (state.claimTypes.length && !state.claimTypes.find((t) => t.key === state.selectedClaimType)) {
           state.selectedClaimType = state.claimTypes[0].key;
+        }
+
+        const coverageItems = state.coverageGuide?.coverage_categories || [];
+        if (coverageItems.length && !coverageItems.find((item) => item.key === state.selectedCoverageKey)) {
+          state.selectedCoverageKey = coverageItems[0].key;
         }
 
         state.manualLoaded = true;
@@ -491,6 +497,70 @@
 
     function getSectionById(sectionId) {
       return state.policies.find((sec) => String(sec.section_id) === String(sectionId)) || null;
+    }
+
+    function getSelectedSection() {
+      return getSectionById(state.selectedSectionId);
+    }
+
+    function getSelectedClaimType() {
+      return state.claimTypes.find((t) => t.key === state.selectedClaimType) || null;
+    }
+
+    function getSelectedClaimTypeContext() {
+      return getSelectedClaimType();
+    }
+
+    function getSelectedPortalSchema() {
+      return state.claimPortalSchema?.[state.selectedClaimType] || null;
+    }
+
+    function getSelectedPortalSectionContext() {
+      const schema = getSelectedPortalSchema();
+      if (!schema?.sections || !state.selectedPortalSection) return null;
+
+      const section = schema.sections[state.selectedPortalSection];
+      if (!section) return null;
+
+      return {
+        claim_type: state.selectedClaimType,
+        section_key: state.selectedPortalSection,
+        ...section
+      };
+    }
+
+    function getSelectedErrorRule() {
+      return state.claimErrorRules.find((r) => r.code === state.selectedErrorCode) || null;
+    }
+
+    function getSelectedChecklistContext() {
+      const checklist = state.claimRequirements;
+      if (!checklist) return null;
+
+      const key = state.selectedChecklistGroup;
+      const label = CHECKLIST_GROUPS.find(([k]) => k === key)?.[1] || key;
+
+      if (key === "special_requirements") {
+        return {
+          key,
+          label,
+          items: checklist.special_requirements || {}
+        };
+      }
+
+      return {
+        key,
+        label,
+        items: checklist[key] || []
+      };
+    }
+
+    function getCoverageItems() {
+      return state.coverageGuide?.coverage_categories || [];
+    }
+
+    function getSelectedCoverageItem() {
+      return getCoverageItems().find((item) => item.key === state.selectedCoverageKey) || null;
     }
 
     function linkSectionMentions(text) {
@@ -653,22 +723,6 @@
         .map((item) => item.sec);
     }
 
-    function getSelectedSection() {
-      return getSectionById(state.selectedSectionId);
-    }
-
-    function getSelectedClaimType() {
-      return state.claimTypes.find((t) => t.key === state.selectedClaimType) || null;
-    }
-
-    function getSelectedPortalSchema() {
-      return state.claimPortalSchema?.[state.selectedClaimType] || null;
-    }
-
-    function getSelectedErrorRule() {
-      return state.claimErrorRules.find((r) => r.code === state.selectedErrorCode) || null;
-    }
-
     function getPromptSuggestions() {
       switch (state.mode) {
         case APP_MODES.CHECKLIST:
@@ -692,6 +746,13 @@
             "How should attachments be categorized?",
             "What does the summary section mean?"
           ];
+        case APP_MODES.VALIDATOR:
+          return [
+            "What fields are usually missing first?",
+            "What should I review before submission?",
+            "How do I validate a warranty claim quickly?",
+            "What should I compare against the portal?"
+          ];
         case APP_MODES.ERROR_FIX:
           return [
             "Explain code 306",
@@ -701,7 +762,7 @@
           ];
         case APP_MODES.COVERAGE:
           return [
-            "What is covered for this component?",
+            "What is covered here?",
             "What are the time and mileage limits?",
             "Is this covered for second owner?",
             "What exclusions apply?"
@@ -744,6 +805,8 @@
 
     function renderChatPanel() {
       const selectedSection = getSelectedSection();
+      const selectedCoverage = getSelectedCoverageItem();
+
       const modeLabelMap = {
         policy: "Policy Assistant",
         checklist: "Checklist Assistant",
@@ -841,13 +904,20 @@
         : "";
 
       const enabled = state.manualLoaded && !state.sending;
+
       const chatStatus = !state.manualLoaded
         ? "Libraries required"
         : state.sending
           ? "Assistant is responding…"
           : selectedSection && state.mode === APP_MODES.POLICY
             ? `Using context: Section ${selectedSection.section_id}`
-            : `Mode: ${state.mode.replaceAll("_", " ")}`;
+            : selectedCoverage && state.mode === APP_MODES.COVERAGE
+              ? `Using coverage: ${selectedCoverage.label}`
+              : state.mode === APP_MODES.CHECKLIST
+                ? `Checklist: ${state.selectedChecklistGroup.replaceAll("_", " ")}`
+                : state.mode === APP_MODES.ERROR_FIX && state.selectedErrorCode
+                  ? `Error code: ${state.selectedErrorCode}`
+                  : `Mode: ${state.mode.replaceAll("_", " ")}`;
 
       els.rightPanel.innerHTML = `
         <div id="chat-container" class="bg-grid min-h-0 flex-1 overflow-y-auto p-4">
@@ -858,7 +928,7 @@
           <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-inner">
             <div class="mb-2 flex items-center justify-between gap-3">
               <p class="text-xs text-slate-500">
-                Tip: In Policy mode, selecting a section improves answer precision.
+                Tip: Policy and Coverage modes are strongest when you select an item first.
               </p>
               <p id="chat-status" class="text-xs text-slate-400">${escapeHtml(chatStatus)}</p>
             </div>
@@ -867,7 +937,7 @@
               <textarea
                 id="chat-input"
                 rows="3"
-                placeholder="Ask about a policy, checklist item, claim type, portal field, or return error..."
+                placeholder="Ask about a policy, checklist item, claim type, portal field, return error, or coverage rule..."
                 class="min-h-[72px] max-h-40 w-full resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-transparent focus:ring-2 focus:ring-[var(--brand)] disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500"
                 ${enabled ? "" : "disabled"}
               ></textarea>
@@ -916,6 +986,18 @@
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
           <h3 class="text-lg font-semibold text-slate-800">${escapeHtml(title)}</h3>
           <p class="mt-2 text-sm text-slate-600">${escapeHtml(message)}</p>
+        </div>
+      `;
+    }
+
+    function renderCardList(title, items, toneClass = "border-slate-200 bg-white text-slate-800") {
+      if (!items || !items.length) return "";
+      return `
+        <div class="rounded-xl border ${toneClass} p-4 shadow-sm">
+          <div class="text-sm font-bold">${escapeHtml(title)}</div>
+          <ul class="mt-3 space-y-2 text-sm text-slate-700">
+            ${items.map((item) => `<li>${formatRichInline(String(item), "model")}</li>`).join("")}
+          </ul>
         </div>
       `;
     }
@@ -1011,9 +1093,9 @@
                 <div class="mt-1 truncate text-sm font-medium ${isSelected ? "text-white" : "text-slate-800"}">
                   ${escapeHtml(sec.title || "Untitled")}
                 </div>
-                  ${sec.is_structured
-  ? `<div class="mt-1.5 inline-flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-700">Structured Reference</div>`
-  : ""}
+                ${sec.is_structured
+                  ? `<div class="mt-1.5 inline-flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-700">Structured Reference</div>`
+                  : ""}
               </div>
               <svg class="ml-3 h-4 w-4 shrink-0 ${isSelected ? "text-white" : "text-slate-300"}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
@@ -1129,11 +1211,12 @@
           addCard("Dealer Actions", normalizeArray(selectedSection.dealer_actions), "blue");
           addCard("Timing Rules", normalizeArray(selectedSection.timing_rules), "amber");
           addCard("Documents Required", normalizeArray(selectedSection.documents_required), "indigo");
-          addCard("Systems", normalizeArray(selectedSection.systems), "cyan");
+          addCard("Systems", normalizeArray(selectedSection.systems || selectedSection.systems_referenced), "cyan");
           addCard("System Screens", normalizeArray(selectedSection.system_screens), "sky");
           addCard("Comment Requirements", normalizeArray(selectedSection.comment_requirements), "fuchsia");
           addCard("Claim Processing Risks", normalizeArray(selectedSection.claim_processing_risks), "rose");
           addCard("Roles Explicitly Mentioned", normalizeArray(selectedSection.roles_explicitly_mentioned), "teal");
+          addCard("Source PDF Pages", normalizeArray(selectedSection.source_pdf_pages || selectedSection.source_pages), "slate");
         }
 
         els.centerPanel.innerHTML = `
@@ -1414,6 +1497,15 @@
                 </div>
               </div>
 
+              ${(selected.optional_groups || []).length ? `
+                <div class="mt-4 rounded-xl bg-slate-50 p-4">
+                  <div class="text-sm font-semibold text-slate-900">Optional Groups</div>
+                  <ul class="mt-2 space-y-1 text-sm text-slate-700">
+                    ${(selected.optional_groups || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                  </ul>
+                </div>
+              ` : ""}
+
               <div class="mt-4 grid gap-4 md:grid-cols-2">
                 <div class="rounded-xl bg-slate-50 p-4">
                   <div class="text-sm font-semibold text-slate-900">When To Use</div>
@@ -1429,6 +1521,28 @@
                   </ul>
                 </div>
               </div>
+
+              ${(selected.common_required_fields || []).length ? `
+                <div class="mt-4 rounded-xl bg-slate-50 p-4">
+                  <div class="text-sm font-semibold text-slate-900">Common Required Fields</div>
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    ${(selected.common_required_fields || []).map((item) => `
+                      <span class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700">${escapeHtml(item)}</span>
+                    `).join("")}
+                  </div>
+                </div>
+              ` : ""}
+
+              ${(selected.common_attachments || []).length ? `
+                <div class="mt-4 rounded-xl bg-slate-50 p-4">
+                  <div class="text-sm font-semibold text-slate-900">Common Attachments</div>
+                  <div class="mt-3 flex flex-wrap gap-2">
+                    ${(selected.common_attachments || []).map((item) => `
+                      <span class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700">${escapeHtml(item)}</span>
+                    `).join("")}
+                  </div>
+                </div>
+              ` : ""}
             </div>
           </div>
         `;
@@ -1595,8 +1709,6 @@
         </div>
       `;
 
-      const checklist = state.claimRequirements;
-      const relatedDocs = checklist?.documents_required || [];
       els.rightPanel.innerHTML = `
         <div class="space-y-4 p-4">
           <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -1685,7 +1797,7 @@
 
       els.centerPanel.innerHTML = `
         <div class="p-5">
-          ${renderPlaceholderCard("Validator", "This first version checks presence of core required fields using the selected claim type’s Basic Information schema.")}
+          ${renderPlaceholderCard("Validator", "This version checks presence of core required fields using the selected claim type’s Basic Information schema.")}
         </div>
       `;
 
@@ -1700,7 +1812,7 @@
           <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <div class="text-sm font-semibold text-slate-900">Validation Engine</div>
             <p class="mt-2 text-sm text-slate-600">
-              This checks for obvious presence/missing patterns against the selected claim type’s portal fields. Later you can extend it for attachment categories, OP code structure, and return-code-aware checks.
+              This checks for obvious presence or missing patterns against the selected claim type’s portal fields. You can later extend it for attachments, OP code logic, and return-code-aware checks.
             </p>
           </div>
         </div>
@@ -1853,6 +1965,15 @@
                 ${(selectedRule.recommended_fix_steps || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
               </ol>
             </div>
+
+            ${(selectedRule.related_sections || []).length ? `
+              <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div class="text-sm font-semibold text-slate-900">Related Sections</div>
+                <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                  ${(selectedRule.related_sections || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                </ul>
+              </div>
+            ` : ""}
           </div>
         `;
       }
@@ -1905,30 +2026,143 @@
     }
 
     function renderCoverageMode() {
+      const coverageItems = getCoverageItems();
+      const selectedCoverage = getSelectedCoverageItem();
+
       els.leftPanelHeader.innerHTML = `
         <div class="mb-3 flex items-center justify-between gap-3">
           <h2 class="text-sm font-semibold text-slate-700">Coverage Guide</h2>
+          <span class="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-600">
+            ${coverageItems.length} items
+          </span>
         </div>
-        <p class="text-xs text-slate-500">CoverageGuide.json can plug in here when structured.</p>
+        <p class="text-xs text-slate-500">Coverage categories, exclusions, limits, transferability, and claim notes.</p>
       `;
 
-      els.leftPanel.innerHTML = `
-        <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-          Build this mode after you structure the Coverage Guide into coverageGuide.json categories.
-        </div>
-      `;
+      if (!coverageItems.length) {
+        els.leftPanel.innerHTML = `
+          <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+            No coverage items found in coverageGuide.json.
+          </div>
+        `;
+      } else {
+        els.leftPanel.innerHTML = coverageItems.map((item) => `
+          <button
+            class="mb-2 w-full rounded-xl border px-3 py-3 text-left ${
+              item.key === state.selectedCoverageKey
+                ? "border-blue-600 bg-blue-50 text-blue-700"
+                : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+            }"
+            data-coverage-key="${escapeHtml(item.key)}"
+          >
+            <div class="font-semibold">${escapeHtml(item.label)}</div>
+            <div class="mt-1 text-xs opacity-80">${escapeHtml(item.category || "")}</div>
+          </button>
+        `).join("");
+      }
 
       els.centerPanelHeader.innerHTML = `
         <div class="flex items-center justify-between gap-3">
           <h2 class="text-sm font-semibold text-slate-700">Coverage Lookup</h2>
+          <button
+            id="copy-coverage-btn"
+            type="button"
+            class="${selectedCoverage ? "" : "hidden "}rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
+          >
+            Copy Coverage
+          </button>
         </div>
       `;
 
-      els.centerPanel.innerHTML = `
-        <div class="p-5">
-          ${renderPlaceholderCard("Coverage mode ready for next phase", "Use this mode for component coverage, time/mileage limits, ownership rules, and exceptions once coverageGuide.json is structured.")}
-        </div>
-      `;
+      if (!selectedCoverage) {
+        els.centerPanel.innerHTML = `
+          <div class="p-5">
+            ${renderPlaceholderCard("No coverage selected", "Choose a coverage item on the left to view the rules.")}
+          </div>
+        `;
+      } else {
+        const limitsHtml = (selectedCoverage.limits || []).length
+          ? `
+            <div class="rounded-xl border border-orange-200 bg-orange-50/70 p-4 shadow-sm">
+              <div class="text-sm font-bold text-orange-800">Limits</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                ${(selectedCoverage.limits || []).map((limit) => `
+                  <li>
+                    <strong>${escapeHtml(limit.type || "limit")}:</strong>
+                    ${escapeHtml(limit.value || "")}
+                    ${limit.notes ? ` — ${escapeHtml(limit.notes)}` : ""}
+                  </li>
+                `).join("")}
+              </ul>
+            </div>
+          `
+          : "";
+
+        els.centerPanel.innerHTML = `
+          <div class="space-y-4 p-5">
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="mb-3 inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[var(--brand)]">
+                ${escapeHtml(selectedCoverage.category || "coverage")}
+              </div>
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div class="w-full text-xl font-bold text-slate-800 sm:w-auto">
+                  ${escapeHtml(selectedCoverage.label || "Untitled")}
+                </div>
+              </div>
+              <p class="mt-3 text-sm leading-relaxed text-slate-600">
+                ${escapeHtml(selectedCoverage.summary || "")}
+              </p>
+            </div>
+
+            ${(selectedCoverage.applies_to || []).length ? `
+              <div class="rounded-xl border border-purple-200 bg-purple-50/70 p-4 shadow-sm">
+                <div class="text-sm font-bold text-purple-800">Applies To</div>
+                <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                  ${(selectedCoverage.applies_to || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                </ul>
+              </div>
+            ` : ""}
+
+            ${(selectedCoverage.core_coverage || []).length ? `
+              <div class="rounded-xl border border-green-200 bg-green-50/70 p-4 shadow-sm">
+                <div class="text-sm font-bold text-green-800">Covered / Included</div>
+                <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                  ${(selectedCoverage.core_coverage || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                </ul>
+              </div>
+            ` : ""}
+
+            ${limitsHtml}
+
+            ${(selectedCoverage.transferability || []).length ? `
+              <div class="rounded-xl border border-blue-200 bg-blue-50/70 p-4 shadow-sm">
+                <div class="text-sm font-bold text-blue-800">Transferability / Ownership</div>
+                <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                  ${(selectedCoverage.transferability || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                </ul>
+              </div>
+            ` : ""}
+
+            ${(selectedCoverage.not_covered || []).length ? `
+              <div class="rounded-xl border border-red-200 bg-red-50/70 p-4 shadow-sm">
+                <div class="text-sm font-bold text-red-800">Not Covered</div>
+                <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                  ${(selectedCoverage.not_covered || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                </ul>
+              </div>
+            ` : ""}
+
+            ${(selectedCoverage.claim_notes || []).length ? `
+              <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div class="text-sm font-bold text-slate-800">Claim Notes</div>
+                <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                  ${(selectedCoverage.claim_notes || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                </ul>
+              </div>
+            ` : ""}
+          </div>
+        `;
+      }
 
       els.rightPanelHeader.innerHTML = `
         <div class="flex items-center justify-between gap-3">
@@ -1936,16 +2170,58 @@
         </div>
       `;
 
-      els.rightPanel.innerHTML = `
-        <div class="p-4">
-          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div class="text-sm font-semibold text-slate-900">Planned use</div>
-            <p class="mt-2 text-sm text-slate-600">
-              This mode should answer: What is covered, for how long, for which owner, and under what exception?
-            </p>
+      els.rightPanel.innerHTML = selectedCoverage
+        ? `
+          <div class="space-y-4 p-4">
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm text-slate-500">Coverage Key</div>
+              <div class="mt-1 text-sm font-semibold text-slate-900">${escapeHtml(selectedCoverage.key || "-")}</div>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm text-slate-500">Source Sections</div>
+              <div class="mt-1 text-sm font-semibold text-slate-900">${escapeHtml((selectedCoverage.source_sections || []).join(", "))}</div>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div class="text-sm font-semibold text-slate-900">How to use this</div>
+              <p class="mt-2 text-sm text-slate-600">
+                Use this mode to answer whether something is covered, what the limits are, what ownership rule applies, and what exclusions control the decision.
+              </p>
+            </div>
           </div>
-        </div>
-      `;
+        `
+        : `
+          <div class="p-5">
+            ${renderPlaceholderCard("Coverage notes", "Select a coverage item on the left.")}
+          </div>
+        `;
+
+      els.leftPanel.querySelectorAll("[data-coverage-key]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selectedCoverageKey = button.dataset.coverageKey;
+          renderCoverageMode();
+          renderChatPanel();
+          if (window.innerWidth < 1280) setCompactView("center");
+        });
+      });
+
+      const copyCoverageBtn = document.getElementById("copy-coverage-btn");
+      if (copyCoverageBtn && selectedCoverage) {
+        copyCoverageBtn.addEventListener("click", () => {
+          const lines = [
+            selectedCoverage.label || "",
+            "",
+            "Summary:",
+            selectedCoverage.summary || "",
+            "",
+            "Covered:",
+            ...(selectedCoverage.core_coverage || []),
+            "",
+            "Not Covered:",
+            ...(selectedCoverage.not_covered || [])
+          ];
+          copyTextToClipboard(lines.join("\n"), "Coverage copied");
+        });
+      }
     }
 
     function renderApp() {
@@ -2000,6 +2276,15 @@
         const selectedSection = state.mode === APP_MODES.POLICY ? getSelectedSection() : null;
         const matchedSections = state.mode === APP_MODES.POLICY ? findMatchingSections(message) : [];
 
+        const selectedClaimTypeContext = getSelectedClaimTypeContext();
+        const selectedChecklistContext = state.mode === APP_MODES.CHECKLIST ? getSelectedChecklistContext() : null;
+        const selectedPortalSectionContext =
+          state.mode === APP_MODES.ENTRY_MAP || state.mode === APP_MODES.VALIDATOR
+            ? getSelectedPortalSectionContext()
+            : null;
+        const selectedErrorRuleContext = state.mode === APP_MODES.ERROR_FIX ? getSelectedErrorRule() : null;
+        const selectedCoverageContext = state.mode === APP_MODES.COVERAGE ? getSelectedCoverageItem() : null;
+
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: {
@@ -2008,12 +2293,26 @@
           body: JSON.stringify({
             message,
             mode: state.mode,
+
             selectedSection,
             relevantSections: matchedSections,
+            matchingMeta: {
+              matchedCount: matchedSections.length,
+              autoSelected: false
+            },
+
             selectedClaimType: state.selectedClaimType,
             selectedChecklistGroup: state.selectedChecklistGroup,
             selectedPortalSection: state.selectedPortalSection,
             selectedErrorCode: state.selectedErrorCode,
+            selectedCoverageKey: state.selectedCoverageKey,
+
+            selectedClaimTypeContext,
+            selectedChecklistContext,
+            selectedPortalSectionContext,
+            selectedErrorRuleContext,
+            selectedCoverageContext,
+
             history: state.chatHistory.slice(-8)
           })
         });
@@ -2054,7 +2353,7 @@
         {
           role: "model",
           text: state.manualLoaded
-            ? "Chat cleared. Ask me about policy, checklist, claim types, portal sections, or returned-claim errors."
+            ? "Chat cleared. Ask me about policy, checklist, claim types, portal sections, returned-claim errors, or coverage."
             : "Chat cleared. I’ll be ready once the libraries finish loading."
         }
       ];
