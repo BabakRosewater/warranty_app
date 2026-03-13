@@ -53,7 +53,10 @@ function sanitizeObjectMap(obj, valueMax = 500, maxItems = MAX_ARRAY_ITEMS) {
   return Object.fromEntries(
     Object.entries(obj)
       .slice(0, maxItems)
-      .map(([key, value]) => [sanitizeText(key, 120), sanitizeSimpleValue(value, valueMax)])
+      .map(([key, value]) => [
+        sanitizeText(key, 120),
+        sanitizeSimpleValue(value, valueMax)
+      ])
   );
 }
 
@@ -99,6 +102,9 @@ function pickClaimTypeContext(item) {
     portal_path: sanitizeArray(item.portal_path, 200),
     when_to_use: sanitizeArray(item.when_to_use, 500),
     required_groups: sanitizeArray(item.required_groups, 200),
+    optional_groups: sanitizeArray(item.optional_groups, 200),
+    common_required_fields: sanitizeArray(item.common_required_fields, 200),
+    common_attachments: sanitizeArray(item.common_attachments, 200),
     related_workflows: sanitizeArray(item.related_workflows, 300),
     source_sections: sanitizeArray(item.source_sections, 120)
   };
@@ -140,7 +146,15 @@ function pickPortalSectionContext(item) {
     restricted_characters_note: sanitizeText(item.restricted_characters_note, 1000),
     allowed_categories: sanitizeArray(item.allowed_categories, 200),
     system_generated_examples: sanitizeArray(item.system_generated_examples, 300),
+    notes: sanitizeArray(item.notes, 500),
     character_limits: sanitizeObjectMap(item.character_limits, 120),
+    section_totals: Array.isArray(item.section_totals)
+      ? item.section_totals.slice(0, MAX_ARRAY_ITEMS).map((field) => ({
+          key: sanitizeText(field?.key, 120),
+          label: sanitizeText(field?.label, 150),
+          type: sanitizeText(field?.type, 80)
+        }))
+      : [],
     fields: Array.isArray(item.fields)
       ? item.fields.slice(0, MAX_ARRAY_ITEMS).map((field) => ({
           key: sanitizeText(field?.key, 120),
@@ -167,7 +181,32 @@ function pickErrorRuleContext(item) {
     likely_problem_areas: sanitizeArray(item.likely_problem_areas, 400),
     validation_checks: sanitizeArray(item.validation_checks, 500),
     recommended_fix_steps: sanitizeArray(item.recommended_fix_steps, 600),
+    related_sections: sanitizeArray(item.related_sections, 200),
     dealer_reply_needed: Boolean(item.dealer_reply_needed)
+  };
+}
+
+function pickCoverageContext(item) {
+  if (!item || typeof item !== "object") return null;
+
+  return {
+    key: sanitizeText(item.key, 120),
+    label: sanitizeText(item.label, 180),
+    category: sanitizeText(item.category, 120),
+    summary: sanitizeText(item.summary, 1500),
+    source_sections: sanitizeArray(item.source_sections, 120),
+    applies_to: sanitizeArray(item.applies_to, 500),
+    core_coverage: sanitizeArray(item.core_coverage, 700),
+    limits: Array.isArray(item.limits)
+      ? item.limits.slice(0, MAX_ARRAY_ITEMS).map((limit) => ({
+          type: sanitizeText(limit?.type, 120),
+          value: sanitizeText(limit?.value, 300),
+          notes: sanitizeText(limit?.notes, 600)
+        }))
+      : [],
+    transferability: sanitizeArray(item.transferability, 500),
+    not_covered: sanitizeArray(item.not_covered, 700),
+    claim_notes: sanitizeArray(item.claim_notes, 700)
   };
 }
 
@@ -229,10 +268,12 @@ function buildSystemPrompt({
   selectedChecklistGroup,
   selectedPortalSection,
   selectedErrorCode,
+  selectedCoverageKey,
   selectedClaimTypeContext,
   selectedChecklistContext,
   selectedPortalSectionContext,
-  selectedErrorRuleContext
+  selectedErrorRuleContext,
+  selectedCoverageContext
 }) {
   const context = {
     mode: mode || "policy",
@@ -240,11 +281,13 @@ function buildSystemPrompt({
     selected_checklist_group: selectedChecklistGroup || null,
     selected_portal_section: selectedPortalSection || null,
     selected_error_code: selectedErrorCode || null,
+    selected_coverage_key: selectedCoverageKey || null,
 
     selected_claim_type_context: selectedClaimTypeContext || null,
     selected_checklist_context: selectedChecklistContext || null,
     selected_portal_section_context: selectedPortalSectionContext || null,
     selected_error_rule_context: selectedErrorRuleContext || null,
+    selected_coverage_context: selectedCoverageContext || null,
 
     selected_section: selectedSection || null,
     relevant_sections: relevantSections || [],
@@ -253,18 +296,18 @@ function buildSystemPrompt({
 
   return [
     "You are an expert Hyundai Warranty Administrator.",
-    "You help with warranty policy interpretation, claim requirements, claim types, portal field mapping, validator guidance, and returned-claim error resolution.",
+    "You help with warranty policy interpretation, claim requirements, claim types, portal field mapping, validator guidance, returned-claim error resolution, and coverage explanation.",
     "Base your answers strictly on the context provided below.",
-    "Do not invent coverages, exclusions, limits, documentation, portal fields, claim workflows, or claim-fix instructions that are not supported by the provided context.",
+    "Do not invent coverages, exclusions, limits, documentation, portal fields, workflows, or correction steps that are not supported by the provided context.",
     "",
     "MODE RULES:",
     "- If mode is 'policy', focus on selected_section and relevant_sections from the warranty policy manual.",
-    "- If mode is 'checklist', focus on required documentation, attachments, audit support, submission checklist items, and special requirements.",
-    "- If mode is 'claim_types', focus on selected_claim_type_context and explain when to use that claim type, what screen it belongs to, what it is for, and how it differs from related claim types when the provided context supports that comparison.",
-    "- If mode is 'entry_map', focus on selected_portal_section_context and explain what fields belong in that portal section, what is required, and what the user should review before submitting.",
+    "- If mode is 'checklist', focus on selected_checklist_context and explain documentation, attachments, audit support, submission checklist items, and special requirements.",
+    "- If mode is 'claim_types', focus on selected_claim_type_context and explain when to use that claim type, what screen it belongs to, what it is for, and how it differs from related workflows if supported by context.",
+    "- If mode is 'entry_map', focus on selected_portal_section_context and explain what fields belong in that portal section, what is required, what is optional, and what the user should review before submitting.",
     "- If mode is 'validator', use selected_claim_type_context and selected_portal_section_context when available to explain what appears missing, what should be reviewed, and what the user should verify before submission.",
     "- If mode is 'error_fix', focus on selected_error_rule_context and explain the error code, meaning, likely causes, validation checks, and recommended correction steps before resubmission.",
-    "- If mode is 'coverage', explain coverage, exclusions, ownership rules, and time/mileage limits only if supported by the provided context.",
+    "- If mode is 'coverage', focus on selected_coverage_context and explain what is covered, what is excluded, ownership/transferability rules, and any time, mileage, or dollar limits supported by that context.",
     "",
     "RESPONSE RULES:",
     "- Answer the user directly first.",
@@ -277,7 +320,7 @@ function buildSystemPrompt({
     "- If claim_processing_risks are present, highlight them clearly.",
     "- If documents_required or comment_requirements are present, spell them out clearly so the dealer knows what to attach or type.",
     "- If the user asks a comparison question, compare only from the provided context. If the context is incomplete, say that plainly.",
-    "- When helpful, cite section numbers, titles, claim type names, portal section names, or error codes from the context.",
+    "- When helpful, cite section numbers, titles, claim type names, portal section names, error codes, or coverage category names from the context.",
     "- If the context is insufficient, say so plainly.",
     "",
     "CONTEXT:",
@@ -358,6 +401,7 @@ export async function onRequestPost(context) {
     const selectedChecklistGroup = sanitizeText(body?.selectedChecklistGroup, 120);
     const selectedPortalSection = sanitizeText(body?.selectedPortalSection, 120);
     const selectedErrorCode = sanitizeText(body?.selectedErrorCode, 120);
+    const selectedCoverageKey = sanitizeText(body?.selectedCoverageKey, 120);
 
     const selectedSection = pickContextSection(body?.selectedSection);
 
@@ -372,6 +416,7 @@ export async function onRequestPost(context) {
     const selectedChecklistContext = pickChecklistContext(body?.selectedChecklistContext);
     const selectedPortalSectionContext = pickPortalSectionContext(body?.selectedPortalSectionContext);
     const selectedErrorRuleContext = pickErrorRuleContext(body?.selectedErrorRuleContext);
+    const selectedCoverageContext = pickCoverageContext(body?.selectedCoverageContext);
 
     const matchingMeta = sanitizeMatchingMeta(body?.matchingMeta);
 
@@ -384,10 +429,12 @@ export async function onRequestPost(context) {
       selectedChecklistGroup,
       selectedPortalSection,
       selectedErrorCode,
+      selectedCoverageKey,
       selectedClaimTypeContext,
       selectedChecklistContext,
       selectedPortalSectionContext,
-      selectedErrorRuleContext
+      selectedErrorRuleContext,
+      selectedCoverageContext
     });
 
     let history = sanitizeHistory(body?.history);
@@ -444,7 +491,8 @@ export async function onRequestPost(context) {
       selectedClaimType,
       selectedChecklistGroup,
       selectedPortalSection,
-      selectedErrorCode
+      selectedErrorCode,
+      selectedCoverageKey
     });
   } catch (error) {
     return json(
