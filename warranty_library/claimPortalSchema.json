@@ -1,74 +1,63 @@
 {
   "claim_portal_schema": {
-    "campaign": {
-      "screen_name": "Campaign Claim",
-      "sections": {
-        "basic_information": {
-          "label": "Basic Information",
-          "fields": [
-            { "key": "ro_number", "label": "R.O. #", "type": "string", "required": true },
-            { "key": "claim_number", "label": "Claim #", "type": "string", "required": false },
-            { "key": "op_code", "label": "OP Code", "type": "string", "required": true },
-            { "key": "campaign_description", "label": "Campaign Description", "type": "string", "required": true },
-            { "key": "vin", "label": "VIN #", "type": "string", "required": true },
-            { "key": "technician", "label": "Technician", "type": "string", "required": true },
-            { "key": "repair_date_in", "label": "Repair Date (in)", "type": "date", "required": true },
-            { "key": "repair_date_out", "label": "Repair Date (out)", "type": "date", "required": true },
-            { "key": "mileage_in", "label": "Mileage (in)", "type": "number", "required": true },
-            { "key": "mileage_out", "label": "Mileage (out)", "type": "number", "required": true },
-            { "key": "pa_number", "label": "PA #", "type": "string", "required": false }
-          ]
-        }
-      }
-    },
     "warranty": {
       "screen_name": "Warranty Claim Create/Edit/Submit",
+      "screen_type": "claim_entry",
+      "portal_path": [
+        "Warranty",
+        "Claims",
+        "Claim Entry/Edit/Submit"
+      ],
       "sections": {
         "basic_information": {
           "label": "Basic Information",
           "fields": [
             { "key": "ro_number", "label": "R.O. #", "type": "string", "required": true },
             { "key": "claim_number", "label": "Claim #", "type": "string", "required": false },
-            { "key": "vin", "label": "VIN", "type": "string", "required": true },
-            { "key": "hma_pay_percent", "label": "HMA Pay %", "type": "percentage", "required": true },
+            { "key": "vin", "label": "VIN", "type": "vin", "required": true },
+            { "key": "hma_pay_percent", "label": "HMA Pay %", "type": "percent", "required": true },
             { "key": "repair_date_in", "label": "Repair Date (in)", "type": "date", "required": true },
             { "key": "repair_date_out", "label": "Repair Date (out)", "type": "date", "required": true },
             { "key": "mileage_in", "label": "Mileage (in)", "type": "number", "required": true },
             { "key": "mileage_out", "label": "Mileage (out)", "type": "number", "required": true },
             { "key": "owner_verification", "label": "Owner Verification", "type": "string", "required": false },
-            { "key": "service_advisor", "label": "Service Advisor", "type": "string", "required": true },
-            { "key": "technician", "label": "Technician", "type": "string", "required": true },
+            { "key": "service_advisor", "label": "Service Advisor", "type": "lookup", "required": true },
+            { "key": "technician", "label": "Technician", "type": "lookup", "required": true },
             { "key": "condition_description", "label": "Condition Description", "type": "string", "required": false },
-            { "key": "towing", "label": "Towing", "type": "currency", "required": false },
+            { "key": "towing_amount", "label": "Towing", "type": "currency", "required": false },
             { "key": "sublet_amount", "label": "Sublet Amount", "type": "currency", "required": false },
             { "key": "sublet_code", "label": "Sublet Code", "type": "string", "required": false },
-            { "key": "causal_part_number", "label": "Causal Part #", "type": "string", "required": true },
+            { "key": "causal_part_number", "label": "Causal Part #", "type": "part_number", "required": true },
             { "key": "causal_part_description", "label": "Causal Part Description", "type": "string", "required": false },
             { "key": "nature_group_code", "label": "Nature Grp/Code", "type": "string", "required": true },
-            { "key": "cause", "label": "Cause", "type": "string", "required": true },
-            { "key": "goodwill_requested", "label": "Goodwill Requested", "type": "boolean", "required": true },
-            { "key": "pa_number", "label": "PA #", "type": "string", "required": false }
+            { "key": "cause_code", "label": "Cause", "type": "string", "required": true },
+            { "key": "goodwill_requested", "label": "Goodwill Requested", "type": "boolean", "required": false },
+            { "key": "prior_approval_number", "label": "PA #", "type": "string", "required": false }
           ]
         },
         "op_code_information": {
           "label": "OP Code Information",
           "repeatable": true,
-          "max_lines": 6,
+          "max_rows": 6,
           "fields": [
-            { "key": "line", "label": "Line", "type": "number", "required": true },
+            { "key": "line_number", "label": "Line", "type": "number", "required": true },
             { "key": "op_code", "label": "OP Code", "type": "string", "required": true },
             { "key": "op_code_description", "label": "OP Code Description", "type": "string", "required": false },
             { "key": "op_code_hours", "label": "OP Code HRS", "type": "number", "required": false },
-            { "key": "op_code_qty", "label": "OP Code QTY", "type": "number", "required": false },
+            { "key": "op_code_quantity", "label": "OP Code QTY", "type": "number", "required": false },
             { "key": "labor_dollars", "label": "Labor Dollars", "type": "currency", "required": false }
+          ],
+          "section_totals": [
+            { "key": "labor_rate", "label": "Labor Rate", "type": "currency" },
+            { "key": "labor_total_amount", "label": "Total Amount", "type": "currency" }
           ]
         },
         "scan_tool_information": {
           "label": "Scan Tool",
           "fields": [
-            { "key": "scan_tool_test_code_1", "label": "Scan Tool Test Code 1", "type": "string", "required": false },
-            { "key": "scan_tool_test_code_2", "label": "Scan Tool Test Code 2", "type": "string", "required": false },
-            { "key": "scan_tool_test_code_3", "label": "Scan Tool Test Code 3", "type": "string", "required": false },
+            { "key": "scan_tool_test_code_1", "label": "Test Code 1", "type": "string", "required": false },
+            { "key": "scan_tool_test_code_2", "label": "Test Code 2", "type": "string", "required": false },
+            { "key": "scan_tool_test_code_3", "label": "Test Code 3", "type": "string", "required": false },
             { "key": "battery_test_code_1", "label": "Battery Test Code 1", "type": "string", "required": false },
             { "key": "battery_test_code_2", "label": "Battery Test Code 2", "type": "string", "required": false }
           ]
@@ -76,10 +65,10 @@
         "part_information": {
           "label": "Part Information",
           "repeatable": true,
-          "max_lines": 10,
+          "max_rows": 10,
           "fields": [
-            { "key": "line", "label": "Line", "type": "number", "required": true },
-            { "key": "part_number", "label": "Part Number", "type": "string", "required": false },
+            { "key": "line_number", "label": "Line", "type": "number", "required": true },
+            { "key": "part_number", "label": "Part Number", "type": "part_number", "required": false },
             { "key": "part_description", "label": "Part Description", "type": "string", "required": false },
             { "key": "part_quantity", "label": "Part Quantity", "type": "number", "required": false },
             { "key": "part_dollars", "label": "Part Dollars", "type": "currency", "required": false }
@@ -89,10 +78,11 @@
           "label": "Attachments",
           "max_file_size_mb": 20,
           "fields": [
+            { "key": "selected", "label": "SELECT", "type": "boolean", "required": false },
             { "key": "upload_by", "label": "Upload By", "type": "string", "required": false },
             { "key": "file_type", "label": "Type", "type": "string", "required": false },
             { "key": "attachment_name", "label": "Attachment Name", "type": "string", "required": false },
-            { "key": "category", "label": "Category", "type": "string", "required": false }
+            { "key": "attachment_category", "label": "Category", "type": "string", "required": false }
           ],
           "allowed_categories": [
             "VIN",
@@ -117,63 +107,334 @@
             "complaint_description": 200,
             "cause_description": 200,
             "correction_description": 600,
-            "additional_comments": 400,
-            "dealer_pwa_reply": 512
+            "additional_comments": 400
           },
           "restricted_characters_note": "Please do not use the characters \" ~ ` ! @ # $ % & * ( ) [ ] { } | : ; ' < > / + - in the following fields.",
           "fields": [
-            { "key": "complaint_description", "label": "Complaint Description", "type": "text", "required": true },
-            { "key": "cause_description", "label": "Cause Description", "type": "text", "required": true },
-            { "key": "correction_description", "label": "Correction Description", "type": "text", "required": true },
-            { "key": "additional_comments", "label": "Additional Comments", "type": "text", "required": false },
-            { "key": "dealer_pwa_reply", "label": "Dealer PWA Reply", "type": "text", "required": false }
+            { "key": "complaint_description", "label": "Complaint Description", "type": "text", "required": true, "max_length": 200 },
+            { "key": "cause_description", "label": "Cause Description", "type": "text", "required": true, "max_length": 200 },
+            { "key": "correction_description", "label": "Correction Description", "type": "text", "required": true, "max_length": 600 },
+            { "key": "additional_comments", "label": "Additional Comments", "type": "text", "required": false, "max_length": 400 }
           ]
         },
         "summary": {
           "label": "Summary",
           "fields": [
             { "key": "net_parts_total", "label": "Net Parts Total", "type": "currency" },
-            { "key": "towing", "label": "Towing", "type": "currency" },
-            { "key": "mark_up_percent", "label": "Mark Up Percent", "type": "percentage" },
+            { "key": "towing_total", "label": "Towing", "type": "currency" },
+            { "key": "mark_up_percent", "label": "Mark Up Percent", "type": "percent" },
             { "key": "total_labor_amount", "label": "Total Labor Amount", "type": "currency" },
             { "key": "mark_up_dollar", "label": "Mark Up Dollar", "type": "currency" },
             { "key": "claim_total", "label": "Claim Total", "type": "currency" },
             { "key": "part_total", "label": "Part Total", "type": "currency" },
-            { "key": "hma_pay_percent", "label": "HMA Pay Percent", "type": "percentage" },
-            { "key": "sublet_amount", "label": "Sublet Amount", "type": "currency" },
+            { "key": "summary_hma_pay_percent", "label": "HMA Pay Percent", "type": "percent" },
+            { "key": "summary_sublet_amount", "label": "Sublet Amount", "type": "currency" },
             { "key": "adjusted_claim", "label": "Adjusted Claim", "type": "currency" }
+          ],
+          "notes": [
+            "Values shown are unaudited estimates and are for dealer information only."
+          ]
+        }
+      }
+    },
+    "campaign": {
+      "screen_name": "Campaign Claim Create/Edit/Submit",
+      "screen_type": "claim_entry",
+      "portal_path": [
+        "Warranty",
+        "Claims",
+        "Claim Entry/Edit/Submit"
+      ],
+      "sections": {
+        "basic_information": {
+          "label": "Basic Information",
+          "fields": [
+            { "key": "ro_number", "label": "R.O. #", "type": "string", "required": true },
+            { "key": "claim_number", "label": "Claim #", "type": "string", "required": false },
+            { "key": "op_code", "label": "OP Code", "type": "string", "required": true },
+            { "key": "campaign_description", "label": "Campaign Description", "type": "string", "required": true },
+            { "key": "vin", "label": "VIN #", "type": "vin", "required": true },
+            { "key": "technician", "label": "Technician", "type": "lookup", "required": true },
+            { "key": "repair_date_in", "label": "Repair Date (in)", "type": "date", "required": true },
+            { "key": "repair_date_out", "label": "Repair Date (out)", "type": "date", "required": true },
+            { "key": "mileage_in", "label": "Mileage (in)", "type": "number", "required": true },
+            { "key": "mileage_out", "label": "Mileage (out)", "type": "number", "required": true },
+            { "key": "prior_approval_number", "label": "PA #", "type": "string", "required": false }
+          ]
+        },
+        "attachments": {
+          "label": "Attachments",
+          "max_file_size_mb": 10,
+          "fields": [
+            { "key": "selected", "label": "SELECT", "type": "boolean", "required": false },
+            { "key": "upload_by", "label": "Upload By", "type": "string", "required": false },
+            { "key": "file_type", "label": "Type", "type": "string", "required": false },
+            { "key": "attachment_name", "label": "Attachment Name", "type": "string", "required": false },
+            { "key": "attachment_category", "label": "Category", "type": "string", "required": false }
+          ],
+          "notes": [
+            "Each attachment can't exceed the allowable size (10M)."
+          ]
+        }
+      }
+    },
+    "rental": {
+      "screen_name": "Rental Claim Detail",
+      "screen_type": "claim_entry",
+      "portal_path": [
+        "Warranty",
+        "Claims",
+        "Rental Claim"
+      ],
+      "sections": {
+        "rental_claim": {
+          "label": "Rental Claim",
+          "fields": [
+            { "key": "claim_number", "label": "Claim Number", "type": "string", "required": false },
+            { "key": "rental_start_date", "label": "Rental Start Date", "type": "date", "required": true },
+            { "key": "days", "label": "Days", "type": "number", "required": true },
+            { "key": "return_date", "label": "Return Date", "type": "date", "required": true },
+            { "key": "rental_type", "label": "Rental Type", "type": "string", "required": true },
+            { "key": "vin", "label": "VIN", "type": "vin", "required": true },
+            { "key": "model", "label": "Model", "type": "string", "required": false },
+            { "key": "amount", "label": "Amount", "type": "currency", "required": true },
+            { "key": "rental_reason", "label": "Rental Reason", "type": "string", "required": true }
+          ]
+        },
+        "repaired_vehicle": {
+          "label": "Repaired Vehicle",
+          "fields": [
+            { "key": "repaired_vehicle_claim_number", "label": "Claim Number", "type": "string", "required": false },
+            { "key": "repair_order_number", "label": "R/O Number", "type": "string", "required": true },
+            { "key": "repair_order_open_date", "label": "R/O Open Date", "type": "date", "required": true },
+            { "key": "repaired_vehicle_vin", "label": "VIN", "type": "vin", "required": true },
+            { "key": "repaired_vehicle_model", "label": "Model", "type": "string", "required": false },
+            { "key": "causal_part", "label": "Causal Part", "type": "part_number", "required": false },
+            { "key": "mileage", "label": "Mileage", "type": "number", "required": true }
+          ]
+        },
+        "details": {
+          "label": "Details",
+          "character_limits": {
+            "additional_comments": 400
+          },
+          "fields": [
+            { "key": "additional_comments", "label": "Additional Comments", "type": "text", "required": false, "max_length": 400 }
+          ]
+        },
+        "attachments": {
+          "label": "Attachments",
+          "max_file_size_mb": 20,
+          "fields": [
+            { "key": "file_type", "label": "Type", "type": "string", "required": false },
+            { "key": "attachment_name", "label": "Attachment Name", "type": "string", "required": false },
+            { "key": "delete_flag", "label": "Delete", "type": "boolean", "required": false }
+          ]
+        }
+      }
+    },
+    "pdi": {
+      "screen_name": "PDI Claim Create/Edit/Submit",
+      "screen_type": "claim_entry",
+      "portal_path": [
+        "Warranty",
+        "Claims",
+        "PDI Claims"
+      ],
+      "sections": {
+        "basic_information": {
+          "label": "Basic Information",
+          "fields": [
+            { "key": "claim_number", "label": "Claim #", "type": "string", "required": false }
+          ]
+        },
+        "ro_vin_information": {
+          "label": "R.O and VIN #",
+          "repeatable": true,
+          "max_rows": 1,
+          "fields": [
+            { "key": "line_number", "label": "No.", "type": "number", "required": true },
+            { "key": "repair_order_number", "label": "R.O. #", "type": "string", "required": true },
+            { "key": "vin", "label": "VIN #", "type": "vin", "required": true },
+            { "key": "mileage_in", "label": "Mileage (in)", "type": "number", "required": true },
+            { "key": "mileage_out", "label": "Mileage (out)", "type": "number", "required": true },
+            { "key": "repair_order_date", "label": "R/O Date", "type": "date", "required": true },
+            { "key": "static_flag", "label": "Static", "type": "boolean", "required": false },
+            { "key": "dynamic_flag", "label": "Dynamic", "type": "boolean", "required": false }
+          ]
+        },
+        "attachments": {
+          "label": "Attachments",
+          "max_file_size_mb": 20,
+          "fields": [
+            { "key": "file_type", "label": "Type", "type": "string", "required": false },
+            { "key": "attachment_name", "label": "Attachment Name", "type": "string", "required": false },
+            { "key": "delete_flag", "label": "Delete", "type": "boolean", "required": false }
+          ],
+          "notes": [
+            "Each attachment can't exceed the allowable size (20M)."
+          ]
+        },
+        "reporting": {
+          "label": "Reporting",
+          "notes": [
+            "PDI CLAIM STATUS REPORTS: REPORT RPT-4300 (DAILY)",
+            "PDI SETTLEMENT STATEMENT RPT-4306 (BI-WEEKLY)"
           ]
         }
       }
     },
     "resubmit": {
       "screen_name": "Warranty Claim ReSubmit",
+      "screen_type": "claim_resubmit",
+      "portal_path": [
+        "Warranty",
+        "Claims",
+        "Claim Search Resubmit"
+      ],
       "sections": {
         "header_status": {
+          "label": "Header Status",
           "fields": [
-            { "key": "ro_number", "label": "R.O. #", "type": "string" },
-            { "key": "hma_claim_number", "label": "HMA Claim #", "type": "string" },
-            { "key": "dms_claim_number", "label": "DMS Claim #", "type": "string" },
-            { "key": "claim_type", "label": "Claim Type", "type": "string" },
-            { "key": "vin", "label": "VIN #", "type": "string" },
-            { "key": "ro_date", "label": "R.O. Date", "type": "date" },
-            { "key": "adjustment_date", "label": "Adjustment Date", "type": "date" },
-            { "key": "status", "label": "Status", "type": "string" }
+            { "key": "ro_number", "label": "R.O. #", "type": "string", "required": false },
+            { "key": "hma_claim_number", "label": "HMA Claim #", "type": "string", "required": false },
+            { "key": "dms_claim_number", "label": "DMS Claim #", "type": "string", "required": false },
+            { "key": "claim_type", "label": "Claim Type", "type": "string", "required": false },
+            { "key": "vin", "label": "VIN #", "type": "vin", "required": false },
+            { "key": "ro_date", "label": "R.O. Date", "type": "date", "required": false },
+            { "key": "adjustment_date", "label": "Adjustment Date", "type": "date", "required": false },
+            { "key": "status", "label": "Status", "type": "string", "required": false }
           ]
         },
         "return_reason": {
+          "label": "Return Reason",
           "fields": [
-            { "key": "return_code", "label": "Return Code", "type": "string" },
-            { "key": "return_message", "label": "Return Message", "type": "string" }
+            { "key": "return_code", "label": "Return Code", "type": "string", "required": false },
+            { "key": "return_message", "label": "Return Message", "type": "string", "required": false }
+          ]
+        },
+        "basic_information": {
+          "label": "Basic Information",
+          "fields": [
+            { "key": "ro_number", "label": "R.O. #", "type": "string", "required": true },
+            { "key": "claim_number", "label": "Claim #", "type": "string", "required": false },
+            { "key": "vin", "label": "VIN", "type": "vin", "required": true },
+            { "key": "hma_pay_percent", "label": "HMA Pay %", "type": "percent", "required": true },
+            { "key": "repair_date_in", "label": "Repair Date (in)", "type": "date", "required": true },
+            { "key": "repair_date_out", "label": "Repair Date (out)", "type": "date", "required": true },
+            { "key": "mileage_in", "label": "Mileage (in)", "type": "number", "required": true },
+            { "key": "mileage_out", "label": "Mileage (out)", "type": "number", "required": true },
+            { "key": "owner_verification", "label": "Owner Verification", "type": "string", "required": false },
+            { "key": "service_advisor", "label": "Service Advisor", "type": "lookup", "required": true },
+            { "key": "technician", "label": "Technician", "type": "lookup", "required": true },
+            { "key": "condition_description", "label": "Condition Description", "type": "string", "required": false },
+            { "key": "towing_amount", "label": "Towing", "type": "currency", "required": false },
+            { "key": "sublet_amount", "label": "Sublet Amount", "type": "currency", "required": false },
+            { "key": "sublet_code", "label": "Sublet Code", "type": "string", "required": false },
+            { "key": "causal_part_number", "label": "Causal Part #", "type": "part_number", "required": true },
+            { "key": "causal_part_description", "label": "Causal Part Description", "type": "string", "required": false },
+            { "key": "nature_group_code", "label": "Nature Grp/Code", "type": "string", "required": true },
+            { "key": "cause_code", "label": "Cause", "type": "string", "required": true },
+            { "key": "goodwill_requested", "label": "Goodwill Requested", "type": "boolean", "required": false },
+            { "key": "prior_approval_number", "label": "PA #", "type": "string", "required": false }
+          ]
+        },
+        "dealer_reply": {
+          "label": "Dealer Reply",
+          "character_limits": {
+            "dealer_pwa_reply": 512
+          },
+          "fields": [
+            { "key": "dealer_pwa_reply", "label": "Dealer PWA Reply", "type": "text", "required": false, "max_length": 512 }
           ]
         },
         "remark_history": {
+          "label": "Remark History",
           "repeatable": true,
           "fields": [
-            { "key": "remark_type", "label": "Type", "type": "string" },
-            { "key": "user_id", "label": "UserID", "type": "string" },
-            { "key": "date", "label": "Date", "type": "date" },
-            { "key": "remark", "label": "Remark", "type": "text" }
+            { "key": "remark_type", "label": "Type", "type": "string", "required": false },
+            { "key": "user_id", "label": "UserID", "type": "string", "required": false },
+            { "key": "remark_date", "label": "Date", "type": "date", "required": false },
+            { "key": "remark", "label": "Remark", "type": "text", "required": false }
+          ]
+        },
+        "op_code_information": {
+          "label": "OP Code Information",
+          "repeatable": true,
+          "max_rows": 6,
+          "fields": [
+            { "key": "line_number", "label": "Line", "type": "number", "required": true },
+            { "key": "op_code", "label": "OP Code", "type": "string", "required": true },
+            { "key": "op_code_description", "label": "OP Code Description", "type": "string", "required": false },
+            { "key": "op_code_hours", "label": "OP Code HRS", "type": "number", "required": false },
+            { "key": "op_code_quantity", "label": "OP Code QTY", "type": "number", "required": false },
+            { "key": "labor_dollars", "label": "Labor Dollars", "type": "currency", "required": false }
+          ]
+        },
+        "part_information": {
+          "label": "Part Information",
+          "repeatable": true,
+          "max_rows": 10,
+          "fields": [
+            { "key": "line_number", "label": "Line", "type": "number", "required": true },
+            { "key": "part_number", "label": "Part Number", "type": "part_number", "required": false },
+            { "key": "part_description", "label": "Part Description", "type": "string", "required": false },
+            { "key": "part_quantity", "label": "Part Quantity", "type": "number", "required": false },
+            { "key": "part_dollars", "label": "Part Dollars", "type": "currency", "required": false }
+          ]
+        },
+        "attachments": {
+          "label": "Attachments",
+          "max_file_size_mb": 20,
+          "fields": [
+            { "key": "selected", "label": "SELECT", "type": "boolean", "required": false },
+            { "key": "upload_by", "label": "Upload By", "type": "string", "required": false },
+            { "key": "file_type", "label": "Type", "type": "string", "required": false },
+            { "key": "attachment_name", "label": "Attachment Name", "type": "string", "required": false },
+            { "key": "attachment_category", "label": "Category", "type": "string", "required": false }
+          ],
+          "allowed_categories": [
+            "VIN",
+            "Odometer/Mileage",
+            "Part",
+            "Other Attachment",
+            "Repair Order",
+            "Customer DMV Registration",
+            "Sublet Invoice",
+            "Original Owner Affidavit",
+            "Oil Dipstick Photo",
+            "Transmission Diagnostic Worksheet"
+          ]
+        },
+        "details": {
+          "label": "Details",
+          "character_limits": {
+            "complaint_description": 200,
+            "cause_description": 200,
+            "correction_description": 600,
+            "additional_comments": 400
+          },
+          "restricted_characters_note": "Please do not use the characters \" ~ ` ! @ # $ % & * ( ) [ ] { } | : ; ' < > / + - in the following fields.",
+          "fields": [
+            { "key": "complaint_description", "label": "Complaint Description", "type": "text", "required": true, "max_length": 200 },
+            { "key": "cause_description", "label": "Cause Description", "type": "text", "required": true, "max_length": 200 },
+            { "key": "correction_description", "label": "Correction Description", "type": "text", "required": true, "max_length": 600 },
+            { "key": "additional_comments", "label": "Additional Comments", "type": "text", "required": false, "max_length": 400 }
+          ]
+        },
+        "summary": {
+          "label": "Summary",
+          "fields": [
+            { "key": "net_parts_total", "label": "Net Parts Total", "type": "currency" },
+            { "key": "towing_total", "label": "Towing", "type": "currency" },
+            { "key": "mark_up_percent", "label": "Mark Up Percent", "type": "percent" },
+            { "key": "total_labor_amount", "label": "Total Labor Amount", "type": "currency" },
+            { "key": "mark_up_dollar", "label": "Mark Up Dollar", "type": "currency" },
+            { "key": "claim_total", "label": "Claim Total", "type": "currency" },
+            { "key": "part_total", "label": "Part Total", "type": "currency" },
+            { "key": "summary_hma_pay_percent", "label": "HMA Pay Percent", "type": "percent" },
+            { "key": "summary_sublet_amount", "label": "Sublet Amount", "type": "currency" },
+            { "key": "adjusted_claim", "label": "Adjusted Claim", "type": "currency" }
           ]
         }
       }
