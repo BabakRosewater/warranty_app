@@ -25,11 +25,7 @@ function sanitizeText(value, max = MAX_TEXT_CHARS) {
 
 function sanitizeSimpleValue(value, max = MAX_TEXT_CHARS) {
   if (value === null || value === undefined) return "";
-  if (
-    typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean"
-  ) {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
     return sanitizeText(value, max);
   }
   return sanitizeText(JSON.stringify(value), max);
@@ -53,10 +49,7 @@ function sanitizeObjectMap(obj, valueMax = 500, maxItems = MAX_ARRAY_ITEMS) {
   return Object.fromEntries(
     Object.entries(obj)
       .slice(0, maxItems)
-      .map(([key, value]) => [
-        sanitizeText(key, 120),
-        sanitizeSimpleValue(value, valueMax)
-      ])
+      .map(([key, value]) => [sanitizeText(key, 120), sanitizeSimpleValue(value, valueMax)])
   );
 }
 
@@ -67,12 +60,8 @@ function pickContextSection(section) {
     section_id: sanitizeText(section.section_id, 80),
     title: sanitizeText(section.title, 250),
     raw_content: sanitizeText(section.raw_content, MAX_LONG_TEXT_CHARS),
-
     eligibility_conditions: sanitizeArray(section.eligibility_conditions, 500),
-    coverage_and_reimbursement: sanitizeArray(
-      section.coverage_and_reimbursement || section.coverage_details,
-      800
-    ),
+    coverage_and_reimbursement: sanitizeArray(section.coverage_and_reimbursement || section.coverage_details, 800),
     not_covered: sanitizeArray(section.not_covered || section.exclusions, 800),
     payment_limitations: sanitizeArray(section.payment_limitations, 500),
     dealer_actions: sanitizeArray(section.dealer_actions, 800),
@@ -86,8 +75,7 @@ function pickContextSection(section) {
     source_pdf_pages: sanitizeArray(section.source_pdf_pages || section.source_pages, 100)
   };
 
-  if (!picked.section_id && !picked.title) return null;
-  return picked;
+  return picked.section_id || picked.title ? picked : null;
 }
 
 function pickClaimTypeContext(item) {
@@ -102,11 +90,15 @@ function pickClaimTypeContext(item) {
     portal_path: sanitizeArray(item.portal_path, 200),
     when_to_use: sanitizeArray(item.when_to_use, 500),
     required_groups: sanitizeArray(item.required_groups, 200),
-    optional_groups: sanitizeArray(item.optional_groups, 200),
-    common_required_fields: sanitizeArray(item.common_required_fields, 200),
-    common_attachments: sanitizeArray(item.common_attachments, 200),
     related_workflows: sanitizeArray(item.related_workflows, 300),
-    source_sections: sanitizeArray(item.source_sections, 120)
+    source_sections: sanitizeArray(item.source_sections, 120),
+    audit_profile: item.audit_profile && typeof item.audit_profile === "object"
+      ? {
+          required_documents: sanitizeArray(item.audit_profile.required_documents, 200),
+          recommended_documents: sanitizeArray(item.audit_profile.recommended_documents, 200),
+          common_failure_modes: sanitizeArray(item.audit_profile.common_failure_modes, 200)
+        }
+      : null
   };
 }
 
@@ -146,15 +138,7 @@ function pickPortalSectionContext(item) {
     restricted_characters_note: sanitizeText(item.restricted_characters_note, 1000),
     allowed_categories: sanitizeArray(item.allowed_categories, 200),
     system_generated_examples: sanitizeArray(item.system_generated_examples, 300),
-    notes: sanitizeArray(item.notes, 500),
     character_limits: sanitizeObjectMap(item.character_limits, 120),
-    section_totals: Array.isArray(item.section_totals)
-      ? item.section_totals.slice(0, MAX_ARRAY_ITEMS).map((field) => ({
-          key: sanitizeText(field?.key, 120),
-          label: sanitizeText(field?.label, 150),
-          type: sanitizeText(field?.type, 80)
-        }))
-      : [],
     fields: Array.isArray(item.fields)
       ? item.fields.slice(0, MAX_ARRAY_ITEMS).map((field) => ({
           key: sanitizeText(field?.key, 120),
@@ -181,32 +165,38 @@ function pickErrorRuleContext(item) {
     likely_problem_areas: sanitizeArray(item.likely_problem_areas, 400),
     validation_checks: sanitizeArray(item.validation_checks, 500),
     recommended_fix_steps: sanitizeArray(item.recommended_fix_steps, 600),
-    related_sections: sanitizeArray(item.related_sections, 200),
     dealer_reply_needed: Boolean(item.dealer_reply_needed)
   };
 }
 
-function pickCoverageContext(item) {
+function pickAuditContext(item) {
   if (!item || typeof item !== "object") return null;
 
   return {
-    key: sanitizeText(item.key, 120),
-    label: sanitizeText(item.label, 180),
-    category: sanitizeText(item.category, 120),
-    summary: sanitizeText(item.summary, 1500),
-    source_sections: sanitizeArray(item.source_sections, 120),
-    applies_to: sanitizeArray(item.applies_to, 500),
-    core_coverage: sanitizeArray(item.core_coverage, 700),
-    limits: Array.isArray(item.limits)
-      ? item.limits.slice(0, MAX_ARRAY_ITEMS).map((limit) => ({
-          type: sanitizeText(limit?.type, 120),
-          value: sanitizeText(limit?.value, 300),
-          notes: sanitizeText(limit?.notes, 600)
+    summary: item.summary && typeof item.summary === "object"
+      ? {
+          readiness: sanitizeText(item.summary.readiness, 50),
+          hardStopCount: Number(item.summary.hardStopCount || 0),
+          warningCount: Number(item.summary.warningCount || 0),
+          infoCount: Number(item.summary.infoCount || 0),
+          claimType: sanitizeText(item.summary.claimType, 50),
+          vin: sanitizeText(item.summary.vin, 40),
+          claimRoNumber: sanitizeText(item.summary.claimRoNumber, 50),
+          recommendedFinalMileage: sanitizeSimpleValue(item.summary.recommendedFinalMileage, 50)
+        }
+      : null,
+    issues: Array.isArray(item.issues)
+      ? item.issues.slice(0, MAX_ARRAY_ITEMS).map((issue) => ({
+          code: sanitizeText(issue?.code, 80),
+          severity: sanitizeText(issue?.severity, 80),
+          title: sanitizeText(issue?.title, 200),
+          message: sanitizeText(issue?.message, 1000),
+          recommendedAction: sanitizeText(issue?.recommendedAction, 800),
+          sources: sanitizeArray(issue?.sources, 120)
         }))
       : [],
-    transferability: sanitizeArray(item.transferability, 500),
-    not_covered: sanitizeArray(item.not_covered, 700),
-    claim_notes: sanitizeArray(item.claim_notes, 700)
+    questions: sanitizeArray(item.questions, 600),
+    suggestions: sanitizeArray(item.suggestions, 600)
   };
 }
 
@@ -229,7 +219,6 @@ function sanitizeHistory(history) {
   if (!Array.isArray(history)) return [];
 
   const cleaned = [];
-
   for (const msg of history) {
     const role = msg?.role === "model" ? "model" : "user";
     const text = sanitizeText(msg?.text, MAX_LONG_TEXT_CHARS);
@@ -238,10 +227,7 @@ function sanitizeHistory(history) {
     if (cleaned.length > 0 && cleaned[cleaned.length - 1].role === role) {
       cleaned[cleaned.length - 1].parts[0].text += `\n\n${text}`;
     } else {
-      cleaned.push({
-        role,
-        parts: [{ text }]
-      });
+      cleaned.push({ role, parts: [{ text }] });
     }
   }
 
@@ -268,12 +254,11 @@ function buildSystemPrompt({
   selectedChecklistGroup,
   selectedPortalSection,
   selectedErrorCode,
-  selectedCoverageKey,
   selectedClaimTypeContext,
   selectedChecklistContext,
   selectedPortalSectionContext,
   selectedErrorRuleContext,
-  selectedCoverageContext
+  selectedAuditContext
 }) {
   const context = {
     mode: mode || "policy",
@@ -281,14 +266,11 @@ function buildSystemPrompt({
     selected_checklist_group: selectedChecklistGroup || null,
     selected_portal_section: selectedPortalSection || null,
     selected_error_code: selectedErrorCode || null,
-    selected_coverage_key: selectedCoverageKey || null,
-
     selected_claim_type_context: selectedClaimTypeContext || null,
     selected_checklist_context: selectedChecklistContext || null,
     selected_portal_section_context: selectedPortalSectionContext || null,
     selected_error_rule_context: selectedErrorRuleContext || null,
-    selected_coverage_context: selectedCoverageContext || null,
-
+    selected_audit_context: selectedAuditContext || null,
     selected_section: selectedSection || null,
     relevant_sections: relevantSections || [],
     matching_meta: matchingMeta || { matchedCount: 0, autoSelected: false }
@@ -296,32 +278,29 @@ function buildSystemPrompt({
 
   return [
     "You are an expert Hyundai Warranty Administrator.",
-    "You help with warranty policy interpretation, claim requirements, claim types, portal field mapping, validator guidance, returned-claim error resolution, and coverage explanation.",
-    "Base your answers strictly on the context provided below.",
-    "Do not invent coverages, exclusions, limits, documentation, portal fields, workflows, or correction steps that are not supported by the provided context.",
+    "You help with warranty policy interpretation, claim requirements, claim types, portal field mapping, claim audit review, validator guidance, and returned-claim error resolution.",
+    "Base your answers strictly on the provided context.",
+    "Do not invent coverages, exclusions, limits, documentation, portal fields, workflows, or correction steps that are not supported by the context.",
     "",
     "MODE RULES:",
     "- If mode is 'policy', focus on selected_section and relevant_sections from the warranty policy manual.",
-    "- If mode is 'checklist', focus on selected_checklist_context and explain documentation, attachments, audit support, submission checklist items, and special requirements.",
-    "- If mode is 'claim_types', focus on selected_claim_type_context and explain when to use that claim type, what screen it belongs to, what it is for, and how it differs from related workflows if supported by context.",
-    "- If mode is 'entry_map', focus on selected_portal_section_context and explain what fields belong in that portal section, what is required, what is optional, and what the user should review before submitting.",
-    "- If mode is 'validator', use selected_claim_type_context and selected_portal_section_context when available to explain what appears missing, what should be reviewed, and what the user should verify before submission.",
-    "- If mode is 'error_fix', focus on selected_error_rule_context and explain the error code, meaning, likely causes, validation checks, and recommended correction steps before resubmission.",
-    "- If mode is 'coverage', focus on selected_coverage_context and explain what is covered, what is excluded, ownership/transferability rules, and any time, mileage, or dollar limits supported by that context.",
+    "- If mode is 'checklist', focus on required documentation, attachments, audit support, and special requirements.",
+    "- If mode is 'claim_types', focus on selected_claim_type_context and explain when to use that claim type.",
+    "- If mode is 'entry_map', focus on selected_portal_section_context and explain the portal section and fields.",
+    "- If mode is 'validator', explain what appears missing or should be reviewed based on the selected claim type or portal section context.",
+    "- If mode is 'error_fix', explain the error code, likely causes, validation checks, and fix steps from selected_error_rule_context.",
+    "- If mode is 'claim_audit', focus on selected_audit_context. Prioritize hard stops first, then warnings, then next actions.",
+    "- If mode is 'coverage', explain coverage only from the provided coverage or policy context.",
     "",
     "RESPONSE RULES:",
     "- Answer the user directly first.",
-    "- Use short bullet points when listing requirements, limits, exclusions, or fix steps.",
-    "- Clearly distinguish covered vs not covered, required vs optional, and warning vs denial risk.",
+    "- Use short bullets for requirements, limits, discrepancies, or fix steps.",
+    "- Clearly distinguish hard stops, warnings, and informational notes when discussing claim audit.",
     "- If selected_section is present, treat it as primary context in policy mode.",
-    "- If selected_section is not present and relevant_sections contains exactly one section, treat that section as the intended policy.",
-    "- If relevant_sections contains multiple sections, briefly summarize each and explain that more than one section may apply.",
-    "- If the user asks about time, mileage, or dollar limits, state them explicitly if they exist in the provided context.",
-    "- If claim_processing_risks are present, highlight them clearly.",
-    "- If documents_required or comment_requirements are present, spell them out clearly so the dealer knows what to attach or type.",
+    "- If selected_audit_context is present, do not contradict it unless the user asks you to challenge it; instead explain what it means and what to do next.",
     "- If the user asks a comparison question, compare only from the provided context. If the context is incomplete, say that plainly.",
-    "- When helpful, cite section numbers, titles, claim type names, portal section names, error codes, or coverage category names from the context.",
-    "- If the context is insufficient, say so plainly.",
+    "- When helpful, cite section numbers, claim type names, portal section names, error codes, or audit issue codes from the context.",
+    "- If context is insufficient, say so plainly.",
     "",
     "CONTEXT:",
     JSON.stringify(context, null, 2)
@@ -333,13 +312,10 @@ async function callGeminiWithRetry(url, payload) {
 
   for (let attempt = 0; attempt <= delays.length; attempt += 1) {
     let response;
-
     try {
       response = await fetch(url, {
         method: "POST",
-        headers: {
-          "content-type": "application/json"
-        },
+        headers: { "content-type": "application/json" },
         body: JSON.stringify(payload)
       });
     } catch (networkError) {
@@ -355,7 +331,6 @@ async function callGeminiWithRetry(url, payload) {
     }
 
     const retriable = response.status === 429 || response.status >= 500;
-
     if (!retriable || attempt === delays.length) {
       let errorMessage = "No response body";
       try {
@@ -378,10 +353,7 @@ export async function onRequestPost(context) {
     const { request, env } = context;
 
     if (!env.GEMINI_API_KEY) {
-      return json(
-        { error: "Missing GEMINI_API_KEY secret in Cloudflare Pages settings." },
-        500
-      );
+      return json({ error: "Missing GEMINI_API_KEY secret in Cloudflare Pages settings." }, 500);
     }
 
     let body;
@@ -401,10 +373,8 @@ export async function onRequestPost(context) {
     const selectedChecklistGroup = sanitizeText(body?.selectedChecklistGroup, 120);
     const selectedPortalSection = sanitizeText(body?.selectedPortalSection, 120);
     const selectedErrorCode = sanitizeText(body?.selectedErrorCode, 120);
-    const selectedCoverageKey = sanitizeText(body?.selectedCoverageKey, 120);
 
     const selectedSection = pickContextSection(body?.selectedSection);
-
     const relevantSections = dedupeSections(
       (Array.isArray(body?.relevantSections) ? body.relevantSections : [])
         .map((item) => pickContextSection(item))
@@ -416,8 +386,7 @@ export async function onRequestPost(context) {
     const selectedChecklistContext = pickChecklistContext(body?.selectedChecklistContext);
     const selectedPortalSectionContext = pickPortalSectionContext(body?.selectedPortalSectionContext);
     const selectedErrorRuleContext = pickErrorRuleContext(body?.selectedErrorRuleContext);
-    const selectedCoverageContext = pickCoverageContext(body?.selectedCoverageContext);
-
+    const selectedAuditContext = pickAuditContext(body?.selectedAuditContext);
     const matchingMeta = sanitizeMatchingMeta(body?.matchingMeta);
 
     const systemPrompt = buildSystemPrompt({
@@ -429,34 +398,24 @@ export async function onRequestPost(context) {
       selectedChecklistGroup,
       selectedPortalSection,
       selectedErrorCode,
-      selectedCoverageKey,
       selectedClaimTypeContext,
       selectedChecklistContext,
       selectedPortalSectionContext,
       selectedErrorRuleContext,
-      selectedCoverageContext
+      selectedAuditContext
     });
 
     let history = sanitizeHistory(body?.history);
-
     if (!history.length || history[history.length - 1]?.parts?.[0]?.text !== message) {
-      history.push({
-        role: "user",
-        parts: [{ text: message }]
-      });
+      history.push({ role: "user", parts: [{ text: message }] });
     }
-
     history = history.slice(-MAX_HISTORY_MESSAGES);
 
     const model = sanitizeText(env.GEMINI_MODEL || DEFAULT_MODEL, 100);
-    const endpoint =
-      `https://generativelanguage.googleapis.com/v1beta/models/` +
-      `${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(env.GEMINI_API_KEY)}`;
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(env.GEMINI_API_KEY)}`;
 
     const payload = {
-      systemInstruction: {
-        parts: [{ text: systemPrompt }]
-      },
+      systemInstruction: { parts: [{ text: systemPrompt }] },
       contents: history,
       generationConfig: {
         temperature: 0.1,
@@ -466,22 +425,13 @@ export async function onRequestPost(context) {
 
     const geminiResponse = await callGeminiWithRetry(endpoint, payload);
     const geminiData = await geminiResponse.json();
-
     const candidate = geminiData?.candidates?.[0];
     const finishReason = candidate?.finishReason || "";
-    const answer =
-      candidate?.content?.parts?.map((part) => part?.text || "").join("").trim() || "";
+    const answer = candidate?.content?.parts?.map((part) => part?.text || "").join("").trim() || "";
 
     if (!answer) {
-      const blockReason =
-        geminiData?.promptFeedback?.blockReason ||
-        finishReason ||
-        "No text returned";
-
-      return json(
-        { error: `Gemini returned no answer. Reason: ${blockReason}` },
-        502
-      );
+      const blockReason = geminiData?.promptFeedback?.blockReason || finishReason || "No text returned";
+      return json({ error: `Gemini returned no answer. Reason: ${blockReason}` }, 502);
     }
 
     return json({
@@ -491,25 +441,14 @@ export async function onRequestPost(context) {
       selectedClaimType,
       selectedChecklistGroup,
       selectedPortalSection,
-      selectedErrorCode,
-      selectedCoverageKey
+      selectedErrorCode
     });
   } catch (error) {
-    return json(
-      {
-        error: error?.message || "Unexpected server error."
-      },
-      500
-    );
+    return json({ error: error?.message || "Unexpected server error." }, 500);
   }
 }
 
 export async function onRequestGet(context) {
   const model = context?.env?.GEMINI_MODEL || DEFAULT_MODEL;
-
-  return json({
-    ok: true,
-    route: "/api/chat",
-    model
-  });
+  return json({ ok: true, route: "/api/chat", model });
 }
