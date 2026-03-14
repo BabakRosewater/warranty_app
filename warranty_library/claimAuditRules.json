@@ -1,0 +1,293 @@
+{
+  "claim_audit_rules": {
+    "metadata": {
+      "title": "Warranty Claim Audit Rules",
+      "version": "1.0.0",
+      "purpose": "Deterministic pre-submit and resubmit checks for Hyundai warranty-related claims using claim screen, repair order, VIS, STUI, and supporting documents."
+    },
+    "document_source_priority": {
+      "warranty": {
+        "vin": [
+          "claim_screen",
+          "vis_pdf",
+          "repair_order",
+          "stui_csv"
+        ],
+        "claim_ro_number": [
+          "claim_screen",
+          "repair_order"
+        ],
+        "final_mileage": [
+          "stui_csv_latest_for_vin",
+          "claim_screen",
+          "repair_order",
+          "vis_maintenance_history"
+        ],
+        "causal_part_number": [
+          "claim_screen",
+          "repair_order",
+          "parts_invoice"
+        ],
+        "replacement_part_number": [
+          "repair_order",
+          "parts_invoice",
+          "claim_screen"
+        ],
+        "campaign_status": [
+          "vis_pdf",
+          "repair_order"
+        ],
+        "prior_claim_history": [
+          "vis_pdf",
+          "resubmit_screen"
+        ]
+      },
+      "campaign": {
+        "vin": [
+          "claim_screen",
+          "vis_pdf",
+          "repair_order",
+          "stui_csv"
+        ],
+        "final_mileage": [
+          "stui_csv_latest_for_vin",
+          "claim_screen",
+          "repair_order"
+        ],
+        "campaign_status": [
+          "vis_pdf",
+          "claim_screen"
+        ],
+        "op_code": [
+          "claim_screen",
+          "repair_order"
+        ]
+      },
+      "rental": {
+        "vin": [
+          "claim_screen",
+          "repair_order",
+          "stui_csv"
+        ],
+        "related_claim_number": [
+          "claim_screen",
+          "repair_order"
+        ],
+        "rental_reason": [
+          "claim_screen",
+          "repair_order"
+        ],
+        "days": [
+          "claim_screen",
+          "rental_agreement"
+        ]
+      },
+      "pdi": {
+        "vin": [
+          "claim_screen",
+          "repair_order"
+        ],
+        "ro_number": [
+          "claim_screen",
+          "repair_order"
+        ],
+        "mileage": [
+          "claim_screen",
+          "repair_order"
+        ]
+      }
+    },
+    "field_resolution_rules": [
+      {
+        "field": "final_mileage",
+        "strategy": "prefer_latest_stui_event_for_claim_vin",
+        "fallback_order": [
+          "claim_screen.mileage_out",
+          "repair_order.mileage_out",
+          "vis.latest_maintenance_mileage"
+        ],
+        "reason": "STUI is the strongest attachment-side proof of the vehicle mileage tied to the final documentation event."
+      },
+      {
+        "field": "claim_basis_ro",
+        "strategy": "prefer_claim_screen_ro_if_present_else_repair_order_ro",
+        "reason": "The claim should be built on the RO shown on the claim screen unless the audit finds that RO already claimed or the repair story requires original RO cross-reference."
+      },
+      {
+        "field": "causal_part_family",
+        "strategy": "normalize_remove_dashes_then_compare_first_five_to_op_family_and_replacement_family",
+        "reason": "Many warranty entry failures occur because the causal part family, replacement part family, and labor op family do not align."
+      },
+      {
+        "field": "attachment_event_dates",
+        "strategy": "group_stui_rows_by_calendar_date_for_claim_vin",
+        "reason": "Multiple STUI event dates may indicate a clean wait-for-parts timeline or a mixed attachment package that needs explanation."
+      }
+    ],
+    "hard_stop_rules": [
+      {
+        "code": "AUDIT-001",
+        "title": "Missing VIN across primary documents",
+        "applies_to": [
+          "warranty",
+          "campaign",
+          "rental",
+          "pdi"
+        ],
+        "severity": "hard_stop",
+        "logic_key": "missing_vin",
+        "description": "A claim cannot be audited safely if the VIN cannot be identified from the uploaded or pasted materials."
+      },
+      {
+        "code": "AUDIT-002",
+        "title": "Causal part family mismatch",
+        "applies_to": [
+          "warranty"
+        ],
+        "severity": "hard_stop",
+        "logic_key": "causal_part_family_mismatch",
+        "description": "The entered causal part does not align with the replacement part family or the labor op family."
+      },
+      {
+        "code": "AUDIT-003",
+        "title": "Final mileage mismatch against latest STUI",
+        "applies_to": [
+          "warranty",
+          "campaign"
+        ],
+        "severity": "hard_stop",
+        "logic_key": "claim_mileage_mismatch_with_stui",
+        "description": "The mileage entered on the claim does not match the latest STUI-captured mileage for the same VIN and repair event."
+      },
+      {
+        "code": "AUDIT-004",
+        "title": "Required STUI categories missing",
+        "applies_to": [
+          "warranty",
+          "campaign"
+        ],
+        "severity": "hard_stop",
+        "logic_key": "required_attachment_categories_missing",
+        "description": "Required attachment categories are missing for the claim type."
+      },
+      {
+        "code": "AUDIT-005",
+        "title": "Current claim built on an earlier RO already shown in claim history",
+        "applies_to": [
+          "warranty",
+          "campaign"
+        ],
+        "severity": "hard_stop",
+        "logic_key": "claim_ro_already_claimed_in_vis",
+        "description": "VIS shows the same RO already claimed; the current claim should be corrected or moved to the correct RO before submission."
+      }
+    ],
+    "warning_rules": [
+      {
+        "code": "AUDIT-101",
+        "title": "Multiple STUI attachment dates detected",
+        "applies_to": [
+          "warranty",
+          "campaign",
+          "rental"
+        ],
+        "severity": "warning",
+        "logic_key": "multiple_stui_event_dates",
+        "description": "STUI attachments appear to come from more than one repair event date. Confirm whether this is a clean wait-for-parts story or a mixed attachment package."
+      },
+      {
+        "code": "AUDIT-102",
+        "title": "Campaign or recall language found in RO history while claim type is warranty",
+        "applies_to": [
+          "warranty"
+        ],
+        "severity": "warning",
+        "logic_key": "campaign_language_found_in_history",
+        "description": "Campaign or recall language was found in the RO or VIS history. Confirm that the current issue is separate from campaign work."
+      },
+      {
+        "code": "AUDIT-103",
+        "title": "Open campaigns found on VIS",
+        "applies_to": [
+          "warranty",
+          "campaign"
+        ],
+        "severity": "warning",
+        "logic_key": "open_campaigns_found_on_vis",
+        "description": "VIS indicates open campaigns not yet performed. The current issue may need campaign separation review."
+      },
+      {
+        "code": "AUDIT-104",
+        "title": "Wait-for-parts pattern detected",
+        "applies_to": [
+          "warranty",
+          "rental"
+        ],
+        "severity": "warning",
+        "logic_key": "wait_for_parts_pattern_detected",
+        "description": "The dates and supporting records suggest an incomplete repair followed by a later completion. Confirm original presentation data and cross-reference the earlier RO."
+      },
+      {
+        "code": "AUDIT-105",
+        "title": "Mileage differs between claim screen and repair order",
+        "applies_to": [
+          "warranty",
+          "campaign"
+        ],
+        "severity": "warning",
+        "logic_key": "claim_mileage_mismatch_with_ro",
+        "description": "The claim mileage and repair order mileage do not match. Confirm final mileage before submission."
+      },
+      {
+        "code": "AUDIT-106",
+        "title": "No complaint/cause/correction detail found",
+        "applies_to": [
+          "warranty"
+        ],
+        "severity": "warning",
+        "logic_key": "missing_ccc_story",
+        "description": "The pasted or extracted claim screen text does not clearly show complaint, cause, and correction detail."
+      }
+    ],
+    "info_rules": [
+      {
+        "code": "AUDIT-201",
+        "title": "Earlier related RO found in VIS history",
+        "applies_to": [
+          "warranty",
+          "campaign"
+        ],
+        "severity": "info",
+        "logic_key": "related_prior_ro_found",
+        "description": "VIS shows earlier maintenance or claim history for the same VIN. This may simply be context, or it may matter for a wait-for-parts or repeat-visit story."
+      },
+      {
+        "code": "AUDIT-202",
+        "title": "Prior approval history not found on VIS",
+        "applies_to": [
+          "warranty",
+          "campaign",
+          "rental"
+        ],
+        "severity": "info",
+        "logic_key": "pa_history_not_found",
+        "description": "No prior approval history was found on VIS. This is informational unless the repair type requires PA."
+      }
+    ],
+    "required_attachment_categories": {
+      "warranty": [
+        "VIN",
+        "Odometer/Mileage",
+        "Part"
+      ],
+      "campaign": [
+        "VIN",
+        "Odometer/Mileage"
+      ],
+      "rental": [
+        "Repair Order"
+      ],
+      "pdi": []
+    }
+  }
+}

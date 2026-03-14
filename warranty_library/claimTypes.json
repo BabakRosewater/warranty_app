@@ -2,263 +2,317 @@
   "claim_types": [
     {
       "key": "warranty",
-      "label": "Warranty",
-      "category": "core_claim",
+      "label": "Warranty Claim",
+      "category": "primary",
       "screen_name": "Warranty Claim Create/Edit/Submit",
+      "description": "Standard warranty repair claim for warrantable defects, goodwill situations where supported, and most claim-entry issues that require full labor, parts, and attachment review.",
       "portal_path": [
         "Warranty",
         "Claims",
         "Claim Entry/Edit/Submit"
       ],
-      "description": "Standard Hyundai warranty repair claim used for warrantable repairs, goodwill-related warranty processing, and normal claim entry tied to complaint, cause, correction, labor, parts, and attachments.",
       "when_to_use": [
-        "Use for standard warrantable repairs.",
-        "Use when the claim requires complaint, cause, and correction entry.",
-        "Use when labor operation lines, part lines, and summary amounts must be entered.",
-        "Use when VIN, mileage, causal part, and supporting attachments are needed."
+        "Use for standard Hyundai warranty repairs that are not campaign-only claims.",
+        "Use when labor, parts, and narrative claim detail must be entered on the full warranty screen."
       ],
       "required_groups": [
         "basic_information",
         "op_code_information",
-        "details"
-      ],
-      "optional_groups": [
-        "scan_tool_information",
         "part_information",
         "attachments",
+        "details",
         "summary"
-      ],
-      "common_required_fields": [
-        "ro_number",
-        "vin",
-        "repair_date_in",
-        "repair_date_out",
-        "mileage_in",
-        "mileage_out",
-        "service_advisor",
-        "technician",
-        "causal_part_number",
-        "nature_group_code",
-        "cause_code",
-        "complaint_description",
-        "cause_description",
-        "correction_description"
-      ],
-      "common_attachments": [
-        "VIN",
-        "Odometer/Mileage",
-        "Part",
-        "Repair Order",
-        "Sublet Invoice",
-        "Customer DMV Registration",
-        "Original Owner Affidavit",
-        "Oil Dipstick Photo",
-        "Transmission Diagnostic Worksheet",
-        "Other Attachment"
       ],
       "related_workflows": [
         "resubmit",
-        "rental"
+        "rental",
+        "claim_audit"
       ],
       "source_sections": [
         "6.1",
         "6.1.1",
         "6.2.1"
-      ]
+      ],
+      "audit_profile": {
+        "required_documents": [
+          "claim_screen_pdf",
+          "repair_order_pdf",
+          "vis_pdf",
+          "stui_csv"
+        ],
+        "recommended_documents": [
+          "parts_invoice_pdf"
+        ],
+        "common_failure_modes": [
+          "causal_part_mismatch",
+          "mileage_mismatch",
+          "missing_attachment_category",
+          "mixed_attachment_dates",
+          "related_prior_ro_confusion"
+        ]
+      }
     },
     {
       "key": "campaign",
-      "label": "Campaign",
-      "category": "core_claim",
+      "label": "Campaign Claim",
+      "category": "primary",
       "screen_name": "Campaign Claim Create/Edit/Submit",
+      "description": "Claim for completed campaign or recall repairs using the campaign claim screen.",
       "portal_path": [
         "Warranty",
         "Claims",
-        "Claim Entry/Edit/Submit"
+        "Claim Entry/Edit/Submit",
+        "Campaign Claim"
       ],
-      "description": "Campaign or recall claim used when Hyundai publishes a campaign remedy and the dealer is submitting a claim tied to campaign operation code and campaign description.",
       "when_to_use": [
-        "Use for recall or campaign repairs.",
-        "Use when the claim is tied to a campaign op code.",
-        "Use when campaign description and technician information must be recorded.",
-        "Use when campaign attachment support is needed."
+        "Use when the repair is tied to an official campaign or recall bulletin.",
+        "Use when the campaign screen requires OP Code, campaign description, VIN, technician, dates, and mileage only."
       ],
       "required_groups": [
-        "basic_information"
-      ],
-      "optional_groups": [
+        "basic_information",
         "attachments"
       ],
-      "common_required_fields": [
-        "ro_number",
-        "op_code",
-        "vin",
-        "technician",
-        "repair_date_in",
-        "repair_date_out",
-        "mileage_in",
-        "mileage_out"
+      "related_workflows": [
+        "resubmit",
+        "claim_audit"
       ],
-      "common_attachments": [
-        "VIN",
-        "Odometer/Mileage",
-        "Repair Order",
-        "Other Attachment"
-      ],
-      "related_workflows": [],
       "source_sections": [
-        "campaign_tsb",
+        "6.1",
         "6.2.1"
-      ]
+      ],
+      "audit_profile": {
+        "required_documents": [
+          "claim_screen_pdf",
+          "repair_order_pdf",
+          "vis_pdf",
+          "stui_csv"
+        ],
+        "recommended_documents": [],
+        "common_failure_modes": [
+          "missing_vin_attachment",
+          "mileage_mismatch",
+          "campaign_status_confusion"
+        ]
+      }
     },
     {
       "key": "rental",
-      "label": "Rental",
-      "category": "support_claim",
-      "screen_name": "Rental Claim Detail",
+      "label": "Rental / SRC Claim",
+      "category": "supporting",
+      "screen_name": "Rental Claim",
+      "description": "Claim for rental, SRC, third-party rental, or rideshare reimbursement tied to a corresponding repair claim.",
       "portal_path": [
         "Warranty",
         "Claims",
         "Rental Claim"
       ],
-      "description": "Rental reimbursement claim used when the dealership is submitting transportation-related reimbursement tied to a repaired vehicle claim or qualifying warranty/campaign repair event.",
       "when_to_use": [
-        "Use when a rental, SRC, 3rd party rental, or similar transportation reimbursement must be claimed.",
-        "Use when the repaired vehicle claim and repair order must be tied back to the rental expense.",
-        "Use when rental dates, rental type, amount, and rental reason must be documented."
+        "Use for Service Rental Car, 3rd Party Rental, or rideshare reimbursement claims tied to an eligible repair.",
+        "Use only when there is a corresponding repair claim or eligible condition that supports transportation reimbursement."
       ],
       "required_groups": [
-        "rental_claim",
-        "repaired_vehicle"
-      ],
-      "optional_groups": [
-        "details",
+        "basic_information",
+        "repaired_vehicle",
         "attachments"
-      ],
-      "common_required_fields": [
-        "rental_start_date",
-        "days",
-        "return_date",
-        "rental_type",
-        "vin",
-        "amount",
-        "rental_reason",
-        "repair_order_number",
-        "repair_order_open_date",
-        "mileage"
-      ],
-      "common_attachments": [
-        "Repair Order",
-        "Sublet Invoice",
-        "Other Attachment"
       ],
       "related_workflows": [
         "warranty",
-        "campaign"
+        "claim_audit"
       ],
       "source_sections": [
-        "5.0.8",
-        "6.2.1"
-      ]
+        "5.0.8"
+      ],
+      "audit_profile": {
+        "required_documents": [
+          "claim_screen_pdf",
+          "repair_order_pdf"
+        ],
+        "recommended_documents": [
+          "stui_csv"
+        ],
+        "common_failure_modes": [
+          "missing_related_claim",
+          "days_not_supported",
+          "rental_reason_not_supported"
+        ]
+      }
     },
     {
       "key": "pdi",
-      "label": "PDI",
-      "category": "pre_delivery_claim",
+      "label": "PDI Claim",
+      "category": "supporting",
       "screen_name": "PDI Claim Create/Edit/Submit",
+      "description": "Pre-Delivery Inspection claim screen for PDI-related reimbursement and tracking.",
       "portal_path": [
         "Warranty",
         "Claims",
         "PDI Claims"
       ],
-      "description": "Pre-Delivery Inspection claim used for PDI-related submission tied to RO/VIN, mileage, RO date, and static or dynamic inspection indicators.",
       "when_to_use": [
-        "Use for PDI submission.",
-        "Use when the claim is based on pre-delivery inspection completion.",
-        "Use when RO, VIN, mileage, and PDI status information must be recorded."
+        "Use for PDI claim entry and settlement workflows.",
+        "Use when the claim is driven by PDI completion and associated reimbursement reporting."
       ],
       "required_groups": [
         "basic_information",
-        "ro_vin_information"
+        "attachments"
       ],
-      "optional_groups": [
-        "attachments",
-        "reporting"
+      "related_workflows": [
+        "claim_audit"
       ],
-      "common_required_fields": [
-        "repair_order_number",
-        "vin",
-        "mileage_in",
-        "mileage_out",
-        "repair_order_date"
-      ],
-      "common_attachments": [
-        "Repair Order",
-        "Other Attachment"
-      ],
-      "related_workflows": [],
       "source_sections": [
-        "pdi_program_rules"
-      ]
+        "6.1"
+      ],
+      "audit_profile": {
+        "required_documents": [
+          "claim_screen_pdf",
+          "repair_order_pdf"
+        ],
+        "recommended_documents": [],
+        "common_failure_modes": [
+          "missing_ro_vin_row",
+          "mileage_missing"
+        ]
+      }
+    },
+    {
+      "key": "maintenance",
+      "label": "Maintenance Claim",
+      "category": "other",
+      "screen_name": "Maintenance Claim",
+      "description": "Reserved for maintenance-related claim workflows accessible within WebDCS.",
+      "portal_path": [
+        "Warranty",
+        "Claims",
+        "Maintenance Claim"
+      ],
+      "when_to_use": [
+        "Use only when Hyundai instructs the store to submit through the maintenance claim workflow."
+      ],
+      "required_groups": [
+        "basic_information"
+      ],
+      "related_workflows": [
+        "claim_audit"
+      ],
+      "source_sections": [
+        "6.1"
+      ],
+      "audit_profile": {
+        "required_documents": [
+          "claim_screen_pdf"
+        ],
+        "recommended_documents": [
+          "repair_order_pdf"
+        ],
+        "common_failure_modes": []
+      }
+    },
+    {
+      "key": "foreign",
+      "label": "Foreign Claim",
+      "category": "other",
+      "screen_name": "Foreign Claims",
+      "description": "Reserved for foreign-claim workflows accessible within WebDCS.",
+      "portal_path": [
+        "Warranty",
+        "Foreign Claims"
+      ],
+      "when_to_use": [
+        "Use only when Hyundai directs the claim into the foreign-claim workflow."
+      ],
+      "required_groups": [
+        "basic_information"
+      ],
+      "related_workflows": [
+        "claim_audit"
+      ],
+      "source_sections": [
+        "6.1"
+      ],
+      "audit_profile": {
+        "required_documents": [
+          "claim_screen_pdf"
+        ],
+        "recommended_documents": [],
+        "common_failure_modes": []
+      }
+    },
+    {
+      "key": "cuv",
+      "label": "CUV Claim",
+      "category": "other",
+      "screen_name": "CUV Claims",
+      "description": "Reserved for Hyundai CUV claim workflows where applicable.",
+      "portal_path": [
+        "Warranty",
+        "CUV Claims"
+      ],
+      "when_to_use": [
+        "Use only when the claim belongs to the CUV-specific workflow."
+      ],
+      "required_groups": [
+        "basic_information"
+      ],
+      "related_workflows": [
+        "claim_audit"
+      ],
+      "source_sections": [
+        "6.1"
+      ],
+      "audit_profile": {
+        "required_documents": [
+          "claim_screen_pdf"
+        ],
+        "recommended_documents": [],
+        "common_failure_modes": []
+      }
     },
     {
       "key": "resubmit",
-      "label": "Resubmit / Returned Claim",
-      "category": "correction_workflow",
+      "label": "Returned Claim / Resubmit",
+      "category": "supporting",
       "screen_name": "Warranty Claim ReSubmit",
+      "description": "Workflow for fixing and resubmitting a claim returned by Hyundai.",
       "portal_path": [
         "Warranty",
         "Claims",
         "Claim Search Resubmit"
       ],
-      "description": "Returned-claim correction workflow used when a previously submitted warranty claim comes back in Return status and must be corrected, explained, and resubmitted.",
       "when_to_use": [
-        "Use when a submitted warranty claim is returned.",
-        "Use when a return code and return message must be reviewed.",
-        "Use when dealer reply or correction activity is required before resubmission.",
-        "Use when the original warranty claim structure must be reviewed and repaired."
+        "Use when a claim has already been returned and the store needs to correct and resubmit it.",
+        "Use together with the original claim screen, return reason, and supporting documents."
       ],
       "required_groups": [
         "header_status",
         "return_reason",
-        "basic_information"
-      ],
-      "optional_groups": [
-        "dealer_reply",
-        "remark_history",
-        "op_code_information",
-        "part_information",
-        "attachments",
-        "details",
-        "summary"
-      ],
-      "common_required_fields": [
-        "ro_number",
-        "hma_claim_number",
-        "status",
-        "return_code",
-        "return_message"
-      ],
-      "common_attachments": [
-        "VIN",
-        "Odometer/Mileage",
-        "Part",
-        "Repair Order",
-        "Sublet Invoice",
-        "Customer DMV Registration",
-        "Original Owner Affidavit",
-        "Oil Dipstick Photo",
-        "Transmission Diagnostic Worksheet",
-        "Other Attachment"
+        "remark_history"
       ],
       "related_workflows": [
-        "warranty"
+        "warranty",
+        "campaign",
+        "error_fix",
+        "claim_audit"
       ],
       "source_sections": [
-        "6.0",
         "6.1",
         "6.2.1"
-      ]
+      ],
+      "audit_profile": {
+        "required_documents": [
+          "resubmit_screen_pdf",
+          "claim_screen_pdf",
+          "repair_order_pdf"
+        ],
+        "recommended_documents": [
+          "vis_pdf",
+          "stui_csv"
+        ],
+        "common_failure_modes": [
+          "return_code_not_addressed",
+          "dealer_reply_missing",
+          "same_error_not_fixed"
+        ]
+      }
     }
   ]
 }

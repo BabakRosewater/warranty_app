@@ -1,0 +1,189 @@
+{
+  "document_type_schema": {
+    "metadata": {
+      "title": "Warranty Document Type Schema",
+      "version": "1.0.0"
+    },
+    "document_types": [
+      {
+        "key": "claim_screen_pdf",
+        "label": "Warranty or Campaign Claim Screen",
+        "required_for": [
+          "warranty",
+          "campaign",
+          "rental",
+          "pdi",
+          "resubmit"
+        ],
+        "description": "WebDCS claim entry, edit, submit, or resubmit screen output.",
+        "common_labels": [
+          "R.O. #",
+          "Claim #",
+          "VIN",
+          "Mileage (out)",
+          "Causal Part #",
+          "OP Code Information",
+          "Attachments",
+          "Complaint Description"
+        ],
+        "extract_targets": [
+          "claim_number",
+          "ro_number",
+          "vin",
+          "repair_dates",
+          "mileages",
+          "causal_part_number",
+          "op_codes",
+          "part_numbers",
+          "attachment_categories",
+          "detail_fields"
+        ],
+        "example_notes": [
+          "Used to validate the actual values being submitted to Hyundai."
+        ]
+      },
+      {
+        "key": "repair_order_pdf",
+        "label": "Repair Order Packet",
+        "required_for": [
+          "warranty",
+          "campaign",
+          "rental",
+          "pdi"
+        ],
+        "description": "Customer-facing and internal RO copies, tech story, time logs, and accounting copies.",
+        "common_labels": [
+          "Repair Order",
+          "R.O. #",
+          "Complaint",
+          "Cause",
+          "Correction",
+          "Mileage In",
+          "Mileage Out",
+          "Part #"
+        ],
+        "extract_targets": [
+          "ro_number",
+          "vin",
+          "open_date",
+          "close_date",
+          "mileage_in",
+          "mileage_out",
+          "complaint",
+          "cause",
+          "correction",
+          "replacement_part_numbers",
+          "campaign_language"
+        ],
+        "example_notes": [
+          "The packet may include multiple copies and internal pages; use the clearest customer or warranty pages first."
+        ]
+      },
+      {
+        "key": "vis_pdf",
+        "label": "Vehicle Information System (VIS) Record",
+        "required_for": [
+          "warranty",
+          "campaign"
+        ],
+        "description": "Hyundai Vehicle Information screen or printout showing warranty start, campaign status, claim history, maintenance history, and owner context.",
+        "common_labels": [
+          "Vehicle Infomation",
+          "Warranty Start Date",
+          "Original Owner",
+          "Campaign Not Performed",
+          "Prior Approval Request History",
+          "Warranty Claim History",
+          "Maintenance History"
+        ],
+        "extract_targets": [
+          "vin",
+          "warranty_start_date",
+          "original_owner",
+          "campaign_not_performed_count",
+          "prior_approval_request_count",
+          "vis_claim_history_ro_numbers",
+          "vis_maintenance_history_ro_numbers"
+        ],
+        "example_notes": [
+          "Use this to determine whether an earlier RO was already claimed and whether open campaigns exist."
+        ]
+      },
+      {
+        "key": "stui_csv",
+        "label": "STUI Portal Export",
+        "required_for": [
+          "warranty",
+          "campaign"
+        ],
+        "description": "CSV export of STUI portal attachment records.",
+        "common_labels": [
+          "VIN",
+          "STUI Create Date",
+          "Mileage",
+          "Type",
+          "Attachment Name",
+          "Category",
+          "VIN Captured",
+          "Mileage Captured"
+        ],
+        "extract_targets": [
+          "vin",
+          "attachment_dates",
+          "mileages",
+          "categories",
+          "latest_mileage_for_vin"
+        ],
+        "example_notes": [
+          "Use this to verify the latest mileage and detect mixed attachment event dates."
+        ]
+      },
+      {
+        "key": "parts_invoice_pdf",
+        "label": "Parts Invoice / Picking Ticket",
+        "required_for": [
+          "warranty"
+        ],
+        "description": "Internal or intercompany parts invoice that shows the actual part sold or installed.",
+        "common_labels": [
+          "Picking Ticket",
+          "Invoice",
+          "Part #",
+          "Qty",
+          "Amount"
+        ],
+        "extract_targets": [
+          "part_numbers",
+          "invoice_number",
+          "amounts"
+        ],
+        "example_notes": [
+          "Very useful when causal part and replacement part mismatches need to be confirmed."
+        ]
+      },
+      {
+        "key": "resubmit_screen_pdf",
+        "label": "Returned Claim / Resubmit Screen",
+        "required_for": [
+          "resubmit"
+        ],
+        "description": "WebDCS resubmit screen with return code, message, and remark history.",
+        "common_labels": [
+          "Return",
+          "Remark History",
+          "Dealer PWA Reply",
+          "Claim returned for correction"
+        ],
+        "extract_targets": [
+          "return_code",
+          "return_message",
+          "remark_history",
+          "dealer_reply_needed"
+        ],
+        "example_notes": [
+          "Used to guide repair of a previously returned claim."
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "audit_outcome_templates": {
+    "metadata": {
+      "title": "Audit Outcome Templates",
+      "version": "1.0.0"
+    },
+    "severity_definitions": {
+      "hard_stop": {
+        "label": "Hard Stop",
+        "ui_color": "red",
+        "description": "Do not submit until this is corrected or explained with supporting documentation."
+      },
+      "warning": {
+        "label": "Warning",
+        "ui_color": "amber",
+        "description": "This may be valid, but it requires review and likely a clearer story or better supporting documents."
+      },
+      "info": {
+        "label": "Info",
+        "ui_color": "slate",
+        "description": "Context that may matter for the claim but does not block submission by itself."
+      },
+      "pass": {
+        "label": "Pass",
+        "ui_color": "green",
+        "description": "No discrepancy was found for this check."
+      }
+    },
+    "next_action_templates": {
+      "hard_stop": "Correct this issue before submitting or resubmitting the claim.",
+      "warning": "Review this with the advisor, technician, or warranty admin and tighten the story or documents before submitting.",
+      "info": "Keep this in mind while reviewing the rest of the file.",
+      "pass": "No action required."
+    },
+    "summary_templates": {
+      "ready": "No hard stops were found. The claim can move to final manual review.",
+      "blocked": "One or more hard stops were found. Correct them before submitting.",
+      "review": "No hard stops were found, but warnings remain. Review them before final submission."
+    }
+  }
+}

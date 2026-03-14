@@ -1,395 +1,98 @@
 {
   "coverage_guide": {
-    "meta": {
-      "title": "2026 Hyundai Warranty Coverage Guide",
-      "version": "1.0",
-      "purpose": "Structured coverage lookup for front-end coverage search, assistant responses, and claim guidance.",
+    "metadata": {
+      "title": "Hyundai Warranty Coverage Guide",
+      "status": "starter_scaffold",
       "notes": [
-        "This guide is for coverage lookup and explanation.",
-        "Use claimPortalSchema.json for portal field structure.",
-        "Use claimRequirements.json for documentation and submission requirements.",
-        "Use claimErrorRules.json for return and validation issue handling."
+        "This file is intended to hold normalized coverage rules from the Hyundai Warranty Coverage Guide.",
+        "Each coverage item should eventually be tied to time, mileage, ownership, exclusions, and source references."
       ]
     },
     "coverage_categories": [
       {
-        "key": "general_warranty_statement",
-        "label": "General Warranty Statement",
-        "category": "foundation",
-        "source_sections": [
-          "4.0",
-          "4.0.1"
-        ],
-        "summary": "Hyundai Motor America provides express limited warranties on qualifying new Hyundai vehicles and reimburses dealers for qualifying repairs, replacements, or adjustments within the applicable warranty terms.",
-        "applies_to": [
-          "New Hyundai vehicles distributed by Hyundai Motor America",
-          "Dealer reimbursement for qualifying warrantable repairs"
-        ],
-        "core_coverage": [
-          "Repair, replacement, or adjustment of qualifying defective parts",
-          "Coverage under Hyundai limited warranty terms",
-          "Dealer reimbursement when the repair meets warranty requirements"
-        ],
-        "limits": [],
-        "transferability": [],
-        "not_covered": [],
-        "claim_notes": [
-          "Coverage depends on the specific limited warranty and the vehicle being within the applicable warranty period."
-        ]
+        "key": "new_vehicle_limited",
+        "label": "New Vehicle Limited Warranty",
+        "description": "General new vehicle warranty coverage category.",
+        "items": []
       },
       {
-        "key": "warranty_period_and_transferability",
-        "label": "Warranty Period and Transferability",
-        "category": "foundational_rule",
-        "source_sections": [
-          "4.0.3"
-        ],
-        "summary": "Warranty begins on retail sale, date of first use, or demonstrator/company-car in-service date, whichever occurs first. Most Hyundai warranty coverage transfers to subsequent owners, except the 10-year/100,000-mile Powertrain Limited Warranty.",
-        "applies_to": [
-          "Retail sold vehicles",
-          "Demonstrator vehicles",
-          "Company cars",
-          "Subsequent owners"
-        ],
-        "core_coverage": [
-          "Unexpired Hyundai warranty coverage transfers to subsequent owners",
-          "Most Hyundai Motor America warranty coverage follows the vehicle"
-        ],
-        "limits": [
-          {
-            "type": "transferability_exclusion",
-            "value": "10 year/100,000 mile Powertrain Limited Warranty",
-            "notes": "Excluded from general transferability treatment described for change of ownership."
-          }
-        ],
-        "transferability": [
-          "Most Hyundai warranty coverage applies to the vehicle and transfers to later owners.",
-          "Original selling dealer must disclose start date if vehicle first went into service as a demonstrator or company car."
-        ],
-        "not_covered": [
-          "10 year/100,000 mile Powertrain Limited Warranty is excluded from the general change-of-ownership transfer rule described in this section."
-        ],
-        "claim_notes": [
-          "Warranty start date depends on date of retail sale, first use, or first in-service date.",
-          "RDR / DCS data controls first-use recording."
-        ]
+        "key": "powertrain_limited",
+        "label": "Powertrain Limited Warranty",
+        "description": "Powertrain coverage including ownership-sensitive rules where applicable.",
+        "items": []
       },
       {
-        "key": "warranty_jurisdiction",
-        "label": "Warranty Jurisdiction",
-        "category": "jurisdiction_rule",
-        "source_sections": [
-          "4.0.7"
-        ],
-        "summary": "Warranty applicability depends on vehicle specifications, Hyundai Motor America distribution status, and registration/operation geography.",
-        "applies_to": [
-          "Vehicles built to United States specifications",
-          "Vehicles distributed by Hyundai Motor America",
-          "Vehicles registered and operated in covered jurisdictions"
-        ],
-        "core_coverage": [
-          "New Vehicle Limited Warranty for qualifying U.S.-spec vehicles",
-          "Powertrain Limited Warranty for qualifying U.S.-spec vehicles",
-          "Anti-Perforation Limited Warranty for qualifying U.S.-spec vehicles",
-          "Federal Emissions warranties for qualifying vehicles in covered U.S. and territory jurisdictions"
-        ],
-        "limits": [
-          {
-            "type": "jurisdiction",
-            "value": "50 United States and Washington, D.C.",
-            "notes": "Primary jurisdiction for major Hyundai vehicle warranties."
-          },
-          {
-            "type": "emissions_jurisdiction",
-            "value": "Puerto Rico, Virgin Islands, Guam, American Samoa, Northern Mariana Islands",
-            "notes": "Federal emissions warranty extends to these jurisdictions."
-          }
-        ],
-        "transferability": [],
-        "not_covered": [
-          "Vehicles built to non-U.S. specifications and distributed outside HMA follow the warranty of the applicable country rather than the U.S. Hyundai warranty structure.",
-          "Force majeure / Acts of God-type events are excluded from HMA liability for breach of warranty in this section."
-        ],
-        "claim_notes": [
-          "For non-standard jurisdiction situations, dealer may need to contact Hyundai Customer Care Center before repair."
-        ]
+        "key": "anti_perforation",
+        "label": "Anti-Perforation Limited Warranty",
+        "description": "Corrosion perforation-related coverage.",
+        "items": []
       },
       {
-        "key": "new_vehicle_limited_warranty_basic",
-        "label": "New Vehicle Limited Warranty - Basic Covered Repair Rule",
-        "category": "core_coverage",
-        "source_sections": [
-          "4.1.6"
-        ],
-        "summary": "Repair or replacement of Hyundai-manufactured or installed components found defective in material or factory workmanship under normal use and maintenance, subject to warranty terms and exclusions.",
-        "applies_to": [
-          "Components originally manufactured or installed by Hyundai Motor Company, Hyundai Motor Group, HMMA, KMMG, KMM, or HMA",
-          "Defects in material or factory workmanship",
-          "Normal use and maintenance"
-        ],
-        "core_coverage": [
-          "Repair of defective covered component",
-          "Replacement of defective covered component",
-          "Towing to nearest Hyundai dealership or authorized service location when vehicle is inoperable due to a warrantable defect",
-          "Use of new Hyundai Genuine Parts or Hyundai-authorized remanufactured parts in repairs"
-        ],
-        "limits": [
-          {
-            "type": "time",
-            "value": "60 months",
-            "notes": "Towing expense rule discussed in this section."
-          },
-          {
-            "type": "mileage",
-            "value": "60,000 miles",
-            "notes": "Towing expense rule discussed in this section."
-          }
-        ],
-        "transferability": [],
-        "not_covered": [
-          "Items specifically listed under Section 4.1.15 What is Not Covered."
-        ],
-        "claim_notes": [
-          "This is the baseline component defect coverage rule.",
-          "Always read together with the What is Not Covered section."
-        ]
+        "key": "federal_emissions",
+        "label": "Federal Emissions Warranty",
+        "description": "Federal emissions defect and performance warranty coverage.",
+        "items": []
       },
       {
-        "key": "what_is_not_covered",
-        "label": "What is Not Covered",
-        "category": "exclusions",
-        "source_sections": [
-          "4.1.15"
-        ],
-        "summary": "Defines Hyundai warranty exclusions, wear items, excluded damage causes, and diagnostic/non-warrantable situations.",
-        "applies_to": [
-          "New Vehicle Limited Warranty exclusion review",
-          "Coverage denial analysis",
-          "Repair-order and claim review"
-        ],
-        "core_coverage": [
-          "Normal maintenance services are covered only when performed as part of a covered warrantable repair.",
-          "Some normal maintenance items may be covered when replacement is due to defect in material or factory workmanship."
-        ],
-        "limits": [
-          {
-            "type": "time",
-            "value": "12 months",
-            "notes": "Normal maintenance item defect-related coverage."
-          },
-          {
-            "type": "mileage",
-            "value": "12,000 miles",
-            "notes": "Normal maintenance item defect-related coverage."
-          },
-          {
-            "type": "replacement_interval",
-            "value": "First scheduled maintenance replacement interval",
-            "notes": "Applies to certain defect-related maintenance item coverage."
-          }
-        ],
-        "transferability": [],
-        "not_covered": [
-          "Normal maintenance services unless performed as part of a covered warrantable repair",
-          "Normal deterioration or wear items",
-          "Vehicles with altered odometer mileage",
-          "Scrapped vehicles with salvage certificate issued",
-          "Damage from negligence of proper maintenance",
-          "Damage from misuse, abuse, accident, theft, or fire",
-          "Damage from improper or insufficient fuel, fluids, or lubricants",
-          "Damage from non-genuine parts or unapproved accessories when causally related",
-          "Damage from modifications, tampering, or improper repair",
-          "Tires under separate tire manufacturer warranty",
-          "Damage from airborne fallout, salt, hail, windstorms, Acts of God",
-          "Stone chipping, road debris, paint scratches, dents, similar body damage",
-          "Parts or glass broken during removal as part of repair",
-          "Diagnostic labor that does not establish a warrantable condition",
-          "Incidental or consequential damages",
-          "Implied warranties beyond duration of the limited warranty"
-        ],
-        "claim_notes": [
-          "Coverage is not automatically denied just because a non-Hyundai part exists; denial depends on whether that part, misuse, or improper maintenance caused or contributed to the problem."
-        ]
+        "key": "california_emissions",
+        "label": "California Emissions Warranty",
+        "description": "California emissions-related coverage rules.",
+        "items": []
       },
       {
-        "key": "maintenance_item_defect_coverage",
-        "label": "Maintenance Item Defect Coverage",
-        "category": "exception_coverage",
-        "source_sections": [
-          "4.1.15"
-        ],
-        "summary": "Certain maintenance items may still be covered when replacement is required because of defect in material or factory workmanship rather than normal wear.",
-        "applies_to": [
-          "Belts",
-          "Brake pads and linings",
-          "Clutch linings",
-          "Filters",
-          "Wiper blades",
-          "Bulbs except where otherwise excluded"
-        ],
-        "core_coverage": [
-          "Replacement of specified maintenance items when failure is due to defect in material or factory workmanship",
-          "Wheel alignment and tire rotation when performed as part of a covered warrantable repair"
-        ],
-        "limits": [
-          {
-            "type": "time",
-            "value": "12 months",
-            "notes": "From date of original retail delivery or first use."
-          },
-          {
-            "type": "mileage",
-            "value": "12,000 miles",
-            "notes": "Whichever occurs first."
-          },
-          {
-            "type": "replacement_interval",
-            "value": "First scheduled maintenance replacement interval",
-            "notes": "Whichever occurs first."
-          }
-        ],
-        "transferability": [],
-        "not_covered": [
-          "Normal wear and consumable replacement not caused by defect"
-        ],
-        "claim_notes": [
-          "This is an exception inside the larger exclusions section."
-        ]
+        "key": "adjustment",
+        "label": "Adjustment Coverage",
+        "description": "Adjustment-type coverage where Hyundai allows short-term correction coverage.",
+        "items": []
       },
       {
-        "key": "transportation_reimbursement_boundary",
-        "label": "Transportation Reimbursement Boundary",
-        "category": "program_boundary",
-        "source_sections": [
-          "5.0.8"
-        ],
-        "summary": "SRC, 3rd Party Rental, and Rideshare reimbursement programs may support qualifying repairs but are not themselves part of the New Vehicle Limited Warranty.",
-        "applies_to": [
-          "Service Rental Car",
-          "3rd Party Rental",
-          "Rideshare reimbursement"
-        ],
-        "core_coverage": [
-          "Transportation reimbursement for qualifying repair situations under Hyundai policy rules"
-        ],
-        "limits": [
-          {
-            "type": "program_boundary",
-            "value": "Not considered part of the New Vehicle Limited Warranty",
-            "notes": "Important program distinction."
-          }
-        ],
-        "transferability": [],
-        "not_covered": [
-          "Transportation options are not part of NVLW itself"
-        ],
-        "claim_notes": [
-          "Use claim and rental workflow logic, not pure coverage logic, when processing these items."
-        ]
+        "key": "battery_12v",
+        "label": "12V Battery Coverage",
+        "description": "Coverage rules for the conventional 12V battery.",
+        "items": []
       },
       {
-        "key": "goodwill_hsa_extension",
-        "label": "HSA Goodwill Self-Authorization Extension",
-        "category": "goodwill_extension",
-        "source_sections": [
-          "5.4.6"
-        ],
-        "summary": "Hyundai Dealer Self-Authorization (HSA) allows qualifying enrolled dealers to self-authorize certain out-of-warranty and selected warranty-related goodwill repairs within specified limits.",
-        "applies_to": [
-          "Qualifying enrolled HSA dealers",
-          "Selected out-of-warranty goodwill repairs",
-          "Specific beyond-coverage repair windows"
-        ],
-        "core_coverage": [
-          "Selected goodwill repairs processed directly upon claim submission when within HSA limits",
-          "Extended repair handling for certain warranty families beyond normal base terms"
-        ],
-        "limits": [
-          {
-            "type": "dollar",
-            "value": "$1,000.00",
-            "notes": "Total repair amount per visit for self-authorized goodwill."
-          },
-          {
-            "type": "prior_approval_exception",
-            "value": "Engine and transmission assemblies require prior approval",
-            "notes": "Cannot be self-authorized under normal HSA handling."
-          }
-        ],
-        "transferability": [],
-        "not_covered": [
-          "Engine and transmission assembly replacement without prior approval",
-          "Wear-related part replacement not eligible for HSA",
-          "Equus maintenance repairs not performed as scheduled maintenance under applicable Equus guidance"
-        ],
-        "claim_notes": [
-          "This is not basic warranty coverage. It is a controlled self-authorization/goodwill extension process."
-        ]
+        "key": "audio_navigation",
+        "label": "Audio / Navigation / Radio",
+        "description": "Coverage for infotainment, radio, navigation, and sound-related components.",
+        "items": []
       },
       {
-        "key": "parts_and_accessories_warranty_extension_hsa_example",
-        "label": "Parts and Accessories HSA Example Window",
-        "category": "example_extension",
-        "source_sections": [
-          "5.4.6"
-        ],
-        "summary": "One HSA example includes Parts and Accessories Warranty repairs beyond normal term but within an extended self-authorized goodwill window.",
-        "applies_to": [
-          "Parts and Accessories Warranty goodwill example handling under HSA"
-        ],
-        "core_coverage": [
-          "Parts and Accessories Warranty repairs beyond 12 months/12,000 miles but within the specified HSA extension window"
-        ],
-        "limits": [
-          {
-            "type": "time",
-            "value": "24 months",
-            "notes": "HSA example upper limit from original customer purchase."
-          },
-          {
-            "type": "mileage",
-            "value": "24,000 miles",
-            "notes": "HSA example upper limit from original customer purchase."
-          }
-        ],
-        "transferability": [],
-        "not_covered": [],
-        "claim_notes": [
-          "This is a goodwill/HSA example window, not the baseline warranty statement itself."
-        ]
+        "key": "paint",
+        "label": "Paint Coverage",
+        "description": "Paint defect or paint-related warranty coverage.",
+        "items": []
       },
       {
-        "key": "ownership_and_original_owner_validation",
-        "label": "Ownership and Original Owner Validation",
-        "category": "ownership_rule",
-        "source_sections": [
-          "4.0.3",
-          "6.2.1"
-        ],
-        "summary": "Some warranty handling depends on ownership status and original-owner validation documentation.",
-        "applies_to": [
-          "Ownership-sensitive warranty decisions",
-          "Original owner validation workflows"
-        ],
-        "core_coverage": [
-          "Most Hyundai warranty coverage follows the vehicle",
-          "Original-owner-sensitive handling may require extra validation"
-        ],
-        "limits": [
-          {
-            "type": "documentation",
-            "value": "Original Owner Verification Affidavit and supporting registration may be required",
-            "notes": "Used in original owner validation workflows."
-          }
-        ],
-        "transferability": [
-          "Most coverage transfers with the vehicle, except where excluded by specific warranty program rules."
-        ],
-        "not_covered": [],
-        "claim_notes": [
-          "Use this category with claimRequirements.json when ownership validation affects claim support."
-        ]
+        "key": "parts_accessories",
+        "label": "Parts and Accessories",
+        "description": "Coverage for Hyundai supplied service parts and accessories.",
+        "items": []
+      },
+      {
+        "key": "hybrid_ev",
+        "label": "Hybrid / EV System Coverage",
+        "description": "Coverage for hybrid, EV, and high-voltage related systems where applicable.",
+        "items": []
       }
-    ]
+    ],
+    "item_schema_example": {
+      "component_key": "engine_long_block",
+      "component_label": "Engine Long Block",
+      "coverage_category": "powertrain_limited",
+      "covered": true,
+      "coverage_summary": "Example summary only.",
+      "time_limit_months": null,
+      "mileage_limit": null,
+      "ownership_rule": "original_owner_or_subsequent_owner_or_all",
+      "ownership_notes": "",
+      "exceptions": [],
+      "not_covered": [],
+      "related_manual_sections": [],
+      "source_reference": {
+        "document": "Warranty Coverage Guide",
+        "pages": []
+      }
+    }
   }
 }

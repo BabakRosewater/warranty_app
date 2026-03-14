@@ -2,416 +2,328 @@
   "claim_error_rules": [
     {
       "code": "306",
-      "message": "Claim has non-related op with main op code",
       "claim_type": "warranty",
-      "screen": "Warranty Claim ReSubmit",
-      "severity": "error",
       "category": "op_code_relationship",
-      "dealer_reply_needed": true,
-      "meaning": "One or more OP codes on the claim do not logically belong with the main operation code or are not valid supporting operations for the claimed repair.",
+      "severity": "high",
+      "screen": "Warranty Claim ReSubmit",
+      "message": "Claim has non-related op with main op code",
+      "meaning": "The submitted labor operations do not appear to relate correctly to the main labor operation or the claim structure.",
       "likely_problem_areas": [
-        "OP Code Information",
-        "Main labor operation selection",
-        "Related labor operation structure",
-        "Causal part to op code relationship"
+        "Main op code selection",
+        "Additional related ops",
+        "Causal part relationship"
       ],
       "validation_checks": [
-        "Verify the main OP code is the correct primary repair operation.",
-        "Verify each additional OP code is allowed with the main OP code.",
-        "Check whether one of the listed OP codes belongs on a separate claim.",
-        "Confirm the causal part matches the main repair operation."
+        "Confirm the primary op code is correct",
+        "Remove non-related operations",
+        "Check labor op hierarchy"
       ],
       "recommended_fix_steps": [
-        "Open the returned claim and review all OP code lines.",
-        "Identify the intended main operation.",
-        "Remove unrelated labor operations or move them to a separate claim if appropriate.",
-        "Confirm the causal part supports the main operation.",
-        "Update the claim and resubmit."
+        "Review all OP lines",
+        "Keep only operations supported by the repair story",
+        "Resubmit after correcting unrelated lines"
       ],
-      "related_sections": [
-        "op_code_information",
-        "basic_information",
-        "return_reason",
-        "dealer_reply"
-      ]
-    },
-    {
-      "code": "OP_NOT_APPLICABLE_CAUSAL",
-      "message": "Op Code not applicable to Causal Part",
-      "claim_type": "warranty",
-      "screen": "Warranty Claim Create/Edit/Submit",
-      "severity": "error",
-      "category": "causal_part_validation",
-      "dealer_reply_needed": false,
-      "meaning": "The selected OP code does not match the causal part entered on the claim.",
-      "likely_problem_areas": [
-        "Causal Part #",
-        "Causal Part Description",
-        "OP Code Information",
-        "Repair line setup"
-      ],
-      "validation_checks": [
-        "Verify the causal part number is correct.",
-        "Verify the OP code belongs to the entered causal part.",
-        "Check whether the wrong OP code was selected.",
-        "Check whether the wrong causal part was entered."
-      ],
-      "recommended_fix_steps": [
-        "Review the repair order and technician story.",
-        "Confirm the failed component that caused the repair.",
-        "Replace the incorrect causal part or incorrect OP code.",
-        "Save the corrected claim and validate again."
-      ],
-      "related_sections": [
-        "basic_information",
-        "op_code_information",
-        "part_information"
-      ]
-    },
-    {
-      "code": "INVALID_OP_CODE",
-      "message": "Invalid OP Code",
-      "claim_type": "warranty",
-      "screen": "Warranty Claim Create/Edit/Submit",
-      "severity": "error",
-      "category": "op_code_validation",
-      "dealer_reply_needed": false,
-      "meaning": "The OP code entered is not recognized, not valid for the claim type, or not valid in the current claim context.",
-      "likely_problem_areas": [
-        "OP Code Information",
-        "Claim type selection",
-        "Manual labor entry",
-        "Campaign versus warranty routing"
-      ],
-      "validation_checks": [
-        "Verify the OP code was typed correctly.",
-        "Verify the OP code is valid for warranty and not for a different claim type.",
-        "Verify the OP code is active and current.",
-        "Verify the labor operation belongs to the repair being claimed."
-      ],
-      "recommended_fix_steps": [
-        "Compare the entered OP code against the repair source or campaign bulletin.",
-        "Correct any typing or formatting issue.",
-        "Replace the invalid code with the proper Hyundai labor operation.",
-        "Recalculate the claim and validate again."
-      ],
-      "related_sections": [
-        "op_code_information",
-        "basic_information"
-      ]
+      "dealer_reply_needed": false
     },
     {
       "code": "TT_MAIN_OP_NOT_ALLOWED",
-      "message": "*TT opcode not allowed as main OP",
       "claim_type": "warranty",
+      "category": "op_code_rules",
+      "severity": "high",
       "screen": "Warranty Claim Create/Edit/Submit",
-      "severity": "error",
-      "category": "main_op_validation",
-      "dealer_reply_needed": false,
-      "meaning": "A time-trial, test, or auxiliary TT-type OP code was entered as the primary repair operation when it must be used only as a supporting operation.",
+      "message": "*TT opcode not allowed as main OP",
+      "meaning": "A TT operation was entered as the main operation when Hyundai does not allow that usage.",
       "likely_problem_areas": [
-        "Main OP code selection",
-        "OP Code Information",
-        "Repair structure",
-        "Labor line order"
+        "Main op code"
       ],
       "validation_checks": [
-        "Verify whether the TT code is intended as a supporting operation only.",
-        "Verify a valid primary repair operation exists.",
-        "Check whether the main repair line was omitted."
+        "Check whether TT code should be secondary only"
       ],
       "recommended_fix_steps": [
-        "Replace the TT code as the main operation with the correct repair OP code.",
-        "Move the TT code to a supporting line if allowed.",
-        "Confirm labor hours and quantities still match the repair.",
-        "Save and validate the claim again."
+        "Replace the main op with the correct primary operation",
+        "Move TT op to supported position only if allowed"
       ],
-      "related_sections": [
-        "op_code_information"
-      ]
+      "dealer_reply_needed": false
+    },
+    {
+      "code": "OP_NOT_APPLICABLE_TO_CAUSAL_PART",
+      "claim_type": "warranty",
+      "category": "causal_part_relationship",
+      "severity": "high",
+      "screen": "Warranty Claim Create/Edit/Submit",
+      "message": "Op Code not applicable to Causal Part",
+      "meaning": "The labor operation entered does not match the causal part entered on the claim.",
+      "likely_problem_areas": [
+        "Causal part number",
+        "Primary op code",
+        "Replacement part family"
+      ],
+      "validation_checks": [
+        "Confirm causal part number",
+        "Compare op family to part family",
+        "Review parts invoice or RO lines"
+      ],
+      "recommended_fix_steps": [
+        "Correct the causal part number",
+        "Verify the primary op code",
+        "Resubmit with aligned part/op relationship"
+      ],
+      "dealer_reply_needed": false
+    },
+    {
+      "code": "INVALID_OP_CODE",
+      "claim_type": "warranty",
+      "category": "op_code_rules",
+      "severity": "high",
+      "screen": "Warranty Claim Create/Edit/Submit",
+      "message": "Invalid OP Code",
+      "meaning": "The operation code entered is not accepted by WebDCS in the current claim context.",
+      "likely_problem_areas": [
+        "Typo in op code",
+        "Wrong claim type",
+        "Unsupported op"
+      ],
+      "validation_checks": [
+        "Re-check the bulletin or labor guide",
+        "Confirm claim type"
+      ],
+      "recommended_fix_steps": [
+        "Correct the op code",
+        "Remove invalid line if not needed",
+        "Resubmit once validated"
+      ],
+      "dealer_reply_needed": false
+    },
+    {
+      "code": "INVALID_CAUSAL_PART",
+      "claim_type": "warranty",
+      "category": "causal_part_relationship",
+      "severity": "high",
+      "screen": "Warranty Claim Create/Edit/Submit",
+      "message": "Invalid Causal Part",
+      "meaning": "The causal part number entered is not accepted as a valid causal part for the claim.",
+      "likely_problem_areas": [
+        "Causal part typo",
+        "Wrong part family",
+        "Supersession confusion"
+      ],
+      "validation_checks": [
+        "Compare causal part to replacement part",
+        "Check parts catalog or invoice",
+        "Validate part family against op code"
+      ],
+      "recommended_fix_steps": [
+        "Correct the causal part number",
+        "Use the valid part family tied to the repair",
+        "Resubmit after confirming part accuracy"
+      ],
+      "dealer_reply_needed": false
+    },
+    {
+      "code": "RETURN_STATUS",
+      "claim_type": "resubmit",
+      "category": "returned_claim",
+      "severity": "medium",
+      "screen": "Warranty Claim ReSubmit",
+      "message": "Claim returned for correction",
+      "meaning": "Hyundai returned the claim and expects the dealer to review and correct it before resubmission.",
+      "likely_problem_areas": [
+        "Return code",
+        "Remark history",
+        "Dealer reply"
+      ],
+      "validation_checks": [
+        "Read return code and message",
+        "Review remark history",
+        "Confirm whether dealer reply is required"
+      ],
+      "recommended_fix_steps": [
+        "Correct the underlying issue",
+        "Add dealer reply if required",
+        "Resubmit only after the error is addressed"
+      ],
+      "dealer_reply_needed": true
     },
     {
       "code": "MISSING_RELATED_CLAIM",
-      "message": "Rental or support claim missing related repaired vehicle claim linkage",
       "claim_type": "rental",
-      "screen": "Rental Claim Detail",
-      "severity": "error",
-      "category": "claim_linkage",
-      "dealer_reply_needed": false,
-      "meaning": "The rental claim is missing the related repaired vehicle claim reference or supporting repair order linkage.",
+      "category": "related_claim",
+      "severity": "high",
+      "screen": "Rental Claim",
+      "message": "No corresponding repair claim found",
+      "meaning": "The rental claim was submitted without a matching repair claim or the related claim could not be found.",
       "likely_problem_areas": [
-        "Repaired Vehicle section",
-        "Claim Number linkage",
-        "R/O Number",
-        "VIN",
-        "Mileage"
+        "Related claim number",
+        "Related RO number"
       ],
       "validation_checks": [
-        "Verify the repaired vehicle claim number is present if required.",
-        "Verify the repair order number matches the related repair event.",
-        "Verify VIN and mileage belong to the repaired vehicle.",
-        "Confirm the rental reason ties to a valid repair event."
+        "Confirm related warranty or campaign claim exists",
+        "Confirm RO linkage"
       ],
       "recommended_fix_steps": [
-        "Open the rental claim and review the repaired vehicle section.",
-        "Enter or correct the related repair order and claim reference.",
-        "Confirm VIN, mileage, and causal part data are tied to the repaired vehicle.",
-        "Attach any missing rental support documents and resubmit."
+        "Enter the correct related claim or RO",
+        "Wait until the repair claim exists if needed",
+        "Resubmit once linkage is valid"
       ],
-      "related_sections": [
-        "rental_claim",
-        "repaired_vehicle",
-        "attachments"
-      ]
+      "dealer_reply_needed": false
+    },
+    {
+      "code": "HOLD_STATUS_7_DAY",
+      "claim_type": "warranty",
+      "category": "hold_status",
+      "severity": "medium",
+      "screen": "Warranty Claim Create/Edit/Submit",
+      "message": "Claim in hold status pending corresponding repair claim match",
+      "meaning": "The system placed the claim on hold because it could not match the corresponding repair claim information.",
+      "likely_problem_areas": [
+        "RO number",
+        "Causal part",
+        "Related claim"
+      ],
+      "validation_checks": [
+        "Confirm RO number and claim details",
+        "Confirm matching repair claim exists"
+      ],
+      "recommended_fix_steps": [
+        "Correct invalid identifiers",
+        "Contact WCC if necessary",
+        "Resubmit or wait for claim match"
+      ],
+      "dealer_reply_needed": false
     },
     {
       "code": "MISSING_REQUIRED_ATTACHMENT",
-      "message": "Required attachment missing or not categorized correctly",
       "claim_type": "warranty",
+      "category": "attachments",
+      "severity": "high",
       "screen": "Warranty Claim Create/Edit/Submit",
-      "severity": "error",
-      "category": "attachment_validation",
-      "dealer_reply_needed": false,
-      "meaning": "A required file is missing, not selected, or uploaded under the wrong category.",
+      "message": "Required attachment missing or uncategorized",
+      "meaning": "The claim is missing a required attachment category or the existing file was not categorized correctly.",
       "likely_problem_areas": [
-        "Attachments",
-        "Attachment Category",
-        "STUI / uploaded file mapping",
-        "Required digital documentation"
+        "VIN attachment",
+        "Mileage attachment",
+        "Part attachment"
       ],
       "validation_checks": [
-        "Verify required images or documents are attached.",
-        "Verify each file uses the correct attachment category.",
-        "Check whether VIN, Odometer/Mileage, Part, or Sublet support is missing when required.",
-        "Check whether the file size exceeds the allowed upload limit."
+        "Confirm required categories exist",
+        "Confirm category selection is correct"
       ],
       "recommended_fix_steps": [
-        "Review the claim type and required attachment categories.",
-        "Upload missing files or correct the category assignment.",
-        "Confirm the files are clear, complete, and tied to the correct VIN/repair event.",
-        "Resave and resubmit the claim."
+        "Attach the missing file",
+        "Set the correct category",
+        "Resubmit only after required files are categorized"
       ],
-      "related_sections": [
-        "attachments"
-      ]
+      "dealer_reply_needed": false
     },
     {
-      "code": "MISSING_REQUIRED_FIELD",
-      "message": "One or more required fields are missing",
+      "code": "AUDIT-001",
+      "claim_type": "general",
+      "category": "audit_precheck",
+      "severity": "high",
+      "screen": "Claim Audit",
+      "message": "Missing VIN across primary documents",
+      "meaning": "The audit could not find a usable VIN in the pasted materials.",
+      "likely_problem_areas": [
+        "Claim screen paste quality",
+        "RO text extraction",
+        "VIS text missing"
+      ],
+      "validation_checks": [
+        "Confirm claim screen or VIS text includes the VIN"
+      ],
+      "recommended_fix_steps": [
+        "Paste a cleaner claim screen or VIS section",
+        "Run the audit again once VIN is visible"
+      ],
+      "dealer_reply_needed": false
+    },
+    {
+      "code": "AUDIT-002",
       "claim_type": "warranty",
-      "screen": "Warranty Claim Create/Edit/Submit",
-      "severity": "error",
-      "category": "field_completion",
-      "dealer_reply_needed": false,
-      "meaning": "A mandatory field required for claim entry or resubmission has not been completed.",
+      "category": "audit_precheck",
+      "severity": "high",
+      "screen": "Claim Audit",
+      "message": "Causal part family mismatch",
+      "meaning": "The causal part does not align with the replacement part family or op code family.",
       "likely_problem_areas": [
-        "Basic Information",
-        "Details",
-        "OP Code Information",
-        "Part Information"
+        "Causal part typo",
+        "Wrong replacement part family",
+        "Incorrect op code"
       ],
       "validation_checks": [
-        "Verify all required Basic Information fields are completed.",
-        "Verify required complaint, cause, and correction descriptions are entered.",
-        "Verify required OP code or causal part fields are present.",
-        "Verify dates and mileage fields are not blank."
+        "Compare first five digits of causal and replacement part",
+        "Compare op family if supported"
       ],
       "recommended_fix_steps": [
-        "Review the highlighted required fields on the screen.",
-        "Complete all missing required entries.",
-        "Validate character limits and restricted character rules where applicable.",
-        "Save and submit again."
+        "Correct the causal part number",
+        "Verify the replacement part and op code",
+        "Re-run audit before submission"
       ],
-      "related_sections": [
-        "basic_information",
-        "details",
-        "op_code_information",
-        "part_information"
-      ]
+      "dealer_reply_needed": false
     },
     {
-      "code": "INVALID_RESTRICTED_CHARACTERS",
-      "message": "Restricted characters used in text entry field",
+      "code": "AUDIT-003",
       "claim_type": "warranty",
-      "screen": "Warranty Claim Create/Edit/Submit",
-      "severity": "error",
-      "category": "text_validation",
-      "dealer_reply_needed": false,
-      "meaning": "One or more text fields contain characters that the Hyundai portal does not allow.",
+      "category": "audit_precheck",
+      "severity": "high",
+      "screen": "Claim Audit",
+      "message": "Claim mileage differs from latest STUI mileage",
+      "meaning": "The final claim mileage does not match the latest STUI mileage for the VIN.",
       "likely_problem_areas": [
-        "Complaint Description",
-        "Cause Description",
-        "Correction Description",
-        "Additional Comments",
-        "Dealer PWA Reply"
+        "Manual claim entry",
+        "Wrong attachment event selected"
       ],
       "validation_checks": [
-        "Check for forbidden punctuation and symbols in entered text.",
-        "Review copied and pasted notes for hidden or unsupported characters.",
-        "Confirm the text stays within the field character limit."
+        "Compare claim mileage out to latest STUI event"
       ],
       "recommended_fix_steps": [
-        "Remove restricted characters from the affected text fields.",
-        "Use plain text phrasing only.",
-        "Save the claim and validate again."
+        "Use the correct final mileage",
+        "Confirm which STUI event belongs to the claim"
       ],
-      "related_sections": [
-        "details",
-        "dealer_reply"
-      ]
+      "dealer_reply_needed": false
     },
     {
-      "code": "CLAIM_OVER_30_DAYS",
-      "message": "Claim submission or resubmission over 30 days is subject to denial",
-      "claim_type": "resubmit",
-      "screen": "Warranty Claim ReSubmit",
-      "severity": "warning",
-      "category": "timing_risk",
-      "dealer_reply_needed": true,
-      "meaning": "The claim is being submitted or resubmitted outside Hyundai’s preferred timing window and may be denied.",
-      "likely_problem_areas": [
-        "Return timing",
-        "Adjustment Date",
-        "R.O. Date",
-        "Claim follow-up process"
-      ],
-      "validation_checks": [
-        "Compare repair date and current submission date.",
-        "Check how long the claim has been in return or pending status.",
-        "Confirm whether supporting explanation is needed."
-      ],
-      "recommended_fix_steps": [
-        "Review the dates tied to the original repair and return.",
-        "Correct the claim promptly.",
-        "Provide any needed dealer reply or explanation if applicable.",
-        "Resubmit without further delay."
-      ],
-      "related_sections": [
-        "header_status",
-        "return_reason",
-        "dealer_reply"
-      ]
-    },
-    {
-      "code": "HOLD_STATUS_NO_MATCH",
-      "message": "Claim in hold status because corresponding repair claim was not found",
-      "claim_type": "resubmit",
-      "screen": "Warranty Claim ReSubmit",
-      "severity": "error",
-      "category": "claim_match_failure",
-      "dealer_reply_needed": true,
-      "meaning": "The system could not match the submitted data to the expected repair claim record, often due to incorrect RO number, claim number, or related identifiers.",
-      "likely_problem_areas": [
-        "R.O. #",
-        "Claim #",
-        "Causal Part",
-        "Related repair claim linkage"
-      ],
-      "validation_checks": [
-        "Verify the repair order number is correct.",
-        "Verify the claim number is correct.",
-        "Verify the causal part and repair linkage fields match the related repair event.",
-        "Check whether the referenced repair claim exists in the system."
-      ],
-      "recommended_fix_steps": [
-        "Review the returned claim carefully against the original repair order.",
-        "Correct any mismatched identifiers.",
-        "Update related claim linkage if required.",
-        "Use Dealer PWA Reply if needed to explain the correction.",
-        "Resubmit after confirming the repair record can be matched."
-      ],
-      "related_sections": [
-        "header_status",
-        "return_reason",
-        "basic_information",
-        "dealer_reply"
-      ]
-    },
-    {
-      "code": "ATTACHMENT_TOO_LARGE",
-      "message": "Attachment exceeds allowable size",
+      "code": "AUDIT-004",
       "claim_type": "warranty",
-      "screen": "Attachments",
-      "severity": "error",
-      "category": "attachment_validation",
-      "dealer_reply_needed": false,
-      "meaning": "An uploaded file exceeds the maximum size allowed by the claim screen.",
+      "category": "audit_precheck",
+      "severity": "medium",
+      "screen": "Claim Audit",
+      "message": "Multiple STUI event dates detected",
+      "meaning": "Attachments appear to come from more than one date and may need explanation.",
       "likely_problem_areas": [
-        "Attachments",
-        "File upload",
-        "Category assignment"
+        "Wait-for-parts story",
+        "Mixed attachments"
       ],
       "validation_checks": [
-        "Check the file size against the screen limit.",
-        "Confirm the correct claim type is being used, since limits differ by claim type.",
-        "Verify the attachment is still readable after resizing if adjusted."
+        "Review STUI dates",
+        "Compare to repair timeline"
       ],
       "recommended_fix_steps": [
-        "Reduce the file size or replace the file with a smaller version.",
-        "Re-upload the attachment under the correct category.",
-        "Confirm the attachment remains legible and complete."
+        "Confirm whether this is one story across multiple dates",
+        "Remove unrelated attachments if needed"
       ],
-      "related_sections": [
-        "attachments"
-      ]
+      "dealer_reply_needed": false
     },
     {
-      "code": "PDI_MISSING_RO_VIN_LINE",
-      "message": "PDI claim missing required R.O. and VIN line information",
-      "claim_type": "pdi",
-      "screen": "PDI Claim Create/Edit/Submit",
-      "severity": "error",
-      "category": "field_completion",
-      "dealer_reply_needed": false,
-      "meaning": "The PDI claim is missing one or more required values in the R.O. and VIN table.",
+      "code": "AUDIT-005",
+      "claim_type": "warranty",
+      "category": "audit_precheck",
+      "severity": "medium",
+      "screen": "Claim Audit",
+      "message": "Campaign history found in VIS or RO history",
+      "meaning": "Campaign or recall work appears in history and should be separated from the current warranty issue if unrelated.",
       "likely_problem_areas": [
-        "R.O and VIN #",
-        "Mileage (in)",
-        "Mileage (out)",
-        "R/O Date"
+        "Prior campaign history",
+        "Misunderstood current issue"
       ],
       "validation_checks": [
-        "Verify R.O. # is entered.",
-        "Verify VIN is entered.",
-        "Verify mileage in and mileage out are entered.",
-        "Verify R/O date is entered."
+        "Compare current RO and claim type to prior campaign records"
       ],
       "recommended_fix_steps": [
-        "Complete the missing R.O./VIN row fields.",
-        "Review the PDI line for correct vehicle and mileage data.",
-        "Save and submit again."
+        "Confirm current issue is separate",
+        "Keep the claim built on the correct RO"
       ],
-      "related_sections": [
-        "ro_vin_information"
-      ]
-    },
-    {
-      "code": "CAMPAIGN_MISSING_OP_CODE",
-      "message": "Campaign claim missing OP Code",
-      "claim_type": "campaign",
-      "screen": "Campaign Claim Create/Edit/Submit",
-      "severity": "error",
-      "category": "field_completion",
-      "dealer_reply_needed": false,
-      "meaning": "A campaign claim cannot be processed without the proper campaign operation code.",
-      "likely_problem_areas": [
-        "Basic Information",
-        "OP Code",
-        "Campaign Description"
-      ],
-      "validation_checks": [
-        "Verify the campaign OP code is present.",
-        "Verify the OP code matches the campaign being claimed.",
-        "Verify VIN and campaign repair context align."
-      ],
-      "recommended_fix_steps": [
-        "Enter the correct campaign OP code.",
-        "Verify the campaign description is correct.",
-        "Save and submit the campaign claim again."
-      ],
-      "related_sections": [
-        "basic_information"
-      ]
+      "dealer_reply_needed": false
     }
   ]
 }

@@ -1,0 +1,174 @@
+{
+  "claim_audit_field_map": {
+    "metadata": {
+      "title": "Claim Audit Field Map",
+      "version": "1.0.0"
+    },
+    "fields": [
+      {
+        "key": "vin",
+        "label": "VIN",
+        "normalized_type": "vin",
+        "source_priority_by_claim_type": {
+          "warranty": [
+            "claim_screen",
+            "vis_pdf",
+            "repair_order",
+            "stui_csv"
+          ],
+          "campaign": [
+            "claim_screen",
+            "vis_pdf",
+            "repair_order",
+            "stui_csv"
+          ],
+          "rental": [
+            "claim_screen",
+            "repair_order",
+            "stui_csv"
+          ],
+          "pdi": [
+            "claim_screen",
+            "repair_order"
+          ]
+        },
+        "comparison_rule": "exact_after_strip_non_alphanumeric"
+      },
+      {
+        "key": "claim_ro_number",
+        "label": "Claim RO Number",
+        "normalized_type": "ro_number",
+        "source_priority_by_claim_type": {
+          "warranty": [
+            "claim_screen",
+            "repair_order"
+          ],
+          "campaign": [
+            "claim_screen",
+            "repair_order"
+          ],
+          "rental": [
+            "claim_screen",
+            "repair_order"
+          ],
+          "pdi": [
+            "claim_screen",
+            "repair_order"
+          ]
+        },
+        "comparison_rule": "exact_after_strip_spaces_and_hyphens"
+      },
+      {
+        "key": "final_mileage",
+        "label": "Final Mileage",
+        "normalized_type": "mileage",
+        "source_priority_by_claim_type": {
+          "warranty": [
+            "stui_csv_latest_for_vin",
+            "claim_screen",
+            "repair_order",
+            "vis_maintenance_history"
+          ],
+          "campaign": [
+            "stui_csv_latest_for_vin",
+            "claim_screen",
+            "repair_order"
+          ],
+          "rental": [
+            "repair_order",
+            "claim_screen"
+          ],
+          "pdi": [
+            "claim_screen",
+            "repair_order"
+          ]
+        },
+        "comparison_rule": "numeric_exact"
+      },
+      {
+        "key": "causal_part_number",
+        "label": "Causal Part Number",
+        "normalized_type": "hyundai_part_number",
+        "source_priority_by_claim_type": {
+          "warranty": [
+            "claim_screen",
+            "repair_order",
+            "parts_invoice"
+          ]
+        },
+        "comparison_rule": "family_first_then_exact_after_strip_dashes"
+      },
+      {
+        "key": "replacement_part_numbers",
+        "label": "Replacement Part Numbers",
+        "normalized_type": "hyundai_part_number_array",
+        "source_priority_by_claim_type": {
+          "warranty": [
+            "repair_order",
+            "parts_invoice",
+            "claim_screen"
+          ]
+        },
+        "comparison_rule": "family_compare_against_causal_and_op"
+      },
+      {
+        "key": "op_codes",
+        "label": "Labor Operation Codes",
+        "normalized_type": "op_code_array",
+        "source_priority_by_claim_type": {
+          "warranty": [
+            "claim_screen",
+            "repair_order"
+          ],
+          "campaign": [
+            "claim_screen",
+            "repair_order"
+          ]
+        },
+        "comparison_rule": "compare_primary_numeric_family_to_causal_part_family_when_supported"
+      },
+      {
+        "key": "stui_attachment_categories",
+        "label": "STUI Attachment Categories",
+        "normalized_type": "category_array",
+        "source_priority_by_claim_type": {
+          "warranty": [
+            "stui_csv"
+          ],
+          "campaign": [
+            "stui_csv"
+          ]
+        },
+        "comparison_rule": "set_includes_required_categories"
+      },
+      {
+        "key": "campaign_not_performed_count",
+        "label": "Campaign Not Performed Count",
+        "normalized_type": "number",
+        "source_priority_by_claim_type": {
+          "warranty": [
+            "vis_pdf"
+          ],
+          "campaign": [
+            "vis_pdf"
+          ]
+        },
+        "comparison_rule": "numeric_compare"
+      },
+      {
+        "key": "vis_claim_history_ro_numbers",
+        "label": "VIS Claim History RO Numbers",
+        "normalized_type": "ro_number_array",
+        "source_priority_by_claim_type": {
+          "warranty": [
+            "vis_pdf"
+          ],
+          "campaign": [
+            "vis_pdf"
+          ]
+        },
+        "comparison_rule": "contains_or_not"
+      }
+    ]
+  }
+}

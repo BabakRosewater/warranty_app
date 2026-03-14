@@ -1,0 +1,34 @@
+{
+  "claim_audit_examples": [
+    {
+      "key": "santa_fe_in_cabin_camera_claim",
+      "label": "Santa Fe camera claim - causal part typo and mileage mismatch",
+      "claim_type": "warranty",
+      "scenario_summary": "Claim built on later RO after earlier related visit. Initial failure was a causal part typo and final mileage mismatch against STUI.",
+      "expected_findings": [
+        "AUDIT-002",
+        "AUDIT-003",
+        "AUDIT-004",
+        "AUDIT-005"
+      ],
+      "notes": [
+        "Correct causal part family was 96528, not 96526.",
+        "Claim was built on the later RO, while earlier related history existed in VIS and STUI."
+      ]
+    },
+    {
+      "key": "palisade_tow_no_start_packet",
+      "label": "Palisade tow-in packet - mixed warranty and campaign documentation",
+      "claim_type": "warranty",
+      "scenario_summary": "RO packet included a tow-in no-start complaint, ignition coil replacement, completed recalls, VIS history, technician time logs, and parts invoice.",
+      "expected_findings": [
+        "AUDIT-101",
+        "AUDIT-102"
+      ],
+      "notes": [
+        "Packet includes customer-facing RO, internal copies, time tickets, VIS record, and parts invoice.",
+        "Useful as a permanent example package for document recognition and audit comparisons."
+      ]
+    }
+  ]
+}
